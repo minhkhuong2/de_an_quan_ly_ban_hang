@@ -137,4 +137,18 @@ class ImeiModel
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
     }
+    public function getImeiForSale($imei_code)
+    {
+        $query = "SELECT i.*, p.product_name, p.base_price 
+                  FROM " . $this->table_name . " i
+                  JOIN products p ON i.product_id = p.id
+                  WHERE (i.imei_code = :code OR i.serial_number = :code) 
+                  AND i.status = 'Trong kho' LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':code', $imei_code);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

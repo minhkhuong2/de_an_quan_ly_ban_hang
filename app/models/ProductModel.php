@@ -20,22 +20,27 @@ class ProductModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function addProduct($name, $brand, $price)
+    public function addProduct($name, $brand, $price, $sku, $barcode, $unit, $description, $compare_price, $cost_price, $apply_tax, $category, $tags)
     {
-        $query = "INSERT INTO " . $this->table_name . " (product_name, brand, base_price) 
-                  VALUES (:name, :brand, :price)";
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (product_name, brand, base_price, sku, barcode, unit, description, compare_price, cost_price, apply_tax, category, tags) 
+                  VALUES (:name, :brand, :price, :sku, :barcode, :unit, :description, :compare_price, :cost_price, :apply_tax, :category, :tags)";
 
         $stmt = $this->conn->prepare($query);
 
-        // Làm sạch dữ liệu đầu vào
-        $name = htmlspecialchars(strip_tags($name));
-        $brand = htmlspecialchars(strip_tags($brand));
-        $price = htmlspecialchars(strip_tags($price));
-
-        // Gán tham số
+        // Gán tham số trực tiếp (Bạn có thể thêm htmlspecialchars để bảo mật thêm)
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':brand', $brand);
         $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':sku', $sku);
+        $stmt->bindParam(':barcode', $barcode);
+        $stmt->bindParam(':unit', $unit);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':compare_price', $compare_price);
+        $stmt->bindParam(':cost_price', $cost_price);
+        $stmt->bindParam(':apply_tax', $apply_tax);
+        $stmt->bindParam(':category', $category);
+        $stmt->bindParam(':tags', $tags);
 
         if ($stmt->execute()) {
             return true;
