@@ -33,22 +33,36 @@ if ($action == 'dashboard') {
     $imeiController->search();
 
     // === CÁC ĐƯỜNG DẪN DÀNH CHO SẢN PHẨM ===
+} elseif ($action == 'product_list') {
+    $productController->list();
 } elseif ($action == 'add_product') {
     $productController->add();
-} elseif ($action == 'product_list') {     // <-- ĐÃ BỔ SUNG Ở ĐÂY
-    $productController->list();
-} elseif ($action == 'product_category') { // <-- ĐÃ BỔ SUNG Ở ĐÂY
-    $productController->category();
+} elseif ($action == 'edit_product') {
+    $productController->edit();
+} elseif ($action == 'delete_product') {
+    $productController->delete();
 } elseif ($action == 'product_price') {
     $productController->price();
+
+    // === CÁC ĐƯỜNG DẪN DÀNH CHO DANH MỤC ===
+} elseif ($action == 'product_category') {
+    $productController->category_list();     // Nối vào hàm danh sách
+} elseif ($action == 'add_category') {
+    $productController->add_category();      // Nối vào hàm thêm
+} elseif ($action == 'edit_category') {
+    $productController->edit_category();     // Nối vào hàm sửa
+} elseif ($action == 'delete_category') {
+    $productController->delete_category();   // Nối vào hàm xóa
+
+    // === CÁC ĐƯỜNG DẪN DÀNH CHO BÁN HÀNG (POS) ===
 } elseif ($action == 'pos') {
     $orderController->pos();
-} elseif ($action == 'scan_imei') {        // THÊM DÒNG NÀY (Nhận request quét mã)
-    $orderController->scanImei();
 } elseif ($action == 'scan_imei') {
     $orderController->scanImei();
-} elseif ($action == 'checkout') {         // THÊM DÒNG NÀY
-    $orderController->checkout();          // THÊM DÒNG NÀY
+} elseif ($action == 'checkout') {
+    $orderController->checkout();
+
+    // Lỗi 404
 } else {
     echo "<h2 style='color: red; padding: 20px;'>Trang không tồn tại!</h2>";
 }
