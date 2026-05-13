@@ -27,25 +27,39 @@ class CategoryModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function addCategory($name, $description, $status)
+    public function addCategory($name, $desc, $alias, $seo_title, $seo_desc, $status, $sel_type, $match_type, $auto_rules, $sort_order)
     {
-        $query = "INSERT INTO " . $this->table_name . " (category_name, description, status) VALUES (:name, :description, :status)";
+        $query = "INSERT INTO " . $this->table_name . " (category_name, description, alias, seo_title, seo_description, status, selection_type, match_type, auto_rules, sort_order) VALUES (:n, :d, :a, :st, :sd, :stat, :selt, :mt, :ar, :so)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':n', $name);
+        $stmt->bindParam(':d', $desc);
+        $stmt->bindParam(':a', $alias);
+        $stmt->bindParam(':st', $seo_title);
+        $stmt->bindParam(':sd', $seo_desc);
+        $stmt->bindParam(':stat', $status);
+        $stmt->bindParam(':selt', $sel_type);
+        $stmt->bindParam(':mt', $match_type);
+        $stmt->bindParam(':ar', $auto_rules);
+        $stmt->bindParam(':so', $sort_order);
         if ($stmt->execute()) return $this->conn->lastInsertId();
         return false;
     }
 
-    public function updateCategory($id, $name, $description, $status)
+    public function updateCategory($id, $name, $desc, $alias, $seo_title, $seo_desc, $status, $sel_type, $match_type, $auto_rules, $sort_order)
     {
-        $query = "UPDATE " . $this->table_name . " SET category_name=:name, description=:description, status=:status WHERE id=:id";
+        $query = "UPDATE " . $this->table_name . " SET category_name=:n, description=:d, alias=:a, seo_title=:st, seo_description=:sd, status=:stat, selection_type=:selt, match_type=:mt, auto_rules=:ar, sort_order=:so WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':n', $name);
+        $stmt->bindParam(':d', $desc);
+        $stmt->bindParam(':a', $alias);
+        $stmt->bindParam(':st', $seo_title);
+        $stmt->bindParam(':sd', $seo_desc);
+        $stmt->bindParam(':stat', $status);
+        $stmt->bindParam(':selt', $sel_type);
+        $stmt->bindParam(':mt', $match_type);
+        $stmt->bindParam(':ar', $auto_rules);
+        $stmt->bindParam(':so', $sort_order);
         return $stmt->execute();
     }
 

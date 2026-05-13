@@ -43,6 +43,8 @@ if ($action == 'dashboard') {
     $productController->delete();
 } elseif ($action == 'product_price') {
     $productController->price();
+} elseif ($action == 'add_price') {        // THÊM ROUTE NÀY CHO BẢNG GIÁ
+    $productController->add_price();
 
     // === CÁC ĐƯỜNG DẪN DÀNH CHO DANH MỤC ===
 } elseif ($action == 'product_category') {
