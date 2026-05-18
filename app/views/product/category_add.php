@@ -134,16 +134,6 @@
                     <button type="button" onclick="addRule()" style="background:#fff; border:1px solid #0088ff; color:#0088ff; padding:6px 12px; border-radius:4px; cursor:pointer; margin-top:10px;">+ Thêm điều kiện</button>
                 </div>
             </div>
-
-            <div class="sapo-card">
-                <div style="display:flex; justify-content:space-between;">
-                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tối ưu SEO</h3>
-                    <a href="#" style="color:#0088ff; text-decoration:none;">Tùy chỉnh SEO</a>
-                </div>
-                <label>Thẻ Tiêu đề (SEO Title)</label> <input type="text" name="seo_title" class="form-control">
-                <label>Thẻ mô tả</label> <textarea name="seo_description" class="form-control" rows="3"></textarea>
-                <label>Đường dẫn / Alias</label> <input type="text" name="alias" class="form-control">
-            </div>
         </div>
 
         <div class="sapo-col-right">

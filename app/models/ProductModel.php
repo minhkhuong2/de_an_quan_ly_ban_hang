@@ -10,6 +10,16 @@ class ProductModel
         $this->conn = $db;
     }
 
+    // === MÌNH CHỈ THÊM HÀM NÀY VÀO ĐỂ KHÔNG BỊ GẠCH ĐỎ ===
+    public function getAllProducts()
+    {
+        $query = "SELECT * FROM " . $this->table_name . " ORDER BY id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // ====================================================
+
     public function getProductsWithStock()
     {
         $query = "SELECT p.*, (SELECT COUNT(*) FROM product_items i WHERE i.product_id = p.id AND i.status = 'Trong kho') as ton_kho FROM " . $this->table_name . " p ORDER BY p.id DESC";

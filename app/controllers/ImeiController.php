@@ -39,6 +39,7 @@ class ImeiController
         // 3. Gọi View hiển thị
         require_once __DIR__ . '/../views/imei/add_form.php';
     }
+
     // Thêm hàm này vào bên trong class ImeiController (dưới hàm add)
     public function list()
     {
@@ -53,6 +54,7 @@ class ImeiController
         // 3. Gọi View để hiển thị danh sách (truyền biến $items sang View)
         require_once __DIR__ . '/../views/imei/list.php';
     }
+
     public function sell()
     {
         // 1. Xử lý khi nhân viên bấm "Xác nhận bán" (POST)
@@ -82,6 +84,7 @@ class ImeiController
             echo "Lỗi: Không tìm thấy sản phẩm cần bán!";
         }
     }
+
     public function search()
     {
         $result = null;
@@ -102,6 +105,7 @@ class ImeiController
         // Gọi View và truyền kết quả ($result) ra ngoài màn hình
         require_once __DIR__ . '/../views/imei/search.php';
     }
+
     public function warranty()
     {
         if (isset($_GET['id'])) {

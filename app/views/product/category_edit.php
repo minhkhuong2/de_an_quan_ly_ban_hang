@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/../layout/header.php';
-
-// Dòng này giúp "bịt miệng" VS Code, báo cho nó biết biến này đã tồn tại
 $category = $category ?? [];
 ?>
 <style>
@@ -90,7 +88,7 @@ $category = $category ?? [];
     <div class="sapo-grid">
         <div class="sapo-col-left">
             <div class="sapo-card">
-                <h3 style="font-size: 16px; margin-bottom: 15px;">Thông tin chung</h3>
+                <h3 style="font-size: 16px; margin-bottom: 15px;">Thông配置 tin chung</h3>
                 <label>Tên danh mục *</label> <input type="text" name="category_name" class="form-control" value="<?php echo htmlspecialchars($category['category_name'] ?? ''); ?>" required>
                 <label>Mô tả</label> <textarea name="description" class="form-control" rows="4"><?php echo htmlspecialchars($category['description'] ?? ''); ?></textarea>
             </div>
@@ -154,15 +152,6 @@ $category = $category ?? [];
                     </div>
                     <button type="button" onclick="addRule()" style="background:#fff; border:1px solid #0088ff; color:#0088ff; padding:6px 12px; border-radius:4px; cursor:pointer; margin-top:10px;">+ Thêm điều kiện</button>
                 </div>
-            </div>
-
-            <div class="sapo-card">
-                <div style="display:flex; justify-content:space-between;">
-                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tối ưu SEO</h3> <a href="#" style="color:#0088ff; text-decoration:none;">Tùy chỉnh SEO</a>
-                </div>
-                <label>Thẻ Tiêu đề</label> <input type="text" name="seo_title" class="form-control" value="<?php echo htmlspecialchars($category['seo_title'] ?? ''); ?>">
-                <label>Thẻ mô tả</label> <textarea name="seo_description" class="form-control" rows="3"><?php echo htmlspecialchars($category['seo_description'] ?? ''); ?></textarea>
-                <label>Alias</label> <input type="text" name="alias" class="form-control" value="<?php echo htmlspecialchars($category['alias'] ?? ''); ?>">
             </div>
         </div>
 

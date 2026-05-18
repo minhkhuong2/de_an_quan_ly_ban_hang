@@ -1,23 +1,39 @@
 <?php
 // Đường dẫn file: public/index.php
+session_start(); // Khởi động Session để lưu trạng thái đăng nhập
 
 // 1. Khai báo các Controller
 require_once __DIR__ . '/../app/controllers/ImeiController.php';
 require_once __DIR__ . '/../app/controllers/ProductController.php';
 require_once __DIR__ . '/../app/controllers/DashboardController.php';
 require_once __DIR__ . '/../app/controllers/OrderController.php';
+require_once __DIR__ . '/../app/controllers/AuthController.php';
 
 // 2. Khởi tạo đối tượng
 $imeiController = new ImeiController();
 $productController = new ProductController();
 $dashboardController = new DashboardController();
 $orderController = new OrderController();
+$authController = new AuthController();
 
 // 3. Lấy action từ URL
 $action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
+// === KIỂM TRA BẢO MẬT ĐĂNG NHẬP ===
+$public_actions = ['login', 'register'];
+if (!isset($_SESSION['user']) && !in_array($action, $public_actions)) {
+    header("Location: index.php?action=login");
+    exit;
+}
+
 // 4. Bộ định tuyến (Routing)
-if ($action == 'dashboard') {
+if ($action == 'login') {
+    $authController->login();
+} elseif ($action == 'register') {
+    $authController->register();
+} elseif ($action == 'logout') {
+    $authController->logout();
+} elseif ($action == 'dashboard') {
     $dashboardController->index();
 } elseif ($action == 'list') {
     $imeiController->list();
@@ -43,18 +59,18 @@ if ($action == 'dashboard') {
     $productController->delete();
 } elseif ($action == 'product_price') {
     $productController->price();
-} elseif ($action == 'add_price') {        // THÊM ROUTE NÀY CHO BẢNG GIÁ
+} elseif ($action == 'add_price') {
     $productController->add_price();
 
-    // === CÁC ĐƯỜNG DẪN DÀNH CHO DANH MỤC ===
+    // === CÁC ĐƯỜNG DẪN DÀNH CHO DANH MỤC (ĐÃ SỬA LỖI Ở ĐÂY) ===
 } elseif ($action == 'product_category') {
-    $productController->category_list();     // Nối vào hàm danh sách
+    $productController->category_list(); // <- Gọi đúng hàm category_list()
 } elseif ($action == 'add_category') {
-    $productController->add_category();      // Nối vào hàm thêm
+    $productController->add_category();
 } elseif ($action == 'edit_category') {
-    $productController->edit_category();     // Nối vào hàm sửa
+    $productController->edit_category();
 } elseif ($action == 'delete_category') {
-    $productController->delete_category();   // Nối vào hàm xóa
+    $productController->delete_category();
 
     // === CÁC ĐƯỜNG DẪN DÀNH CHO BÁN HÀNG (POS) ===
 } elseif ($action == 'pos') {
@@ -63,8 +79,6 @@ if ($action == 'dashboard') {
     $orderController->scanImei();
 } elseif ($action == 'checkout') {
     $orderController->checkout();
-
-    // Lỗi 404
 } else {
     echo "<h2 style='color: red; padding: 20px;'>Trang không tồn tại!</h2>";
 }
