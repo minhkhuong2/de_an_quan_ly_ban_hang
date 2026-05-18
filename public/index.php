@@ -1,32 +1,29 @@
 <?php
 // Đường dẫn file: public/index.php
-session_start(); // Khởi động Session để lưu trạng thái đăng nhập
+session_start();
 
-// 1. Khai báo các Controller
 require_once __DIR__ . '/../app/controllers/ImeiController.php';
 require_once __DIR__ . '/../app/controllers/ProductController.php';
 require_once __DIR__ . '/../app/controllers/DashboardController.php';
 require_once __DIR__ . '/../app/controllers/OrderController.php';
 require_once __DIR__ . '/../app/controllers/AuthController.php';
+require_once __DIR__ . '/../app/controllers/CustomerController.php'; // Gọi Controller Khách hàng
 
-// 2. Khởi tạo đối tượng
 $imeiController = new ImeiController();
 $productController = new ProductController();
 $dashboardController = new DashboardController();
 $orderController = new OrderController();
 $authController = new AuthController();
+$customerController = new CustomerController(); // Khởi tạo
 
-// 3. Lấy action từ URL
 $action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
-// === KIỂM TRA BẢO MẬT ĐĂNG NHẬP ===
 $public_actions = ['login', 'register'];
 if (!isset($_SESSION['user']) && !in_array($action, $public_actions)) {
     header("Location: index.php?action=login");
     exit;
 }
 
-// 4. Bộ định tuyến (Routing)
 if ($action == 'login') {
     $authController->login();
 } elseif ($action == 'register') {
@@ -35,21 +32,10 @@ if ($action == 'login') {
     $authController->logout();
 } elseif ($action == 'dashboard') {
     $dashboardController->index();
-} elseif ($action == 'list') {
-    $imeiController->list();
-} elseif ($action == 'add') {
-    $imeiController->add();
-} elseif ($action == 'sell') {
-    $imeiController->sell();
-} elseif ($action == 'warranty') {
-    $imeiController->warranty();
-} elseif ($action == 'returnItem') {
-    $imeiController->returnItem();
-} elseif ($action == 'search') {
-    $imeiController->search();
+}
 
-    // === CÁC ĐƯỜNG DẪN DÀNH CHO SẢN PHẨM ===
-} elseif ($action == 'product_list') {
+// === HÀNG HÓA ===
+elseif ($action == 'product_list') {
     $productController->list();
 } elseif ($action == 'add_product') {
     $productController->add();
@@ -61,19 +47,42 @@ if ($action == 'login') {
     $productController->price();
 } elseif ($action == 'add_price') {
     $productController->add_price();
-
-    // === CÁC ĐƯỜNG DẪN DÀNH CHO DANH MỤC (ĐÃ SỬA LỖI Ở ĐÂY) ===
 } elseif ($action == 'product_category') {
-    $productController->category_list(); // <- Gọi đúng hàm category_list()
+    $productController->category_list();
 } elseif ($action == 'add_category') {
     $productController->add_category();
 } elseif ($action == 'edit_category') {
     $productController->edit_category();
 } elseif ($action == 'delete_category') {
     $productController->delete_category();
+}
 
-    // === CÁC ĐƯỜNG DẪN DÀNH CHO BÁN HÀNG (POS) ===
-} elseif ($action == 'pos') {
+// === KHÁCH HÀNG (MỚI) ===
+elseif ($action == 'customer_list') {
+    $customerController->list();
+} elseif ($action == 'add_customer') {
+    $customerController->add();
+} elseif ($action == 'delete_customer') {
+    $customerController->delete();
+}
+
+// === IMEI & KHO ===
+elseif ($action == 'list') {
+    $imeiController->list();
+} elseif ($action == 'add') {
+    $imeiController->add();
+} elseif ($action == 'sell') {
+    $imeiController->sell();
+} elseif ($action == 'warranty') {
+    $imeiController->warranty();
+} elseif ($action == 'returnItem') {
+    $imeiController->returnItem();
+} elseif ($action == 'search') {
+    $imeiController->search();
+}
+
+// === POS ===
+elseif ($action == 'pos') {
     $orderController->pos();
 } elseif ($action == 'scan_imei') {
     $orderController->scanImei();

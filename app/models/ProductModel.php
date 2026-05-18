@@ -10,7 +10,6 @@ class ProductModel
         $this->conn = $db;
     }
 
-    // === MÌNH CHỈ THÊM HÀM NÀY VÀO ĐỂ KHÔNG BỊ GẠCH ĐỎ ===
     public function getAllProducts()
     {
         $query = "SELECT * FROM " . $this->table_name . " ORDER BY id DESC";
@@ -18,7 +17,6 @@ class ProductModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // ====================================================
 
     public function getProductsWithStock()
     {
@@ -37,12 +35,12 @@ class ProductModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Hàm thêm sản phẩm - NHẬN ĐỦ 12 THAM SỐ TỪ FORM SAPO
-    public function addProduct($name, $brand, $price, $sku, $barcode, $unit, $description, $compare_price, $cost_price, $apply_tax, $category, $tags)
+    // Đã thêm tham số $image
+    public function addProduct($name, $brand, $price, $sku, $barcode, $unit, $description, $image, $compare_price, $cost_price, $apply_tax, $category, $tags)
     {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (product_name, brand, base_price, sku, barcode, unit, description, compare_price, cost_price, apply_tax, category, tags) 
-                  VALUES (:name, :brand, :price, :sku, :barcode, :unit, :description, :compare_price, :cost_price, :apply_tax, :category, :tags)";
+                  (product_name, brand, base_price, sku, barcode, unit, description, image, compare_price, cost_price, apply_tax, category, tags) 
+                  VALUES (:name, :brand, :price, :sku, :barcode, :unit, :description, :image, :compare_price, :cost_price, :apply_tax, :category, :tags)";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':name', $name);
@@ -52,6 +50,7 @@ class ProductModel
         $stmt->bindParam(':barcode', $barcode);
         $stmt->bindParam(':unit', $unit);
         $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':image', $image);
         $stmt->bindParam(':compare_price', $compare_price);
         $stmt->bindParam(':cost_price', $cost_price);
         $stmt->bindParam(':apply_tax', $apply_tax);
@@ -62,10 +61,10 @@ class ProductModel
         return false;
     }
 
-    // Hàm cập nhật sản phẩm
-    public function updateProduct($id, $name, $brand, $price, $sku, $barcode, $unit, $description, $compare_price, $cost_price, $apply_tax, $category, $tags)
+    // Đã thêm tham số $image
+    public function updateProduct($id, $name, $brand, $price, $sku, $barcode, $unit, $description, $image, $compare_price, $cost_price, $apply_tax, $category, $tags)
     {
-        $query = "UPDATE " . $this->table_name . " SET product_name=:name, brand=:brand, base_price=:price, sku=:sku, barcode=:barcode, unit=:unit, description=:description, compare_price=:compare_price, cost_price=:cost_price, apply_tax=:apply_tax, category=:category, tags=:tags WHERE id=:id";
+        $query = "UPDATE " . $this->table_name . " SET product_name=:name, brand=:brand, base_price=:price, sku=:sku, barcode=:barcode, unit=:unit, description=:description, image=:image, compare_price=:compare_price, cost_price=:cost_price, apply_tax=:apply_tax, category=:category, tags=:tags WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':name', $name);
@@ -75,6 +74,7 @@ class ProductModel
         $stmt->bindParam(':barcode', $barcode);
         $stmt->bindParam(':unit', $unit);
         $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':image', $image);
         $stmt->bindParam(':compare_price', $compare_price);
         $stmt->bindParam(':cost_price', $cost_price);
         $stmt->bindParam(':apply_tax', $apply_tax);

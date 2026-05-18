@@ -165,7 +165,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </a>
 
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Quản lý Khác</div>
-            <a href="#" class="menu-item">👥 Khách hàng</a>
+            <a href="index.php?action=customer_list" class="menu-item">👥 Khách hàng</a>
             <a href="#" class="menu-item">📄 Đơn hàng</a>
             <a href="#" class="menu-item">⚙️ Cài đặt</a>
         </div>

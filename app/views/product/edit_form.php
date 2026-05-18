@@ -1,6 +1,10 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php
+require_once __DIR__ . '/../layout/header.php';
+$product = $product ?? [];
+?>
 
 <style>
+    /* CSS CHUẨN FORM SAPO */
     .sapo-header-bar {
         display: flex;
         justify-content: space-between;
@@ -15,6 +19,12 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+
+    .sapo-header-bar h2 a {
+        text-decoration: none;
+        color: #637381;
+        font-size: 18px;
     }
 
     .sapo-btn-group button {
@@ -36,6 +46,10 @@
     .btn-save {
         background: #0088ff;
         color: #fff;
+    }
+
+    .btn-save:hover {
+        background: #0070d2;
     }
 
     .sapo-grid {
@@ -90,8 +104,15 @@
         border: 1px solid #c4cdd5;
         border-radius: 4px;
         outline: none;
+        transition: all 0.2s;
         font-size: 14px;
         color: #212b36;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #0088ff;
+        box-shadow: 0 0 0 1px #0088ff;
     }
 
     .row-flex {
@@ -109,6 +130,14 @@
         gap: 10px;
         margin-bottom: 12px;
         font-size: 14px;
+        color: #212b36;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #0088ff;
     }
 
     .upload-box {
@@ -117,7 +146,19 @@
         padding: 30px;
         text-align: center;
         color: #637381;
+        cursor: pointer;
         background: #fafbfc;
+        transition: 0.3s;
+    }
+
+    .upload-box:hover {
+        background: #f4f6f8;
+        border-color: #0088ff;
+    }
+
+    .upload-box a {
+        color: #0088ff;
+        text-decoration: none;
     }
 
     .link-blue {
@@ -127,31 +168,27 @@
     }
 </style>
 
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
+
     <div class="sapo-header-bar">
-        <h2>
-            <a href="index.php?action=product_list" style="color:#637381; text-decoration:none;">←</a>
-            Chỉnh sửa sản phẩm: <?php echo htmlspecialchars($product['product_name'] ?? ''); ?>
-        </h2>
+        <h2><a href="index.php?action=product_list">←</a> Chỉnh sửa: <?php echo htmlspecialchars($product['product_name'] ?? ''); ?></h2>
         <div class="sapo-btn-group">
             <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=product_list'">Hủy</button>
             <button type="submit" class="btn-save">Lưu thay đổi</button>
         </div>
     </div>
 
+    <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Tạo sản phẩm thành công!</div><?php endif; ?>
     <?php if (!empty($message)) echo $message; ?>
-    <?php if (isset($_GET['success'])): ?>
-        <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">
-            ✅ Sản phẩm "<strong><?php echo htmlspecialchars($product['product_name'] ?? ''); ?></strong>" đã được tạo thành công!
-        </div>
-    <?php endif; ?>
 
     <div class="sapo-grid">
+
         <div class="sapo-col-left">
+
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tự sản phẩm</div>
+                <div class="sapo-card-title">Thông tin sản phẩm</div>
                 <div class="form-group">
-                    <label>Tên sản phẩm *</label>
+                    <label>Tên sản phẩm <span style="color:red;">*</span></label>
                     <input type="text" name="product_name" class="form-control" value="<?php echo htmlspecialchars($product['product_name'] ?? ''); ?>" required>
                 </div>
                 <div class="row-flex">
@@ -179,74 +216,177 @@
                 <div class="row-flex">
                     <div class="form-group">
                         <label>Giá bán</label>
-                        <input type="number" name="base_price" class="form-control" value="<?php echo htmlspecialchars($product['base_price'] ?? 0); ?>">
+                        <div style="display: flex; position: relative;">
+                            <input type="number" name="base_price" class="form-control" value="<?php echo htmlspecialchars($product['base_price'] ?? 0); ?>">
+                            <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Giá so sánh</label>
-                        <input type="number" name="compare_price" class="form-control" value="<?php echo htmlspecialchars($product['compare_price'] ?? 0); ?>">
+                        <label>Giá so sánh ⓘ</label>
+                        <div style="display: flex; position: relative;">
+                            <input type="number" name="compare_price" class="form-control" value="<?php echo htmlspecialchars($product['compare_price'] ?? 0); ?>">
+                            <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group" style="width: 48%;">
-                    <label>Giá vốn</label>
-                    <input type="number" name="cost_price" class="form-control" value="<?php echo htmlspecialchars($product['cost_price'] ?? 0); ?>">
+                    <label>Giá vốn ⓘ</label>
+                    <div style="display: flex; position: relative;">
+                        <input type="number" name="cost_price" class="form-control" value="<?php echo htmlspecialchars($product['cost_price'] ?? 0); ?>">
+                        <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
+                    </div>
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="tax" name="apply_tax" <?php echo (isset($product['apply_tax']) && $product['apply_tax'] == 1) ? 'checked' : ''; ?>>
+                    <input type="checkbox" id="tax" name="apply_tax" value="1" <?php echo (isset($product['apply_tax']) && $product['apply_tax'] == 1) ? 'checked' : ''; ?>>
                     <label for="tax" style="margin:0;">Áp dụng thuế</label>
                 </div>
             </div>
 
             <div class="sapo-card">
                 <div class="sapo-card-title">Thông tin kho</div>
-                <div class="checkbox-group">
-                    <input type="checkbox" checked disabled>
-                    <label style="margin:0; font-weight:bold; color: #0088ff;">Quản lý kho chi tiết theo mã định danh (IMEI/Serial)</label>
+                <div class="form-group">
+                    <label>Lưu kho tại</label>
+                    <select class="form-control" style="background-color: #fff;">
+                        <option>Cửa hàng chính</option>
+                    </select>
                 </div>
-                <table style="width: 100%; border-collapse: collapse; margin-top:15px;">
-                    <tr style="background: #fafbfc; border: 1px solid #dfe3e8;">
-                        <th style="padding: 10px; text-align: left;">Kho lưu trữ</th>
-                        <th style="padding: 10px; text-align: left;">Tồn kho</th>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #dfe3e8;">Cửa hàng chính</td>
-                        <td style="padding: 10px; border: 1px solid #dfe3e8;"><strong>0</strong> (Tính theo IMEI)</td>
-                    </tr>
+                <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
+                <div class="checkbox-group"><input type="checkbox"><label style="margin:0;">Cho phép bán âm</label></div>
+                <div style="border-top: 1px solid #f4f6f8; margin: 15px 0;"></div>
+                <div class="checkbox-group"><input type="checkbox"><label style="margin:0;">Quản lý sản phẩm theo lô - HSD</label></div>
+
+                <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #fafbfc; border-top: 1px solid #dfe3e8; border-bottom: 1px solid #dfe3e8;">
+                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36;">Kho lưu trữ</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36; width: 150px;">Tồn kho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 15px 12px; font-size: 14px; color: #212b36;">
+                                <strong>Cửa hàng chính</strong><br><a href="#" class="link-blue">Vị trí lưu kho</a>
+                            </td>
+                            <td style="padding: 15px 12px;"><input type="number" class="form-control" value="0" readonly style="background-color: #f4f6f8; color: #212b36;"></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Tối ưu SEO</div>
-                <p style="font-size: 14px; color: #637381;">Thiết lập các thẻ tiêu đề và mô tả để sản phẩm dễ dàng được tìm thấy trên Google.</p>
-                <a href="#" class="link-blue">Tùy chỉnh SEO</a>
+                <div class="sapo-card-title">Vận chuyển</div>
+                <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
+                <div class="form-group" style="width: 48%; margin-top: 15px;">
+                    <label>Khối lượng</label>
+                    <div style="display: flex;">
+                        <input type="number" class="form-control" value="0" style="border-radius: 4px 0 0 4px; border-right: none;">
+                        <select class="form-control" style="width: 70px; border-radius: 0 4px 4px 0; background: #fafbfc;">
+                            <option>g</option>
+                            <option>kg</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+
+            <div class="sapo-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
+                    <a href="#" class="link-blue">Thêm thuộc tính</a>
+                </div>
+                <p style="font-size: 14px; color: #212b36; margin: 0;">Sản phẩm có nhiều thuộc tính khác nhau. Ví dụ: kích thước, màu sắc.</p>
+            </div>
+
         </div>
 
         <div class="sapo-col-right">
+
             <div class="sapo-card">
                 <div class="sapo-card-title">Ảnh sản phẩm</div>
-                <div class="upload-box">
-                    <div style="font-size: 24px;">+</div>
-                    <a href="#" class="link-blue">Thêm ảnh từ thiết bị</a>
+                <div class="upload-box" onclick="document.getElementById('file-upload').click()">
+                    <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
+
+                    <div id="upload-placeholder" style="display: <?php echo !empty($product['image']) ? 'none' : 'block'; ?>;">
+                        <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>
+                        Kéo thả hoặc <a href="javascript:void(0)" class="link-blue">thêm ảnh từ thiết bị</a><br>
+                        <span style="font-size: 12px; margin-top: 5px; display: block;">(Dung lượng tối đa 2MB)</span>
+                    </div>
+
+                    <img id="image-preview" src="<?php echo !empty($product['image']) ? htmlspecialchars($product['image']) : ''; ?>" style="display: <?php echo !empty($product['image']) ? 'block' : 'none'; ?>; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
                 </div>
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Phân loại</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="sapo-card-title" style="margin:0;">Kênh bán hàng</div>
+                    <a href="#" class="link-blue">Bỏ chọn tất cả</a>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
+                </div>
+            </div>
+
+            <div class="sapo-card">
                 <div class="form-group">
-                    <label>Danh mục</label>
-                    <input type="text" name="category" class="form-control" value="<?php echo htmlspecialchars($product['category'] ?? ''); ?>">
+                    <label>Danh mục ⓘ</label>
+                    <select class="form-control" name="category">
+                        <option value="">Chọn danh mục</option>
+                        <option value="Điện thoại di động" <?php echo (($product['category'] ?? '') == 'Điện thoại di động') ? 'selected' : ''; ?>>Điện thoại di động</option>
+                        <option value="Máy tính bảng" <?php echo (($product['category'] ?? '') == 'Máy tính bảng') ? 'selected' : ''; ?>>Máy tính bảng</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Nhãn hiệu</label>
-                    <input type="text" name="brand" class="form-control" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>">
+                    <select class="form-control" name="brand">
+                        <option value="">Chọn nhãn hiệu</option>
+                        <option value="Apple" <?php echo (($product['brand'] ?? '') == 'Apple') ? 'selected' : ''; ?>>Apple</option>
+                        <option value="Samsung" <?php echo (($product['brand'] ?? '') == 'Samsung') ? 'selected' : ''; ?>>Samsung</option>
+                    </select>
                 </div>
+                <div class="form-group"><label>Loại sản phẩm</label><select class="form-control">
+                        <option value="">Chọn loại sản phẩm</option>
+                    </select></div>
                 <div class="form-group">
-                    <label>Tag</label>
+                    <div style="display: flex; justify-content: space-between;">
+                        <label>Tag</label><a href="#" class="link-blue" style="font-size: 13px;">Danh sách tag</a>
+                    </div>
                     <input type="text" name="tags" class="form-control" value="<?php echo htmlspecialchars($product['tags'] ?? ''); ?>">
                 </div>
             </div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Khung giao diện</div><select class="form-control">
+                    <option value="product">product</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="sapo-header-bar" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dfe3e8; justify-content: flex-end;">
+        <div class="sapo-btn-group">
+            <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=product_list'">Hủy</button>
+            <button type="submit" class="btn-save">Lưu thay đổi</button>
         </div>
     </div>
 </form>
 
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('image-preview');
+            output.src = reader.result;
+            output.style.display = 'block';
+            document.getElementById('upload-placeholder').style.display = 'none';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
