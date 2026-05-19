@@ -2,7 +2,7 @@
 // Lấy action hiện tại để làm nổi bật (active) menu đang được chọn
 $current_action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
-// Khởi tạo mảng an toàn để đánh lừa công cụ kiểm tra của VS Code, hết báo đỏ
+// Khởi tạo mảng an toàn để tránh lỗi báo đỏ Session
 $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân viên', 'full_name' => 'Khương'];
 ?>
 <!DOCTYPE html>
@@ -160,12 +160,22 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=product_price" class="menu-item <?php echo ($current_action == 'product_price' || $current_action == 'add_price') ? 'active' : ''; ?>">
                 🏷️ Bảng giá
             </a>
-            <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list') ? 'active' : ''; ?>">
-                🔍 Quản lý IMEI (Kho)
+
+            <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Quản lý Kho</div>
+            <a href="index.php?action=inventory_list" class="menu-item <?php echo ($current_action == 'inventory_list' || $current_action == 'update_stock') ? 'active' : ''; ?>">
+                🏢 Tồn kho
+            </a>
+            <a href="index.php?action=supplier_list" class="menu-item <?php echo ($current_action == 'supplier_list' || $current_action == 'add_supplier') ? 'active' : ''; ?>">
+                🤝 Nhà cung cấp
+            </a>
+            <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">
+                🔍 Quản lý IMEI
             </a>
 
-            <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Quản lý Khác</div>
-            <a href="index.php?action=customer_list" class="menu-item">👥 Khách hàng</a>
+            <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Đối tác & Khác</div>
+            <a href="index.php?action=customer_list" class="menu-item <?php echo ($current_action == 'customer_list' || $current_action == 'add_customer') ? 'active' : ''; ?>">
+                👥 Khách hàng
+            </a>
             <a href="#" class="menu-item">📄 Đơn hàng</a>
             <a href="#" class="menu-item">⚙️ Cài đặt</a>
         </div>
