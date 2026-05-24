@@ -1,0 +1,101 @@
+<?php
+// Đường dẫn file: app/core/App.php
+
+class App
+{
+    // BẢNG ĐỊNH TUYẾN: Ánh xạ action từ URL sang đúng Controller và Hàm xử lý
+    protected $routes = [
+        // --- Tài khoản & Tổng quan ---
+        'login'            => ['AuthController', 'login'],
+        'register'         => ['AuthController', 'register'],
+        'logout'           => ['AuthController', 'logout'],
+        'dashboard'        => ['DashboardController', 'index'],
+
+        // --- Sản phẩm & Danh mục ---
+        'product_list'     => ['ProductController', 'list'],
+        'add_product'      => ['ProductController', 'add'],
+        'edit_product'     => ['ProductController', 'edit'],
+        'delete_product'   => ['ProductController', 'delete'],
+        'product_category' => ['ProductController', 'category_list'],
+        'add_category'     => ['ProductController', 'add_category'],
+        'edit_category'    => ['ProductController', 'edit_category'],
+        'delete_category'  => ['ProductController', 'delete_category'],
+        'product_price'    => ['ProductController', 'price'],
+        'add_price'        => ['ProductController', 'add_price'],
+
+        // --- Đối tác ---
+        'customer_list'    => ['CustomerController', 'list'],
+        'add_customer'     => ['CustomerController', 'add'],
+        'delete_customer'  => ['CustomerController', 'delete'],
+        'supplier_list'    => ['SupplierController', 'list'],
+        'add_supplier'     => ['SupplierController', 'add'],
+        'edit_supplier'    => ['SupplierController', 'edit'],
+        'delete_supplier'  => ['SupplierController', 'delete'],
+
+        // --- Quản lý Kho ---
+        'inventory_list'   => ['InventoryController', 'list'],
+        'update_stock'     => ['InventoryController', 'update_stock'],
+        'purchase_list'    => ['PurchaseOrderController', 'list'],
+        'add_purchase'     => ['PurchaseOrderController', 'add'],
+        'purchase_return_list' => ['PurchaseReturnController', 'list'], // Thêm dòng này
+        'add_purchase_return'  => ['PurchaseReturnController', 'add'],
+
+        // --- Quản lý IMEI (Cũ) ---
+        'list'             => ['ImeiController', 'list'],
+        'add'              => ['ImeiController', 'add'],
+        'sell'             => ['ImeiController', 'sell'],
+        'warranty'         => ['ImeiController', 'warranty'],
+        'returnItem'       => ['ImeiController', 'returnItem'],
+        'search'           => ['ImeiController', 'search'],
+
+        // --- POS Bán hàng ---
+        'pos'              => ['OrderController', 'pos'],
+        'scan_imei'        => ['OrderController', 'scanImei'],
+        'checkout'         => ['OrderController', 'checkout']
+    ];
+
+    public function __construct()
+    {
+        // Kiểm tra và khởi động Session nếu chưa kích hoạt
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Lấy action từ URL, nếu không có thì mặc định hiển thị trang tổng quan
+        $action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
+
+        // Kiểm tra bảo mật đăng nhập
+        $public_actions = ['login', 'register'];
+        if (!isset($_SESSION['user']) && !in_array($action, $public_actions)) {
+            header("Location: index.php?action=login");
+            exit;
+        }
+
+        // Định tuyến xử lý tự động gọi Controller
+        if (array_key_exists($action, $this->routes)) {
+            $controllerName = $this->routes[$action][0];
+            $methodName = $this->routes[$action][1];
+
+            $controllerFile = __DIR__ . '/../controllers/' . $controllerName . '.php';
+
+            if (file_exists($controllerFile)) {
+                require_once $controllerFile;
+
+                if (class_exists($controllerName)) {
+                    $controller = new $controllerName();
+                    if (method_exists($controller, $methodName)) {
+                        $controller->{$methodName}();
+                    } else {
+                        echo "<h2 style='color: red; padding: 20px;'>Lỗi: Hàm {$methodName} không tồn tại trong {$controllerName}!</h2>";
+                    }
+                } else {
+                    echo "<h2 style='color: red; padding: 20px;'>Lỗi: Lớp {$controllerName} không tồn tại!</h2>";
+                }
+            } else {
+                echo "<h2 style='color: red; padding: 20px;'>Lỗi: Không tìm thấy file Controller tại đường dẫn {$controllerFile}!</h2>";
+            }
+        } else {
+            echo "<h2 style='color: red; text-align:center; padding: 50px;'>404 - Trang không tồn tại!</h2>";
+        }
+    }
+}
