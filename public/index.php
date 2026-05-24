@@ -80,7 +80,10 @@ elseif ($action == 'supplier_list') {
     $supplierController->list();
 } elseif ($action == 'add_supplier') {
     $supplierController->add();
-} elseif ($action == 'delete_supplier') {
+} elseif ($action == 'edit_supplier') {
+    $supplierController->edit();
+} // <-- THÊM ĐÚNG DÒNG NÀY VÀO
+elseif ($action == 'delete_supplier') {
     $supplierController->delete();
 }
 

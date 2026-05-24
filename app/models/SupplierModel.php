@@ -18,22 +18,44 @@ class SupplierModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addSupplier($name, $phone, $email, $address)
+    public function getSupplierById($id)
     {
-        $query = "INSERT INTO " . $this->table_name . " (supplier_name, phone, email, address) VALUES (:n, :p, :e, :a)";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = ? LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':n', $name);
-        $stmt->bindParam(':p', $phone);
-        $stmt->bindParam(':e', $email);
-        $stmt->bindParam(':a', $address);
-        return $stmt->execute();
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function addSupplier($name, $code, $phone, $email, $group, $address, $fax, $tax, $web, $debt, $assignee, $desc, $tags, $tax_set, $import_price, $status)
+    {
+        if (empty($code)) {
+            $code = 'SUP' . time();
+        }
+        $query = "INSERT INTO " . $this->table_name . " 
+        (supplier_name, supplier_code, phone, email, supplier_group, address, fax, tax_code, website, debt, assignee, description, tags, tax_setting, default_import_price, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$name, $code, $phone, $email, $group, $address, $fax, $tax, $web, $debt, $assignee, $desc, $tags, $tax_set, $import_price, $status]);
+    }
+
+    public function updateSupplier($id, $name, $code, $phone, $email, $group, $address, $fax, $tax, $web, $debt, $assignee, $desc, $tags, $tax_set, $import_price, $status)
+    {
+        $query = "UPDATE " . $this->table_name . " SET 
+            supplier_name = ?, supplier_code = ?, phone = ?, email = ?, supplier_group = ?, 
+            address = ?, fax = ?, tax_code = ?, website = ?, debt = ?, 
+            assignee = ?, description = ?, tags = ?, tax_setting = ?, 
+            default_import_price = ?, status = ? 
+            WHERE id = ?";
+
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$name, $code, $phone, $email, $group, $address, $fax, $tax, $web, $debt, $assignee, $desc, $tags, $tax_set, $import_price, $status, $id]);
     }
 
     public function deleteSupplier($id)
     {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        return $stmt->execute();
+        return $stmt->execute([$id]);
     }
 }

@@ -20,7 +20,8 @@ class ProductModel
 
     public function getProductsWithStock()
     {
-        $query = "SELECT p.*, (SELECT COUNT(*) FROM product_items i WHERE i.product_id = p.id AND i.status = 'Trong kho') as ton_kho FROM " . $this->table_name . " p ORDER BY p.id DESC";
+        // ĐÃ NÂNG CẤP: Đọc trực tiếp dữ liệu "Tồn kho" (stock) và "Có thể bán" (available) từ Module Kho
+        $query = "SELECT p.*, p.stock as ton_kho, p.available as co_the_ban FROM " . $this->table_name . " p ORDER BY p.id DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -35,7 +36,6 @@ class ProductModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Đã thêm tham số $image
     public function addProduct($name, $brand, $price, $sku, $barcode, $unit, $description, $image, $compare_price, $cost_price, $apply_tax, $category, $tags)
     {
         $query = "INSERT INTO " . $this->table_name . " 
@@ -61,7 +61,6 @@ class ProductModel
         return false;
     }
 
-    // Đã thêm tham số $image
     public function updateProduct($id, $name, $brand, $price, $sku, $barcode, $unit, $description, $image, $compare_price, $cost_price, $apply_tax, $category, $tags)
     {
         $query = "UPDATE " . $this->table_name . " SET product_name=:name, brand=:brand, base_price=:price, sku=:sku, barcode=:barcode, unit=:unit, description=:description, image=:image, compare_price=:compare_price, cost_price=:cost_price, apply_tax=:apply_tax, category=:category, tags=:tags WHERE id=:id";
