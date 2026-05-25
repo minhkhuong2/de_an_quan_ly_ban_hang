@@ -237,4 +237,82 @@ class ProductController
         }
         require_once __DIR__ . '/../views/product/price_add.php';
     }
+    // Hàm xử lý Thêm Sản phẩm Quy đổi
+    public function add_conversion()
+    {
+        $db = (new Database())->getConnection();
+        $productModel = new ProductModel($db);
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $parent_id = $_POST['parent_id'];
+            $unit = $_POST['unit'];
+            $conversion_qty = $_POST['conversion_qty'];
+            $sku = $_POST['sku'];
+            $barcode = $_POST['barcode'];
+            $base_price = $_POST['base_price'];
+
+            // Lấy thông tin sản phẩm mẹ để nối tên
+            $baseProduct = $productModel->getProductById($parent_id);
+            // Tự động tạo tên: Ví dụ "Kính cường lực (Lốc 10 Cái)"
+            $newName = $baseProduct['product_name'] . ' (' . $unit . ' ' . $conversion_qty . ' ' . $baseProduct['unit'] . ')';
+
+            if ($productModel->addConvertedProduct($parent_id, $newName, $unit, $conversion_qty, $sku, $barcode, $base_price)) {
+                // Quay về danh sách và báo thành công
+                header("Location: index.php?action=product_list&success=1");
+                exit;
+            }
+        }
+
+        // Lấy danh sách sản phẩm mẹ truyền ra View
+        $baseProducts = $productModel->getBaseProducts();
+        require_once __DIR__ . '/../views/product/add_conversion.php';
+    }
+    // Thêm Sản phẩm Combo
+    public function add_combo()
+    {
+        $db = (new Database())->getConnection();
+        $productModel = new ProductModel($db);
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Xử lý upload ảnh
+            $imagePath = "";
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $uploadDir = __DIR__ . '/../../public/uploads/';
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+                $fileName = time() . '_' . basename($_FILES["image"]["name"]);
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $uploadDir . $fileName)) {
+                    $imagePath = 'uploads/' . $fileName;
+                }
+            }
+
+            $component_ids = $_POST['component_id'] ?? [];
+            $component_qtys = $_POST['component_qty'] ?? [];
+
+            $newId = $productModel->addComboProduct(
+                $_POST['product_name'] ?? '',
+                $_POST['sku'] ?? '',
+                $_POST['barcode'] ?? '',
+                $_POST['unit'] ?? '',
+                $_POST['description'] ?? '',
+                $imagePath,
+                $_POST['base_price'] ?? 0,
+                $_POST['compare_price'] ?? 0,
+                isset($_POST['apply_tax']) ? 1 : 0,
+                $_POST['category'] ?? '',
+                $_POST['brand'] ?? '',
+                $_POST['tags'] ?? '',
+                $component_ids,
+                $component_qtys
+            );
+
+            if ($newId) {
+                header("Location: index.php?action=product_list&success=1");
+                exit;
+            }
+        }
+
+        // Lấy danh sách sản phẩm gốc để chọn làm thành phần Combo
+        $baseProducts = $productModel->getBaseProducts();
+        require_once __DIR__ . '/../views/product/add_combo.php';
+    }
 }

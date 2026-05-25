@@ -161,9 +161,8 @@
             <button class="dropdown-btn">+ Thêm sản phẩm ▼</button>
             <div class="sapo-dropdown-content" style="right: 0; left: auto;">
                 <a href="index.php?action=add_product">Thêm sản phẩm thường</a>
-                <a href="#">Sản phẩm Serial/IMEI</a>
-                <a href="#">Sản phẩm Combo</a>
-                <a href="#">Sản phẩm lô - HSD</a>
+                <a href="index.php?action=add_conversion">Sản phẩm quy đổi</a>
+                <a href="index.php?action=add_combo">Sản phẩm Combo</a>
             </div>
         </div>
     </div>

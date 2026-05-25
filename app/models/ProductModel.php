@@ -20,8 +20,30 @@ class ProductModel
 
     public function getProductsWithStock()
     {
-        // ĐÃ NÂNG CẤP: Đọc trực tiếp dữ liệu "Tồn kho" (stock) và "Có thể bán" (available) từ Module Kho
-        $query = "SELECT p.*, p.stock as ton_kho, p.available as co_the_ban FROM " . $this->table_name . " p ORDER BY p.id DESC";
+        // SQL thông minh: Nếu là Combo thì tự đếm tồn kho nhỏ nhất của các thành phần
+        $query = "
+            SELECT p.*, 
+            CASE 
+                WHEN p.product_type = 'Combo' THEN (
+                    SELECT MIN(FLOOR(sub_p.stock / c.quantity))
+                    FROM product_combo_details c
+                    JOIN products sub_p ON c.product_id = sub_p.id
+                    WHERE c.combo_id = p.id
+                )
+                ELSE p.stock 
+            END as ton_kho,
+            CASE 
+                WHEN p.product_type = 'Combo' THEN (
+                    SELECT MIN(FLOOR(sub_p.available / c.quantity))
+                    FROM product_combo_details c
+                    JOIN products sub_p ON c.product_id = sub_p.id
+                    WHERE c.combo_id = p.id
+                )
+                ELSE p.available 
+            END as co_the_ban
+            FROM " . $this->table_name . " p 
+            ORDER BY p.id DESC";
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -88,5 +110,68 @@ class ProductModel
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
+    }
+    // --- CÁC HÀM DÀNH CHO SẢN PHẨM QUY ĐỔI ---
+
+    // Lấy danh sách sản phẩm Gốc (Không lấy sản phẩm đã bị quy đổi)
+    public function getBaseProducts()
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE parent_id IS NULL ORDER BY id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Lưu sản phẩm quy đổi
+    public function addConvertedProduct($parent_id, $name, $unit, $qty, $sku, $barcode, $price)
+    {
+        // Lấy category và brand từ sản phẩm gốc
+        $baseProduct = $this->getProductById($parent_id);
+        $category = $baseProduct['category'] ?? '';
+        $brand = $baseProduct['brand'] ?? '';
+        $image = $baseProduct['image'] ?? '';
+
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (parent_id, conversion_qty, product_name, unit, sku, barcode, base_price, category, brand, image) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$parent_id, $qty, $name, $unit, $sku, $barcode, $price, $category, $brand, $image]);
+    }
+    // ==============================================
+    // CÁC HÀM XỬ LÝ SẢN PHẨM COMBO
+    // ==============================================
+
+    // Lưu sản phẩm Combo và các thành phần
+    public function addComboProduct($name, $sku, $barcode, $unit, $description, $image, $price, $compare_price, $apply_tax, $category, $brand, $tags, $component_ids, $component_qtys)
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // 1. Lưu sản phẩm Combo vào bảng products
+            $query = "INSERT INTO " . $this->table_name . " 
+                      (product_type, product_name, sku, barcode, unit, description, image, base_price, compare_price, apply_tax, category, brand, tags) 
+                      VALUES ('Combo', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$name, $sku, $barcode, $unit, $description, $image, $price, $compare_price, $apply_tax, $category, $brand, $tags]);
+            $combo_id = $this->conn->lastInsertId();
+
+            // 2. Lưu các thành phần vào bảng product_combo_details
+            $queryDetail = "INSERT INTO product_combo_details (combo_id, product_id, quantity) VALUES (?, ?, ?)";
+            $stmtDetail = $this->conn->prepare($queryDetail);
+
+            for ($i = 0; $i < count($component_ids); $i++) {
+                $p_id = $component_ids[$i];
+                $qty = $component_qtys[$i];
+                if (!empty($p_id) && $qty > 0) {
+                    $stmtDetail->execute([$combo_id, $p_id, $qty]);
+                }
+            }
+
+            $this->conn->commit();
+            return $combo_id;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
     }
 }
