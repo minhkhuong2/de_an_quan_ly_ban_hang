@@ -42,6 +42,9 @@ class App
         'purchase_return_list' => ['PurchaseReturnController', 'list'], // Thêm dòng này
         'add_purchase_return'  => ['PurchaseReturnController', 'add'],
 
+        'inventory_check_list' => ['InventoryCheckController', 'list'],
+        'add_inventory_check'  => ['InventoryCheckController', 'add'],
+
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],
         'add'              => ['ImeiController', 'add'],
