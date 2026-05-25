@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
-
+<?php /** @var array $products */
+/** @var array $categories */ ?>
 <style>
     .sapo-filter-bar {
         display: flex;
@@ -89,7 +90,7 @@
         display: none;
         position: absolute;
         background-color: #fff;
-        min-width: 180px;
+        min-width: 200px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 10;
         border-radius: 4px;
@@ -113,7 +114,8 @@
         display: block;
     }
 
-    .sapo-dropdown-content a {
+    .sapo-dropdown-content a,
+    .sapo-dropdown-content label {
         color: #212b36;
         padding: 10px 15px;
         text-decoration: none;
@@ -123,7 +125,8 @@
         cursor: pointer;
     }
 
-    .sapo-dropdown-content a:hover {
+    .sapo-dropdown-content a:hover,
+    .sapo-dropdown-content label:hover {
         background-color: #f4f6f8;
         color: #0088ff;
     }
@@ -149,6 +152,17 @@
         font-weight: 500;
         color: #212b36;
     }
+
+    .badge-type {
+        background: #f4f6f8;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #637381;
+        border: 1px solid #c4cdd5;
+        margin-top: 4px;
+        display: inline-block;
+    }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -161,37 +175,49 @@
             <button class="dropdown-btn">+ Thêm sản phẩm ▼</button>
             <div class="sapo-dropdown-content" style="right: 0; left: auto;">
                 <a href="index.php?action=add_product">Thêm sản phẩm thường</a>
-                <a href="index.php?action=add_conversion">Sản phẩm quy đổi</a>
-                <a href="index.php?action=add_combo">Sản phẩm Combo</a>
+                <a href="index.php?action=add_conversion">Thêm phiên bản quy đổi</a>
+                <a href="index.php?action=add_combo">Thêm sản phẩm Combo</a>
+                <div style="height: 1px; background: #dfe3e8; margin: 5px 0;"></div>
+                <a href="#">Sản phẩm Lô - HSD</a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; overflow: visible; min-height: 400px;">
-    <div style="padding: 10px 20px; border-bottom: 1px solid #dfe3e8; display: flex; gap: 20px; font-size: 14px;">
-        <span style="color: #0088ff; font-weight: 500; border-bottom: 2px solid #0088ff; padding-bottom: 10px; margin-bottom: -11px;">Tất cả sản phẩm</span>
-        <span style="color: #637381; cursor: pointer;">Đang giao dịch</span>
-        <span style="color: #637381; cursor: pointer;">Ngừng giao dịch</span>
-    </div>
+<?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Thao tác thành công!</div><?php endif; ?>
 
-    <div class="sapo-filter-bar">
+<div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; overflow: visible; min-height: 400px;">
+
+    <form action="index.php" method="GET" class="sapo-filter-bar">
+        <input type="hidden" name="action" value="product_list">
+
         <div style="position: relative; flex: 1;">
             <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
-            <input type="text" placeholder="Tìm kiếm theo mã sản phẩm, tên sản phẩm, barcode..." style="padding-left: 35px; width: 100%;">
+            <input type="text" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" placeholder="Tìm kiếm theo mã SKU, tên sản phẩm, barcode..." style="padding-left: 35px; width: 100%;">
         </div>
-        <select>
-            <option>Loại sản phẩm ▼</option>
+
+        <select name="type" onchange="this.form.submit()">
+            <option value="">-- Hình thức SP --</option>
+            <option value="Thường" <?php echo (($_GET['type'] ?? '') == 'Thường') ? 'selected' : ''; ?>>Sản phẩm thường</option>
+            <option value="Combo" <?php echo (($_GET['type'] ?? '') == 'Combo') ? 'selected' : ''; ?>>Sản phẩm Combo</option>
+            <option value="Quy đổi" <?php echo (($_GET['type'] ?? '') == 'Quy đổi') ? 'selected' : ''; ?>>Sản phẩm quy đổi</option>
         </select>
-        <select>
-            <option>Nhãn hiệu ▼</option>
+
+        <select name="category" onchange="this.form.submit()">
+            <option value="">-- Danh mục --</option>
+            <?php if (!empty($categories)): foreach ($categories as $cat): ?>
+                    <option value="<?php echo htmlspecialchars($cat['category_name']); ?>" <?php echo (($_GET['category'] ?? '') == $cat['category_name']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($cat['category_name']); ?>
+                    </option>
+            <?php endforeach;
+            endif; ?>
         </select>
-        <select>
-            <option>Trạng thái ▼</option>
-        </select>
-        <button>Y Bộ lọc khác</button>
-        <button style="color: #0088ff; font-weight: 500;">Lưu bộ lọc</button>
-    </div>
+
+        <button type="submit" style="background: #e6f7ff; color: #0088ff; border-color: #91d5ff;">Lọc kết quả</button>
+        <?php if (!empty($_GET['search']) || !empty($_GET['type']) || !empty($_GET['category'])): ?>
+            <a href="index.php?action=product_list" style="text-decoration:none; padding: 8px 12px; color: #ff4d4f; border: 1px solid #ffa39e; border-radius: 4px;">Xóa bộ lọc</a>
+        <?php endif; ?>
+    </form>
 
     <?php if (!empty($products)): ?>
         <table class="sapo-table">
@@ -206,19 +232,18 @@
                     <th class="col-text">Nhãn hiệu</th>
                     <th class="col-text">Ngày tạo</th>
                 </tr>
+
                 <tr id="action-header" style="display: none; background: #e6f7ff; border-top: 1px solid #91d5ff; border-bottom: 1px solid #91d5ff;">
                     <th class="col-cb"><input type="checkbox" checked onclick="toggleAll(this)"></th>
                     <th colspan="7" style="color: #212b36; font-weight: normal; overflow: visible;">
-                        Đã chọn <strong id="selected-count">1</strong> sản phẩm trên trang này
+                        Đã chọn <strong id="selected-count">1</strong> sản phẩm
+
                         <div class="sapo-dropdown" style="margin-left: 20px;">
                             <button class="action-btn">Chọn thao tác ▼</button>
                             <div class="sapo-dropdown-content">
-                                <a>📦 Kiểm tra tồn kho</a>
-                                <a>🖨️ In mã vạch</a>
-                                <a>✅ Đang giao dịch</a>
-                                <a>🚫 Ngừng giao dịch</a>
+                                <a>✏️ Sửa sản phẩm hàng loạt</a>
                                 <div style="height: 1px; background: #dfe3e8; margin: 5px 0;"></div>
-                                <a href="#" id="btn-delete" onclick="return confirm('Thao tác này sẽ xóa sản phẩm bạn đã chọn. Bạn có chắc chắn muốn xóa?');" style="color: #ff4d4f;">🗑️ Xóa sản phẩm</a>
+                                <a href="#" id="btn-delete" onclick="return confirm('Sản phẩm đã xóa không thể khôi phục. Bạn có chắc chắn muốn xóa?');" style="color: #ff4d4f;">🗑️ Xóa sản phẩm</a>
                             </div>
                         </div>
                     </th>
@@ -238,10 +263,16 @@
                         </td>
 
                         <td class="col-name">
-                            <a href="index.php?action=edit_product&id=<?php echo $row['id']; ?>" style="color: #0088ff; font-weight: 500; text-decoration: none;">
+                            <a href="index.php?action=edit_product&id=<?php echo $row['id']; ?>" style="color: #0088ff; font-weight: 500; text-decoration: none; font-size: 15px;">
                                 <?php echo htmlspecialchars($row['product_name']); ?>
                             </a><br>
                             <span style="color: #637381; font-size: 12px;"><?php echo !empty($row['sku']) ? htmlspecialchars($row['sku']) : '---'; ?></span>
+
+                            <?php if (!empty($row['parent_id'])): ?>
+                                <br><span class="badge-type">📦 Sản phẩm quy đổi</span>
+                            <?php elseif (isset($row['product_type']) && $row['product_type'] == 'Combo'): ?>
+                                <br><span class="badge-type">🎁 Sản phẩm Combo</span>
+                            <?php endif; ?>
                         </td>
 
                         <td class="col-num" style="color: <?php echo (isset($row['co_the_ban']) && $row['co_the_ban'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
@@ -252,7 +283,10 @@
                             <?php echo isset($row['ton_kho']) ? $row['ton_kho'] : '0'; ?>
                         </td>
 
-                        <td class="col-text"><?php echo !empty($row['category']) ? htmlspecialchars($row['category']) : '---'; ?></td>
+                        <td class="col-text" style="color: #0088ff; font-weight: 500;">
+                            <?php echo htmlspecialchars($row['smart_categories'] ?? '---'); ?>
+                        </td>
+
                         <td class="col-text"><?php echo !empty($row['brand']) ? htmlspecialchars($row['brand']) : '---'; ?></td>
                         <td class="col-text" style="color: #637381;"><?php echo date('d/m/Y', strtotime($row['created_at'] ?? date('Y-m-d'))); ?></td>
                     </tr>
@@ -261,24 +295,30 @@
         </table>
 
         <div style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: #637381; font-size: 14px; border-top: 1px solid #dfe3e8;">
-            <span>Hiển thị kết quả từ 1 - <?php echo count($products); ?> trên tổng <?php echo count($products); ?></span>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <span>Hiển thị <select style="padding: 4px; border: 1px solid #c4cdd5; border-radius: 4px;">
-                        <option>20</option>
-                    </select> Kết quả</span>
-            </div>
+            <span>Hiển thị 1 - <?php echo count($products); ?> trên tổng <?php echo count($products); ?> sản phẩm</span>
         </div>
 
     <?php else: ?>
-        <div style="text-align: center; padding: 80px 20px;">
-            <div style="font-size: 80px; margin-bottom: 20px;">🛍️</div>
-            <h3 style="font-size: 20px; color: #212b36; font-weight: bold;">Cửa hàng của bạn chưa có sản phẩm nào</h3>
-            <p style="color: #637381; margin-bottom: 25px;">Thêm mới hoặc nhập danh sách sản phẩm của bạn.</p>
-            <div style="display: flex; justify-content: center; gap: 15px;">
-                <button style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer;">📥 Nhập file sản phẩm</button>
-                <a href="index.php?action=add_product" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Thêm sản phẩm</a>
+        <?php
+        // Kiểm tra xem người dùng có đang dùng bộ lọc hay tìm kiếm không
+        $is_filtering = !empty($_GET['search']) || !empty($_GET['type']) || !empty($_GET['category']);
+        ?>
+
+        <?php if ($is_filtering): ?>
+            <div style="text-align: center; padding: 80px 20px;">
+                <div style="font-size: 80px; margin-bottom: 20px;">🔍</div>
+                <h3 style="font-size: 20px; color: #212b36; font-weight: bold;">Không tìm thấy sản phẩm nào</h3>
+                <p style="color: #637381; margin-bottom: 25px;">Thử thay đổi từ khóa tìm kiếm hoặc xóa các bộ lọc hiện tại.</p>
+                <a href="index.php?action=product_list" style="background: #fff; border: 1px solid #c4cdd5; color: #212b36; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">Xóa bộ lọc</a>
             </div>
-        </div>
+        <?php else: ?>
+            <div style="text-align: center; padding: 80px 20px;">
+                <div style="font-size: 80px; margin-bottom: 20px;">🛍️</div>
+                <h3 style="font-size: 20px; color: #212b36; font-weight: bold;">Cửa hàng của bạn chưa có sản phẩm nào</h3>
+                <p style="color: #637381; margin-bottom: 25px;">Thêm mới hoặc nhập danh sách sản phẩm để bắt đầu bán hàng.</p>
+                <a href="index.php?action=add_product" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Thêm sản phẩm ngay</a>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 

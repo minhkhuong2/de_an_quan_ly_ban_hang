@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../layout/header.php';
+/** @var array $product */
+/** @var array $dynamic_categories */
+/** @var array $dynamic_brands */
+/** @var array $dynamic_types */
 $product = $product ?? [];
 ?>
 
@@ -178,7 +182,7 @@ $product = $product ?? [];
         </div>
     </div>
 
-    <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Tạo sản phẩm thành công!</div><?php endif; ?>
+    <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Cập nhật sản phẩm thành công!</div><?php endif; ?>
     <?php if (!empty($message)) echo $message; ?>
 
     <div class="sapo-grid">
@@ -267,7 +271,7 @@ $product = $product ?? [];
                             <td style="padding: 15px 12px; font-size: 14px; color: #212b36;">
                                 <strong>Cửa hàng chính</strong><br><a href="#" class="link-blue">Vị trí lưu kho</a>
                             </td>
-                            <td style="padding: 15px 12px;"><input type="number" class="form-control" value="0" readonly style="background-color: #f4f6f8; color: #212b36;"></td>
+                            <td style="padding: 15px 12px;"><input type="number" class="form-control" value="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" readonly style="background-color: #f4f6f8; color: #212b36;"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -339,21 +343,37 @@ $product = $product ?? [];
                     <label>Danh mục ⓘ</label>
                     <select class="form-control" name="category">
                         <option value="">Chọn danh mục</option>
-                        <option value="Điện thoại di động" <?php echo (($product['category'] ?? '') == 'Điện thoại di động') ? 'selected' : ''; ?>>Điện thoại di động</option>
-                        <option value="Máy tính bảng" <?php echo (($product['category'] ?? '') == 'Máy tính bảng') ? 'selected' : ''; ?>>Máy tính bảng</option>
+                        <?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?>
+                                <option value="<?php echo htmlspecialchars($catName); ?>" <?php echo (strcasecmp(($product['category'] ?? ''), $catName) == 0) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($catName); ?>
+                                </option>
+                        <?php endforeach;
+                        endif; ?>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>Nhãn hiệu</label>
-                    <select class="form-control" name="brand">
-                        <option value="">Chọn nhãn hiệu</option>
-                        <option value="Apple" <?php echo (($product['brand'] ?? '') == 'Apple') ? 'selected' : ''; ?>>Apple</option>
-                        <option value="Samsung" <?php echo (($product['brand'] ?? '') == 'Samsung') ? 'selected' : ''; ?>>Samsung</option>
-                    </select>
+                    <input type="text" name="brand" list="brand_list" class="form-control" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>" placeholder="Gõ hoặc chọn nhãn hiệu...">
+                    <datalist id="brand_list">
+                        <?php if (!empty($dynamic_brands)): foreach ($dynamic_brands as $brandName): ?>
+                                <option value="<?php echo htmlspecialchars($brandName); ?>"></option>
+                        <?php endforeach;
+                        endif; ?>
+                    </datalist>
                 </div>
-                <div class="form-group"><label>Loại sản phẩm</label><select class="form-control">
-                        <option value="">Chọn loại sản phẩm</option>
-                    </select></div>
+
+                <div class="form-group">
+                    <label>Loại sản phẩm</label>
+                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại sản phẩm...">
+                    <datalist id="type_list">
+                        <?php if (!empty($dynamic_types)): foreach ($dynamic_types as $typeName): ?>
+                                <option value="<?php echo htmlspecialchars($typeName); ?>"></option>
+                        <?php endforeach;
+                        endif; ?>
+                    </datalist>
+                </div>
+
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between;">
                         <label>Tag</label><a href="#" class="link-blue" style="font-size: 13px;">Danh sách tag</a>

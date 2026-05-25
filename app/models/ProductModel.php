@@ -18,9 +18,8 @@ class ProductModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getProductsWithStock()
+    public function getProductsWithStock($search = '', $category = '', $brand = '', $tags = '', $type = '')
     {
-        // SQL thông minh: Nếu là Combo thì tự đếm tồn kho nhỏ nhất của các thành phần
         $query = "
             SELECT p.*, 
             CASE 
@@ -42,10 +41,46 @@ class ProductModel
                 ELSE p.available 
             END as co_the_ban
             FROM " . $this->table_name . " p 
-            ORDER BY p.id DESC";
+            WHERE 1=1 "; // Điều kiện ảo để dễ nối chuỗi
+
+        $params = [];
+
+        // 1. Tìm kiếm theo tên hoặc SKU
+        if (!empty($search)) {
+            $query .= " AND (p.product_name LIKE ? OR p.sku LIKE ? OR p.barcode LIKE ?) ";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+        }
+        // 2. Lọc theo Danh mục
+        if (!empty($category)) {
+            $query .= " AND p.category = ? ";
+            $params[] = $category;
+        }
+        // 3. Lọc theo Nhãn hiệu
+        if (!empty($brand)) {
+            $query .= " AND p.brand = ? ";
+            $params[] = $brand;
+        }
+        // 4. Lọc theo Tag
+        if (!empty($tags)) {
+            $query .= " AND p.tags LIKE ? ";
+            $params[] = "%$tags%";
+        }
+        // 5. Lọc theo Loại (Thường, Combo, Quy đổi)
+        if (!empty($type)) {
+            if ($type == 'Quy đổi') {
+                $query .= " AND p.parent_id IS NOT NULL ";
+            } else {
+                $query .= " AND p.product_type = ? AND p.parent_id IS NULL ";
+                $params[] = $type;
+            }
+        }
+
+        $query .= " ORDER BY p.id DESC";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

@@ -50,6 +50,16 @@ $category = $category ?? [];
         margin-bottom: 20px;
     }
 
+    .sapo-card {
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .form-control {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
     .form-control {
         width: 100%;
         padding: 10px;
@@ -88,7 +98,7 @@ $category = $category ?? [];
     <div class="sapo-grid">
         <div class="sapo-col-left">
             <div class="sapo-card">
-                <h3 style="font-size: 16px; margin-bottom: 15px;">Thông配置 tin chung</h3>
+                <h3 style="font-size: 16px; margin-bottom: 15px;">Thông tin chung</h3>
                 <label>Tên danh mục *</label> <input type="text" name="category_name" class="form-control" value="<?php echo htmlspecialchars($category['category_name'] ?? ''); ?>" required>
                 <label>Mô tả</label> <textarea name="description" class="form-control" rows="4"><?php echo htmlspecialchars($category['description'] ?? ''); ?></textarea>
             </div>

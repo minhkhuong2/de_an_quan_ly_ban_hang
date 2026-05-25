@@ -47,6 +47,16 @@
         margin-bottom: 20px;
     }
 
+    .sapo-card {
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .form-control {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
     .form-control {
         width: 100%;
         padding: 10px;
