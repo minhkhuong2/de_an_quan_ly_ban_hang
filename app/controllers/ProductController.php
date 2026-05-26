@@ -41,7 +41,6 @@ class ProductController
         $message = "";
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // Xử lý upload ảnh
             $imagePath = "";
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                 $uploadDir = __DIR__ . '/../../public/uploads/';
@@ -52,8 +51,8 @@ class ProductController
                 }
             }
 
-            // Gọi hàm thêm sản phẩm
-            if ($productModel->addProduct(
+            // Đếm đủ 13 tham số bắn sang Model
+            $is_added = $productModel->addProduct(
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
                 $_POST['base_price'] ?? 0,
@@ -67,8 +66,9 @@ class ProductController
                 isset($_POST['apply_tax']) ? 1 : 0,
                 $_POST['category'] ?? '',
                 $_POST['tags'] ?? ''
-            )) {
-                // Chuyển hướng về danh sách sau khi thêm thành công
+            );
+
+            if ($is_added) {
                 header("Location: index.php?action=product_list&success=1");
                 exit;
             } else {
@@ -76,15 +76,10 @@ class ProductController
             }
         }
 
-        // ========================================================
-        // TỰ ĐỘNG LẤY DỮ LIỆU ĐỘNG ĐỂ ĐỔ VÀO DROPDOWN FORM THÊM
-        // ========================================================
-        // 1. Lấy tất cả danh mục từ bảng categories
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 
-        // 2. Lấy các Nhãn hiệu hiện có
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
@@ -92,10 +87,9 @@ class ProductController
             $dynamic_brands = ['Apple', 'Samsung', 'Xiaomi', 'Oppo'];
         }
 
-        // 3. Lấy các Loại sản phẩm gợi ý
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
 
-        require_once __DIR__ . '/../views/product/add.php';
+        require_once __DIR__ . '/../views/product/add_form.php';
     }
 
     public function edit()
@@ -122,7 +116,8 @@ class ProductController
                 }
             }
 
-            if ($productModel->updateProduct(
+            // Đếm đủ 14 tham số bắn sang Model (ID + 13 dữ liệu)
+            $is_updated = $productModel->updateProduct(
                 $id,
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
@@ -137,30 +132,25 @@ class ProductController
                 isset($_POST['apply_tax']) ? 1 : 0,
                 $_POST['category'] ?? '',
                 $_POST['tags'] ?? ''
-            )) {
+            );
+
+            if ($is_updated) {
                 $message = "<div style='background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;'>✅ Cập nhật sản phẩm thành công!</div>";
-                $product = $productModel->getProductById($id); // Tải lại dữ liệu mới nhất
+                $product = $productModel->getProductById($id);
             }
         }
 
-        // ========================================================
-        // TỰ ĐỘNG LẤY DỮ LIỆU ĐỘNG ĐỂ ĐỔ VÀO DROPDOWN FORM SỬA
-        // ========================================================
-        // 1. Lấy tất cả danh mục từ bảng categories
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 
-        // 2. Lấy các Nhãn hiệu hiện có trong hệ thống (không trùng lặp)
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
-        // Nếu trống thì cho danh sách mặc định
         if (empty($dynamic_brands)) {
             $dynamic_brands = ['Apple', 'Samsung', 'Xiaomi', 'Oppo'];
         }
 
-        // 3. Lấy các Loại sản phẩm hiện có (gợi ý tự động từ danh mục hoặc dữ liệu cũ)
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
 
         require_once __DIR__ . '/../views/product/edit_form.php';
