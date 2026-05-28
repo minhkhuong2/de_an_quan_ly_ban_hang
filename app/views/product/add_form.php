@@ -239,7 +239,7 @@ require_once __DIR__ . '/../layout/header.php';
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông kho (Khởi tạo)</div>
+                <div class="sapo-card-title">Thông tin kho (Khởi tạo)</div>
                 <div class="form-group">
                     <label>Lưu kho tại</label>
                     <select class="form-control" style="background-color: #fff;">
@@ -254,6 +254,7 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
             </div>
 
+            <!-- KHỐI THUỘC TÍNH (ĐÃ BỔ SUNG ĐẦY ĐỦ) -->
             <div class="sapo-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
@@ -263,6 +264,7 @@ require_once __DIR__ . '/../layout/header.php';
 
                 <table style="width: 100%; border-collapse: collapse;" id="attributeTable">
                     <tbody id="attributeBody">
+                        <!-- Các dòng thuộc tính sẽ được chèn vào đây bằng Javascript khi bấm nút -->
                     </tbody>
                 </table>
             </div>
@@ -286,6 +288,7 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
             </div>
 
+            <!-- CHỌN PHÂN LOẠI ĐỘNG -->
             <div class="sapo-card">
                 <div class="form-group">
                     <label>Danh mục ⓘ</label>

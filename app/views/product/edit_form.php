@@ -160,11 +160,6 @@ $product = $product ?? [];
         border-color: #0088ff;
     }
 
-    .upload-box a {
-        color: #0088ff;
-        text-decoration: none;
-    }
-
     .link-blue {
         color: #0088ff;
         text-decoration: none;
@@ -255,49 +250,26 @@ $product = $product ?? [];
                     </select>
                 </div>
                 <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
-                <div class="checkbox-group"><input type="checkbox"><label style="margin:0;">Cho phép bán âm</label></div>
-                <div style="border-top: 1px solid #f4f6f8; margin: 15px 0;"></div>
-                <div class="checkbox-group"><input type="checkbox"><label style="margin:0;">Quản lý sản phẩm theo lô - HSD</label></div>
-
-                <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #fafbfc; border-top: 1px solid #dfe3e8; border-bottom: 1px solid #dfe3e8;">
-                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36;">Kho lưu trữ</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36; width: 150px;">Tồn kho</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding: 15px 12px; font-size: 14px; color: #212b36;">
-                                <strong>Cửa hàng chính</strong><br><a href="#" class="link-blue">Vị trí lưu kho</a>
-                            </td>
-                            <td style="padding: 15px 12px;"><input type="number" class="form-control" value="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" readonly style="background-color: #f4f6f8; color: #212b36;"></td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
 
             <div class="sapo-card">
                 <div class="sapo-card-title">Vận chuyển</div>
                 <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
-                <div class="form-group" style="width: 48%; margin-top: 15px;">
-                    <label>Khối lượng</label>
-                    <div style="display: flex;">
-                        <input type="number" class="form-control" value="0" style="border-radius: 4px 0 0 4px; border-right: none;">
-                        <select class="form-control" style="width: 70px; border-radius: 0 4px 4px 0; background: #fafbfc;">
-                            <option>g</option>
-                            <option>kg</option>
-                        </select>
-                    </div>
-                </div>
             </div>
 
-            <div class="sapo-card">
+            <!-- KHỐI THUỘC TÍNH (ĐÃ THÊM JS TỰ ĐỘNG XỔ XUỐNG) -->
+            <div class="sapo-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
-                    <a href="#" class="link-blue">Thêm thuộc tính</a>
+                    <a href="javascript:void(0)" class="link-blue" onclick="addAttributeRow()">+ Thêm thuộc tính</a>
                 </div>
-                <p style="font-size: 14px; color: #212b36; margin: 0;">Sản phẩm có nhiều thuộc tính khác nhau. Ví dụ: kích thước, màu sắc.</p>
+                <p style="font-size: 14px; color: #212b36; margin: 0; margin-bottom: 15px;" id="attr-hint">Sản phẩm có nhiều thuộc tính khác nhau. Ví dụ: kích thước, màu sắc.</p>
+
+                <table style="width: 100%; border-collapse: collapse;" id="attributeTable">
+                    <tbody id="attributeBody">
+                        <!-- Các dòng thuộc tính sẽ được chèn vào đây bằng Javascript -->
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -319,25 +291,7 @@ $product = $product ?? [];
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div class="sapo-card-title" style="margin:0;">Kênh bán hàng</div>
-                    <a href="#" class="link-blue">Bỏ chọn tất cả</a>
-                </div>
-                <div class="checkbox-group" style="align-items: flex-start;">
-                    <input type="checkbox" checked style="margin-top: 3px;">
-                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá</a></div>
-                </div>
-                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
-                    <input type="checkbox" checked style="margin-top: 3px;">
-                    <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
-                </div>
-                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
-                    <input type="checkbox" checked style="margin-top: 3px;">
-                    <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
-                </div>
-            </div>
-
+            <!-- CHỌN PHÂN LOẠI ĐỘNG -->
             <div class="sapo-card">
                 <div class="form-group">
                     <label>Danh mục ⓘ</label>
@@ -375,14 +329,14 @@ $product = $product ?? [];
                 </div>
 
                 <div class="form-group">
-                    <div style="display: flex; justify-content: space-between;">
-                        <label>Tag</label><a href="#" class="link-blue" style="font-size: 13px;">Danh sách tag</a>
-                    </div>
-                    <input type="text" name="tags" class="form-control" value="<?php echo htmlspecialchars($product['tags'] ?? ''); ?>">
+                    <label>Tag</label>
+                    <input type="text" name="tags" class="form-control" value="<?php echo htmlspecialchars($product['tags'] ?? ''); ?>" placeholder="VD: Khuyến mãi, Hàng mới...">
                 </div>
             </div>
+
             <div class="sapo-card">
-                <div class="sapo-card-title">Khung giao diện</div><select class="form-control">
+                <div class="sapo-card-title">Khung giao diện</div>
+                <select class="form-control">
                     <option value="product">product</option>
                 </select>
             </div>
@@ -398,6 +352,7 @@ $product = $product ?? [];
 </form>
 
 <script>
+    // JS cho tính năng upload ảnh
     function previewImage(event) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -408,5 +363,31 @@ $product = $product ?? [];
         }
         reader.readAsDataURL(event.target.files[0]);
     }
+
+    // JS cho tính năng thêm Thuộc tính động
+    function addAttributeRow() {
+        document.getElementById('attr-hint').style.display = 'none';
+        let tbody = document.getElementById('attributeBody');
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding: 10px 0; border-top: 1px solid #f4f6f8;">
+                <div class="row-flex" style="align-items: flex-end;">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label style="font-size: 13px; color: #637381;">Tên thuộc tính</label>
+                        <input type="text" name="attr_name[]" class="form-control" placeholder="VD: Màu sắc, Dung lượng..." required>
+                    </div>
+                    <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                        <label style="font-size: 13px; color: #637381;">Giá trị</label>
+                        <input type="text" name="attr_value[]" class="form-control" placeholder="VD: Đen, Trắng, Vàng (cách nhau bằng phẩy)" required>
+                    </div>
+                    <div style="padding-bottom: 8px;">
+                        <a href="javascript:void(0)" onclick="this.closest('tr').remove()" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold; padding: 0 10px;">×</a>
+                    </div>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    }
 </script>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
