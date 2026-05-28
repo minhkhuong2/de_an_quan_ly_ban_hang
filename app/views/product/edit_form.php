@@ -250,14 +250,61 @@ $product = $product ?? [];
                     </select>
                 </div>
                 <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
+                <div class="checkbox-group"><input type="checkbox"><label style="margin:0;">Cho phép bán âm</label></div>
+                <div style="border-top: 1px solid #f4f6f8; margin: 15px 0;"></div>
+
+                <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #fafbfc; border-top: 1px solid #dfe3e8; border-bottom: 1px solid #dfe3e8;">
+                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36;">Kho lưu trữ</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 500; font-size: 14px; color: #212b36; width: 250px;">Tồn kho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 15px 12px; font-size: 14px; color: #212b36; vertical-align: top;">
+                                <strong>Cửa hàng chính</strong><br><a href="javascript:void(0)" class="link-blue">Vị trí lưu kho</a>
+                            </td>
+                            <td style="padding: 15px 12px; vertical-align: top;">
+                                <div id="stock-display" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: bold; font-size: 16px; color: #108043;"><?php echo htmlspecialchars($product['stock'] ?? 0); ?></span>
+                                    <a href="javascript:void(0)" onclick="toggleStockEdit()" style="color: #0088ff; text-decoration: none; font-size: 14px;">✏️ Sửa</a>
+                                </div>
+
+                                <div id="stock-edit-box" style="display: none; background: #fafbfc; padding: 12px; border-radius: 4px; margin-top: 5px; border: 1px solid #c4cdd5;">
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px;">Tồn kho mới</label>
+                                        <input type="number" name="new_stock" id="new_stock" class="form-control" value="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" oninput="calculateStockDiff()" style="padding: 6px 10px;">
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px;">Điều chỉnh (+/-)</label>
+                                        <input type="number" id="stock_adjustment" class="form-control" value="0" oninput="calculateNewStock()" style="padding: 6px 10px;">
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <button type="button" onclick="toggleStockEdit()" style="padding: 4px 10px; font-size: 12px; border: 1px solid #c4cdd5; background: #fff; border-radius: 4px; cursor: pointer;">Đóng lại</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="sapo-card">
                 <div class="sapo-card-title">Vận chuyển</div>
                 <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
+                <div class="form-group" style="width: 48%; margin-top: 15px;">
+                    <label>Khối lượng</label>
+                    <div style="display: flex;">
+                        <input type="number" class="form-control" value="0" style="border-radius: 4px 0 0 4px; border-right: none;">
+                        <select class="form-control" style="width: 70px; border-radius: 0 4px 4px 0; background: #fafbfc;">
+                            <option>g</option>
+                            <option>kg</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <!-- KHỐI THUỘC TÍNH (ĐÃ THÊM JS TỰ ĐỘNG XỔ XUỐNG) -->
             <div class="sapo-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
@@ -267,7 +314,6 @@ $product = $product ?? [];
 
                 <table style="width: 100%; border-collapse: collapse;" id="attributeTable">
                     <tbody id="attributeBody">
-                        <!-- Các dòng thuộc tính sẽ được chèn vào đây bằng Javascript -->
                     </tbody>
                 </table>
             </div>
@@ -291,7 +337,25 @@ $product = $product ?? [];
                 </div>
             </div>
 
-            <!-- CHỌN PHÂN LOẠI ĐỘNG -->
+            <div class="sapo-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="sapo-card-title" style="margin:0;">Kênh bán hàng</div>
+                    <a href="#" class="link-blue">Bỏ chọn tất cả</a>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked style="margin-top: 3px;">
+                    <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
+                </div>
+            </div>
+
             <div class="sapo-card">
                 <div class="form-group">
                     <label>Danh mục ⓘ</label>
@@ -352,7 +416,7 @@ $product = $product ?? [];
 </form>
 
 <script>
-    // JS cho tính năng upload ảnh
+    // JS XỬ LÝ ẢNH
     function previewImage(event) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -364,7 +428,7 @@ $product = $product ?? [];
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    // JS cho tính năng thêm Thuộc tính động
+    // JS XỬ LÝ THÊM THUỘC TÍNH
     function addAttributeRow() {
         document.getElementById('attr-hint').style.display = 'none';
         let tbody = document.getElementById('attributeBody');
@@ -387,6 +451,31 @@ $product = $product ?? [];
             </td>
         `;
         tbody.appendChild(tr);
+    }
+
+    // JS XỬ LÝ TÍNH TOÁN TỒN KHO TỰ ĐỘNG
+    const originalStock = <?php echo (int)($product['stock'] ?? 0); ?>;
+
+    function toggleStockEdit() {
+        const box = document.getElementById('stock-edit-box');
+        const display = document.getElementById('stock-display');
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            display.style.display = 'none';
+        } else {
+            box.style.display = 'none';
+            display.style.display = 'flex';
+        }
+    }
+
+    function calculateStockDiff() {
+        let newStock = parseInt(document.getElementById('new_stock').value) || 0;
+        document.getElementById('stock_adjustment').value = newStock - originalStock;
+    }
+
+    function calculateNewStock() {
+        let adjustment = parseInt(document.getElementById('stock_adjustment').value) || 0;
+        document.getElementById('new_stock').value = originalStock + adjustment;
     }
 </script>
 

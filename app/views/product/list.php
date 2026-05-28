@@ -163,6 +163,20 @@
         margin-top: 4px;
         display: inline-block;
     }
+
+    /* CSS cho form Sửa tồn kho nhanh */
+    .stock-form-input {
+        width: 100%;
+        padding: 6px;
+        box-sizing: border-box;
+        border: 1px solid #c4cdd5;
+        border-radius: 4px;
+        outline: none;
+    }
+
+    .stock-form-input:focus {
+        border-color: #0088ff;
+    }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -279,8 +293,34 @@
                             <?php echo isset($row['co_the_ban']) ? $row['co_the_ban'] : '0'; ?>
                         </td>
 
-                        <td class="col-num" style="color: <?php echo (isset($row['ton_kho']) && $row['ton_kho'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
-                            <?php echo isset($row['ton_kho']) ? $row['ton_kho'] : '0'; ?>
+                        <td class="col-num" style="position: relative; color: <?php echo (isset($row['ton_kho']) && $row['ton_kho'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
+
+                            <div id="stock-view-<?php echo $row['id']; ?>" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                                <span><?php echo isset($row['ton_kho']) ? $row['ton_kho'] : '0'; ?></span>
+                                <?php if (empty($row['parent_id']) && ($row['product_type'] ?? '') != 'Combo'): ?>
+                                    <a href="javascript:void(0)" onclick="openStockPopup(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)" style="color: #0088ff; text-decoration: none; font-size: 14px;" title="Cập nhật tồn kho">✏️</a>
+                                <?php endif; ?>
+                            </div>
+
+                            <div id="stock-popup-<?php echo $row['id']; ?>" style="display: none; position: absolute; right: 10px; top: 45px; background: #fff; border: 1px solid #dfe3e8; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; padding: 15px; width: 240px; z-index: 100; text-align: left;">
+                                <div style="font-weight: bold; margin-bottom: 12px; color: #212b36; font-size: 14px; border-bottom: 1px solid #f4f6f8; padding-bottom: 8px;">Chỉnh sửa tồn kho</div>
+                                <form action="index.php?action=quick_update_stock" method="POST">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Tồn kho mới</label>
+                                        <input type="number" name="new_stock" id="new_stock_<?php echo $row['id']; ?>" class="stock-form-input" value="<?php echo $row['ton_kho'] ?? 0; ?>" oninput="calcAdj(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Điều chỉnh (+/-)</label>
+                                        <input type="number" id="adj_<?php echo $row['id']; ?>" class="stock-form-input" value="0" oninput="calcNew(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
+                                    </div>
+                                    <div style="display: flex; gap: 8px; justify-content: flex-end; padding-top: 5px; border-top: 1px solid #f4f6f8;">
+                                        <button type="button" onclick="closeStockPopup(<?php echo $row['id']; ?>)" style="background: #fff; border: 1px solid #c4cdd5; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Hủy</button>
+                                        <button type="submit" style="background: #0088ff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Lưu</button>
+                                    </div>
+                                </form>
+                            </div>
                         </td>
 
                         <td class="col-text" style="color: #0088ff; font-weight: 500;">
@@ -300,7 +340,6 @@
 
     <?php else: ?>
         <?php
-        // Kiểm tra xem người dùng có đang dùng bộ lọc hay tìm kiếm không
         $is_filtering = !empty($_GET['search']) || !empty($_GET['type']) || !empty($_GET['category']);
         ?>
 
@@ -323,6 +362,7 @@
 </div>
 
 <script>
+    // JS HIỆU ỨNG CHECKBOX & CHỌN HÀNG LOẠT
     function toggleRow(checkbox) {
         checkbox.closest('tr').style.background = checkbox.checked ? '#f4f6f8' : 'transparent';
         updateActionBar();
@@ -350,6 +390,61 @@
             actionHeader.style.display = 'none';
         }
     }
+
+    // JS XỬ LÝ POPUP TỒN KHO THÔNG MINH
+    let currentPopupId = null;
+
+    function openStockPopup(id, currentStock) {
+        // Đóng popup đang mở (nếu có)
+        if (currentPopupId && currentPopupId !== id) {
+            closeStockPopup(currentPopupId);
+        }
+
+        const popup = document.getElementById('stock-popup-' + id);
+        const view = document.getElementById('stock-view-' + id);
+
+        if (popup.style.display === 'none' || popup.style.display === '') {
+            popup.style.display = 'block';
+            view.style.display = 'none';
+            // Đặt lại giá trị ban đầu mỗi khi mở
+            document.getElementById('new_stock_' + id).value = currentStock;
+            document.getElementById('adj_' + id).value = 0;
+            currentPopupId = id;
+        } else {
+            closeStockPopup(id);
+        }
+    }
+
+    function closeStockPopup(id) {
+        document.getElementById('stock-popup-' + id).style.display = 'none';
+        document.getElementById('stock-view-' + id).style.display = 'flex';
+        if (currentPopupId === id) currentPopupId = null;
+    }
+
+    // Tự động tính Điều chỉnh khi nhập Tồn kho mới
+    function calcAdj(id, originalStock) {
+        let newStock = parseInt(document.getElementById('new_stock_' + id).value) || 0;
+        document.getElementById('adj_' + id).value = newStock - originalStock;
+    }
+
+    // Tự động tính Tồn kho mới khi nhập Điều chỉnh (+/-)
+    function calcNew(id, originalStock) {
+        let adjustment = parseInt(document.getElementById('adj_' + id).value) || 0;
+        document.getElementById('new_stock_' + id).value = originalStock + adjustment;
+    }
+
+    // Đóng popup khi click ra ngoài vùng popup
+    document.addEventListener('click', function(event) {
+        if (currentPopupId) {
+            const popup = document.getElementById('stock-popup-' + currentPopupId);
+            const view = document.getElementById('stock-view-' + currentPopupId);
+
+            // Nếu click không nằm trong popup và không nằm trong nút mở popup
+            if (!popup.contains(event.target) && !view.contains(event.target)) {
+                closeStockPopup(currentPopupId);
+            }
+        }
+    });
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

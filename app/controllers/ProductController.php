@@ -11,7 +11,6 @@ class ProductController
     {
         $db = (new Database())->getConnection();
 
-        // Lấy dữ liệu lọc từ URL (Nếu có)
         $search = $_GET['search'] ?? '';
         $category = $_GET['category'] ?? '';
         $brand = $_GET['brand'] ?? '';
@@ -19,16 +18,14 @@ class ProductController
         $type = $_GET['type'] ?? '';
 
         $productModel = new ProductModel($db);
-        $categoryModel = new CategoryModel($db); // Gọi model danh mục
+        $categoryModel = new CategoryModel($db);
 
         $products = $productModel->getProductsWithStock($search, $category, $brand, $tags, $type);
 
-        // GẮN DANH MỤC THÔNG MINH CHO TỪNG SẢN PHẨM Ở ĐÂY
         foreach ($products as $key => $prod) {
             $products[$key]['smart_categories'] = $categoryModel->getCategoriesOfProduct($prod);
         }
 
-        // Lấy danh sách danh mục để đổ vào ô Dropdown lọc
         $categories = $categoryModel->getAllCategories();
 
         require_once __DIR__ . '/../views/product/list.php';
@@ -51,7 +48,6 @@ class ProductController
                 }
             }
 
-            // Đếm đủ 13 tham số bắn sang Model
             $is_added = $productModel->addProduct(
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
@@ -69,7 +65,7 @@ class ProductController
             );
 
             if ($is_added) {
-                header("Location: index.php?action=product_list&success=1");
+                header("Location: index.php?action=edit_product&id=" . $is_added . "&success=1");
                 exit;
             } else {
                 $message = "<div style='background:#fff1f0; color:#ff4d4f; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #ffa39e;'>❌ Có lỗi xảy ra, vui lòng thử lại!</div>";
@@ -116,7 +112,6 @@ class ProductController
                 }
             }
 
-            // Đếm đủ 14 tham số bắn sang Model (ID + 13 dữ liệu)
             $is_updated = $productModel->updateProduct(
                 $id,
                 $_POST['product_name'] ?? '',
@@ -135,7 +130,19 @@ class ProductController
             );
 
             if ($is_updated) {
-                $message = "<div style='background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;'>✅ Cập nhật sản phẩm thành công!</div>";
+                if (isset($_POST['new_stock'])) {
+                    $current_stock = $product['stock'] ?? 0;
+                    $current_available = $product['available'] ?? 0;
+                    $new_stock = (int)$_POST['new_stock'];
+
+                    $stock_diff = $new_stock - $current_stock;
+                    if ($stock_diff != 0) {
+                        $new_available = $current_available + $stock_diff;
+                        $productModel->updateInventory($id, $new_stock, $new_available);
+                    }
+                }
+
+                $message = "<div style='background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;'>✅ Cập nhật sản phẩm và Tồn kho thành công!</div>";
                 $product = $productModel->getProductById($id);
             }
         }
@@ -162,19 +169,14 @@ class ProductController
             $db = (new Database())->getConnection();
             (new ProductModel($db))->deleteProduct($_GET['id']);
         }
-        // Bắt buộc phải có 2 dòng này để làm sạch URL và chuyển hướng về danh sách
         header("Location: index.php?action=product_list");
         exit;
     }
 
-    // ==============================================
-    // CÁC HÀM DANH MỤC ĐÃ ĐƯỢC FIX LỖI BÁO ĐỎ 
-    // ==============================================
     public function category_list()
     {
         $db = (new Database())->getConnection();
 
-        // Nhận dữ liệu tìm kiếm & lọc
         $search = $_GET['search'] ?? '';
         $type = $_GET['type'] ?? '';
 
@@ -187,7 +189,6 @@ class ProductController
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $db = (new Database())->getConnection();
 
-            // Lấy dữ liệu điều kiện tự động chuyển thành chuỗi JSON
             $auto_rules = [];
             if (isset($_POST['rule_field'])) {
                 for ($i = 0; $i < count($_POST['rule_field']); $i++) {
@@ -200,13 +201,12 @@ class ProductController
             }
             $auto_rules_json = json_encode($auto_rules, JSON_UNESCAPED_UNICODE);
 
-            // Bơm ĐỦ 10 THAM SỐ cho Model của bạn để VS Code khỏi kêu
             $newId = (new CategoryModel($db))->addCategory(
                 $_POST['category_name'] ?? '',
                 $_POST['description'] ?? '',
-                '', // alias (Bỏ trống ngầm)
-                '', // seo_title (Bỏ trống ngầm)
-                '', // seo_desc (Bỏ trống ngầm)
+                '',
+                '',
+                '',
                 $_POST['status'] ?? 'Hiển thị',
                 $_POST['selection_type'] ?? 'manual',
                 $_POST['match_type'] ?? 'all',
@@ -229,7 +229,6 @@ class ProductController
         $id = $_GET['id'] ?? 0;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // Lấy dữ liệu điều kiện tự động chuyển thành chuỗi JSON
             $auto_rules = [];
             if (isset($_POST['rule_field'])) {
                 for ($i = 0; $i < count($_POST['rule_field']); $i++) {
@@ -242,14 +241,13 @@ class ProductController
             }
             $auto_rules_json = json_encode($auto_rules, JSON_UNESCAPED_UNICODE);
 
-            // Bơm ĐỦ 11 THAM SỐ cho hàm update (có thêm $id)
             if ($model->updateCategory(
                 $id,
                 $_POST['category_name'] ?? '',
                 $_POST['description'] ?? '',
-                '', // alias (Bỏ trống ngầm)
-                '', // seo_title (Bỏ trống ngầm)
-                '', // seo_desc (Bỏ trống ngầm)
+                '',
+                '',
+                '',
                 $_POST['status'] ?? 'Hiển thị',
                 $_POST['selection_type'] ?? 'manual',
                 $_POST['match_type'] ?? 'all',
@@ -298,7 +296,6 @@ class ProductController
             $db = (new Database())->getConnection();
             $status = isset($_POST['btn_apply']) ? 'Đang áp dụng' : 'Lưu nháp';
             $auto_add = isset($_POST['auto_add']) ? 1 : 0;
-            // Hàm này 6 tham số khớp y chang Model của bạn rồi nên không lỗi
             $newId = (new PriceModel($db))->addPrice(
                 $_POST['price_name'],
                 $_POST['adjust_type'],
@@ -314,7 +311,7 @@ class ProductController
         }
         require_once __DIR__ . '/../views/product/price_add.php';
     }
-    // Hàm xử lý Thêm Sản phẩm Quy đổi
+
     public function add_conversion()
     {
         $db = (new Database())->getConnection();
@@ -328,30 +325,25 @@ class ProductController
             $barcode = $_POST['barcode'];
             $base_price = $_POST['base_price'];
 
-            // Lấy thông tin sản phẩm mẹ để nối tên
             $baseProduct = $productModel->getProductById($parent_id);
-            // Tự động tạo tên: Ví dụ "Kính cường lực (Lốc 10 Cái)"
             $newName = $baseProduct['product_name'] . ' (' . $unit . ' ' . $conversion_qty . ' ' . $baseProduct['unit'] . ')';
 
             if ($productModel->addConvertedProduct($parent_id, $newName, $unit, $conversion_qty, $sku, $barcode, $base_price)) {
-                // Quay về danh sách và báo thành công
                 header("Location: index.php?action=product_list&success=1");
                 exit;
             }
         }
 
-        // Lấy danh sách sản phẩm mẹ truyền ra View
         $baseProducts = $productModel->getBaseProducts();
         require_once __DIR__ . '/../views/product/add_conversion.php';
     }
-    // Thêm Sản phẩm Combo
+
     public function add_combo()
     {
         $db = (new Database())->getConnection();
         $productModel = new ProductModel($db);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // Xử lý upload ảnh
             $imagePath = "";
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                 $uploadDir = __DIR__ . '/../../public/uploads/';
@@ -388,8 +380,36 @@ class ProductController
             }
         }
 
-        // Lấy danh sách sản phẩm gốc để chọn làm thành phần Combo
         $baseProducts = $productModel->getBaseProducts();
         require_once __DIR__ . '/../views/product/add_combo.php';
+    }
+
+    // Hàm cập nhật tồn kho nhanh tích hợp tính toán tự động chuẩn Sapo
+    public function quick_update_stock()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
+            $db = (new Database())->getConnection();
+            $productModel = new ProductModel($db);
+
+            $id = $_POST['id'];
+            $new_stock = (int)$_POST['new_stock'];
+
+            $product = $productModel->getProductById($id);
+            if ($product) {
+                $current_stock = $product['stock'] ?? 0;
+                $current_available = $product['available'] ?? 0;
+
+                $stock_diff = $new_stock - $current_stock;
+
+                // Sử dụng hàm chuẩn updateInventory thay vì updateStock
+                if ($stock_diff != 0) {
+                    $new_available = $current_available + $stock_diff;
+                    $productModel->updateInventory($id, $new_stock, $new_available);
+                }
+            }
+
+            header("Location: index.php?action=product_list&success=1");
+            exit;
+        }
     }
 }

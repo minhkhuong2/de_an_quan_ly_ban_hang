@@ -24,6 +24,8 @@ class App
         'delete_category'  => ['ProductController', 'delete_category'],
         'product_price'    => ['ProductController', 'price'],
         'add_price'        => ['ProductController', 'add_price'],
+        // ĐÂY CHÍNH LÀ DÒNG FIX LỖI 404 CỦA CHÚNG TA:
+        'quick_update_stock' => ['ProductController', 'quick_update_stock'],
 
         // --- Đối tác ---
         'customer_list'    => ['CustomerController', 'list'],

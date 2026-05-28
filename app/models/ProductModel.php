@@ -41,33 +41,28 @@ class ProductModel
                 ELSE p.available 
             END as co_the_ban
             FROM " . $this->table_name . " p 
-            WHERE 1=1 "; // Điều kiện ảo để dễ nối chuỗi
+            WHERE 1=1 ";
 
         $params = [];
 
-        // 1. Tìm kiếm theo tên hoặc SKU
         if (!empty($search)) {
             $query .= " AND (p.product_name LIKE ? OR p.sku LIKE ? OR p.barcode LIKE ?) ";
             $params[] = "%$search%";
             $params[] = "%$search%";
             $params[] = "%$search%";
         }
-        // 2. Lọc theo Danh mục
         if (!empty($category)) {
             $query .= " AND p.category = ? ";
             $params[] = $category;
         }
-        // 3. Lọc theo Nhãn hiệu
         if (!empty($brand)) {
             $query .= " AND p.brand = ? ";
             $params[] = $brand;
         }
-        // 4. Lọc theo Tag
         if (!empty($tags)) {
             $query .= " AND p.tags LIKE ? ";
             $params[] = "%$tags%";
         }
-        // 5. Lọc theo Loại (Thường, Combo, Quy đổi)
         if (!empty($type)) {
             if ($type == 'Quy đổi') {
                 $query .= " AND p.parent_id IS NOT NULL ";
@@ -146,9 +141,7 @@ class ProductModel
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
-    // --- CÁC HÀM DÀNH CHO SẢN PHẨM QUY ĐỔI ---
 
-    // Lấy danh sách sản phẩm Gốc (Không lấy sản phẩm đã bị quy đổi)
     public function getBaseProducts()
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE parent_id IS NULL ORDER BY id DESC";
@@ -157,10 +150,8 @@ class ProductModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Lưu sản phẩm quy đổi
     public function addConvertedProduct($parent_id, $name, $unit, $qty, $sku, $barcode, $price)
     {
-        // Lấy category và brand từ sản phẩm gốc
         $baseProduct = $this->getProductById($parent_id);
         $category = $baseProduct['category'] ?? '';
         $brand = $baseProduct['brand'] ?? '';
@@ -172,17 +163,12 @@ class ProductModel
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$parent_id, $qty, $name, $unit, $sku, $barcode, $price, $category, $brand, $image]);
     }
-    // ==============================================
-    // CÁC HÀM XỬ LÝ SẢN PHẨM COMBO
-    // ==============================================
 
-    // Lưu sản phẩm Combo và các thành phần
     public function addComboProduct($name, $sku, $barcode, $unit, $description, $image, $price, $compare_price, $apply_tax, $category, $brand, $tags, $component_ids, $component_qtys)
     {
         try {
             $this->conn->beginTransaction();
 
-            // 1. Lưu sản phẩm Combo vào bảng products
             $query = "INSERT INTO " . $this->table_name . " 
                       (product_type, product_name, sku, barcode, unit, description, image, base_price, compare_price, apply_tax, category, brand, tags) 
                       VALUES ('Combo', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -190,7 +176,6 @@ class ProductModel
             $stmt->execute([$name, $sku, $barcode, $unit, $description, $image, $price, $compare_price, $apply_tax, $category, $brand, $tags]);
             $combo_id = $this->conn->lastInsertId();
 
-            // 2. Lưu các thành phần vào bảng product_combo_details
             $queryDetail = "INSERT INTO product_combo_details (combo_id, product_id, quantity) VALUES (?, ?, ?)";
             $stmtDetail = $this->conn->prepare($queryDetail);
 
@@ -208,5 +193,16 @@ class ProductModel
             $this->conn->rollBack();
             return false;
         }
+    }
+
+    // Hàm cập nhật kho đồng bộ chuẩn nhất
+    public function updateInventory($id, $new_stock, $new_available)
+    {
+        $query = "UPDATE " . $this->table_name . " SET stock = :stock, available = :available WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':stock', $new_stock, PDO::PARAM_INT);
+        $stmt->bindParam(':available', $new_available, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }
