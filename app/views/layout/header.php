@@ -1,4 +1,6 @@
 <?php
+// Đường dẫn file: app/views/layout/header.php
+
 // Lấy action hiện tại để làm nổi bật (active) menu đang được chọn
 $current_action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
@@ -164,16 +166,17 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Quản lý Kho</div>
             <a href="index.php?action=inventory_list" class="menu-item <?php echo ($current_action == 'inventory_list') ? 'active' : ''; ?>">🏢 Tồn kho</a>
 
-            <a href="index.php?action=purchase_list" class="menu-item <?php echo ($current_action == 'purchase_list' || $current_action == 'add_purchase') ? 'active' : ''; ?>">📥 Nhập hàng</a>
+            <a href="index.php?action=purchase_list" class="menu-item <?php echo ($current_action == 'purchase_list' || $current_action == 'add_purchase' || $current_action == 'view_purchase') ? 'active' : ''; ?>">📥 Đặt hàng nhập</a>
+
+            <a href="index.php?action=receipt_list" class="menu-item <?php echo ($current_action == 'receipt_list' || $current_action == 'direct_receive' || $current_action == 'receive_purchase') ? 'active' : ''; ?>">📦 Nhập hàng</a>
 
             <a href="index.php?action=purchase_return_list" class="menu-item <?php echo ($current_action == 'purchase_return_list' || $current_action == 'add_purchase_return') ? 'active' : ''; ?>">📤 Trả hàng nhập</a>
 
             <a href="index.php?action=inventory_check_list" class="menu-item <?php echo ($current_action == 'inventory_check_list' || $current_action == 'add_inventory_check') ? 'active' : ''; ?>">📋 Kiểm kho</a>
 
             <a href="index.php?action=supplier_list" class="menu-item <?php echo ($current_action == 'supplier_list' || $current_action == 'add_supplier' || $current_action == 'edit_supplier') ? 'active' : ''; ?>">🤝 Nhà cung cấp</a>
-            <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">
-                🔍 Quản lý IMEI
-            </a>
+
+
 
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold; letter-spacing: 0.5px;">Đối tác & Khác</div>
             <a href="index.php?action=customer_list" class="menu-item <?php echo ($current_action == 'customer_list' || $current_action == 'add_customer') ? 'active' : ''; ?>">

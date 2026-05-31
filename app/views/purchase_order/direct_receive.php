@@ -1,4 +1,3 @@
-<!-- Đường dẫn: app/views/purchase_order/add.php -->
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $allProducts */ ?>
 
@@ -61,12 +60,6 @@
         font-size: 14px;
     }
 
-    .btn-save {
-        background: #fff;
-        border-color: #c4cdd5;
-        color: #212b36;
-    }
-
     .btn-approve {
         background: #0088ff;
         color: #fff;
@@ -94,12 +87,11 @@
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2><a href="index.php?action=inventory_list" style="text-decoration:none; color:#637381;">←</a> Tạo đơn đặt hàng nhập</h2>
+    <h2><a href="index.php?action=purchase_list" style="text-decoration:none; color:#637381;">←</a> Tạo đơn Nhập hàng trực tiếp</h2>
 </div>
 
-<form action="index.php?action=add_purchase" method="POST">
+<form action="index.php?action=direct_receive" method="POST">
     <div class="sapo-grid">
-        <!-- CỘT TRÁI -->
         <div class="sapo-col-left">
             <div class="sapo-card">
                 <div class="sapo-card-title">Nhà cung cấp</div>
@@ -107,7 +99,7 @@
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin sản phẩm</div>
+                <div class="sapo-card-title">Sản phẩm nhập hàng</div>
                 <div style="position: relative;">
                     <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
                     <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
@@ -132,9 +124,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="po-body">
-                        <!-- Sản phẩm được chọn sẽ tự động chèn vào đây -->
-                    </tbody>
+                    <tbody id="po-body"></tbody>
                 </table>
                 <div style="text-align: right; margin-top: 20px; font-size: 16px; color: #212b36;">
                     <strong>Tổng tiền: <span id="total-amount" style="color: #0088ff; font-size: 18px;">0</span> ₫</strong>
@@ -142,10 +132,9 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI -->
         <div class="sapo-col-right">
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin đơn nhập</div>
+                <div class="sapo-card-title">Thông tin nhập kho</div>
                 <div class="form-group">
                     <label>Chi nhánh nhập</label>
                     <select name="branch" class="form-control">
@@ -153,45 +142,38 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Nhân viên phụ trách</label>
-                    <input type="text" name="employee" class="form-control" value="Admin">
-                </div>
-                <div class="form-group">
-                    <label>Ngày nhập dự kiến</label>
+                    <label>Ngày ghi nhận</label>
                     <input type="date" name="expected_date" class="form-control" value="<?php echo date('Y-m-d'); ?>">
                 </div>
-                <div class="form-group">
-                    <label>Mã đơn nhập</label>
-                    <input type="text" name="reference" class="form-control" placeholder="Để trống hệ thống tự tạo">
+
+                <div style="margin-top: 25px; padding: 15px; background: #eafff0; border: 1px solid #33d067; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                    <span style="color: #108043; font-weight: 500; font-size: 14px;">Nhập kho khi tạo đơn</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #dfe3e8; padding-top: 20px;">
-        <button type="button" class="btn" style="border-color: #c4cdd5;" onclick="window.location.href='index.php?action=inventory_list'">Hủy</button>
-        <button type="submit" name="btn_draft" class="btn btn-save">Tạo đơn nháp</button>
-        <button type="submit" name="btn_approve" class="btn btn-approve">Tạo & duyệt đơn</button>
+        <button type="button" class="btn" style="border: 1px solid #c4cdd5; background: #fff;" onclick="window.location.href='index.php?action=purchase_list'">Hủy</button>
+        <button type="submit" class="btn btn-approve">Tạo đơn & Nhập kho</button>
     </div>
 </form>
 
 <script>
-    // Xử lý Javascript thêm dòng và tính tổng tiền tự động
     function addProductRow() {
         const select = document.getElementById('product-select');
-        const selectedOption = select.options[select.selectedIndex];
+        const option = select.options[select.selectedIndex];
+        if (!option.value) return;
 
-        if (!selectedOption.value) return;
+        const id = option.value;
+        const name = option.text.split(' - ')[0];
+        const sku = option.getAttribute('data-sku');
+        const price = option.getAttribute('data-price') || 0;
 
-        const id = selectedOption.value;
-        const name = selectedOption.text.split(' - ')[0];
-        const sku = selectedOption.getAttribute('data-sku');
-        const price = selectedOption.getAttribute('data-price') || 0;
-
-        // Nếu đã có trong bảng thì chỉ cộng dồn số lượng
         if (document.getElementById('row-' + id)) {
-            let qtyInput = document.getElementById('qty-' + id);
-            qtyInput.value = parseInt(qtyInput.value) + 1;
+            let input = document.getElementById('qty-' + id);
+            input.value = parseInt(input.value) + 1;
             updateRowTotal(id);
             select.value = '';
             return;
@@ -203,21 +185,16 @@
         tr.innerHTML = `
             <td style="color: #0088ff;">${sku}</td>
             <td style="font-weight: 500;">${name}</td>
-            <td>
-                <select class="form-control" style="padding: 6px;"><option>Cái</option></select>
-            </td>
+            <td><select class="form-control" style="padding: 6px;"><option>Cái</option></select></td>
             <td>
                 <input type="number" name="quantity[]" id="qty-${id}" value="1" min="1" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;">
                 <input type="hidden" name="product_id[]" value="${id}">
             </td>
-            <td>
-                <input type="number" name="price[]" id="price-${id}" value="${price}" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;">
-            </td>
+            <td><input type="number" name="price[]" id="price-${id}" value="${price}" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;"></td>
             <td id="total-${id}" style="font-weight: 500;">${new Intl.NumberFormat('vi-VN').format(price)}</td>
             <td><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold;">×</a></td>
         `;
         tbody.appendChild(tr);
-
         select.value = '';
         updateGrandTotal();
     }
@@ -225,8 +202,7 @@
     function updateRowTotal(id) {
         const qty = parseInt(document.getElementById('qty-' + id).value) || 0;
         const price = parseFloat(document.getElementById('price-' + id).value) || 0;
-        const total = qty * price;
-        document.getElementById('total-' + id).innerText = new Intl.NumberFormat('vi-VN').format(total);
+        document.getElementById('total-' + id).innerText = new Intl.NumberFormat('vi-VN').format(qty * price);
         updateGrandTotal();
     }
 
@@ -236,14 +212,13 @@
     }
 
     function updateGrandTotal() {
-        let grandTotal = 0;
-        document.querySelectorAll('input[name="price[]"]').forEach((priceInput) => {
-            let id = priceInput.id.split('-')[1];
+        let total = 0;
+        document.querySelectorAll('input[name="price[]"]').forEach(input => {
+            let id = input.id.split('-')[1];
             let qty = parseInt(document.getElementById('qty-' + id).value) || 0;
-            let price = parseFloat(priceInput.value) || 0;
-            grandTotal += (qty * price);
+            total += qty * (parseFloat(input.value) || 0);
         });
-        document.getElementById('total-amount').innerText = new Intl.NumberFormat('vi-VN').format(grandTotal);
+        document.getElementById('total-amount').innerText = new Intl.NumberFormat('vi-VN').format(total);
     }
 </script>
 

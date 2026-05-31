@@ -45,7 +45,15 @@ class App
         'add_purchase_return'  => ['PurchaseReturnController', 'add'],
 
         'inventory_check_list' => ['InventoryCheckController', 'list'],
-        'add_inventory_check'  => ['InventoryCheckController', 'add'],
+        'add_inventory_check'  => ['InventoryCheckController', 'add'], // <--- Phải có dấu phẩy ở đây
+
+        'view_purchase'    => ['PurchaseOrderController', 'detail'],
+        'cancel_purchase'  => ['PurchaseOrderController', 'cancel'],
+        'receive_purchase' => ['PurchaseOrderController', 'receiveForm'],
+        'process_receive'  => ['PurchaseOrderController', 'processReceive'],
+        'direct_receive'   => ['PurchaseOrderController', 'direct_receive'],
+        'receipt_list'     => ['PurchaseOrderController', 'receiptList'],
+        'pay_purchase'     => ['PurchaseOrderController', 'pay'],
 
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],
