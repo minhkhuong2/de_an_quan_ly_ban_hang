@@ -218,4 +218,80 @@ class PurchaseOrderModel
         $stmt = $this->conn->prepare("UPDATE purchase_orders SET paid_amount = ?, payment_status = ? WHERE id = ?");
         return $stmt->execute([$new_paid, $payment_status, $order_id]);
     }
+    // Hàm xử lý Cập nhật đơn đặt hàng nhập và tính toán lại số lượng Đang về kho
+    public function updatePurchaseOrder($order_id, $supplier_name, $branch, $employee, $expected_date, $reference, $products, $total_amount)
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // 1. Lấy thông tin đơn cũ trước khi sửa để hoàn tác số lượng Đang về kho cũ
+            $old_order = $this->getOrderById($order_id);
+            if ($old_order && $old_order['status'] == 'Chờ nhập') {
+                $old_details = $this->getOrderDetails($order_id);
+                // Trừ bớt hàng đang về của đơn cũ đi trước
+                $stmtReturnStock = $this->conn->prepare("UPDATE products SET dang_ve_kho = dang_ve_kho - ? WHERE id = ?");
+                foreach ($old_details as $old_item) {
+                    $stmtReturnStock->execute([$old_item['quantity'], $old_item['product_id']]);
+                }
+            }
+
+            // 2. Cập nhật thông tin chung của Đơn hàng
+            $query = "UPDATE purchase_orders SET supplier_name = ?, branch = ?, employee = ?, expected_date = ?, reference = ?, total_amount = ? WHERE id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$supplier_name, $branch, $employee, $expected_date, $reference, $total_amount, $order_id]);
+
+            // 3. Xóa chi tiết cũ để ghi đè chi tiết mới
+            $this->conn->prepare("DELETE FROM purchase_order_details WHERE order_id = ?")->execute([$order_id]);
+
+            // 4. Ghi chi tiết mới & Cộng lại số lượng Đang về kho mới
+            $queryDetail = "INSERT INTO purchase_order_details (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
+            $stmtDetail = $this->conn->prepare($queryDetail);
+
+            foreach ($products as $item) {
+                $stmtDetail->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
+
+                // Nếu đơn ở trạng thái Chờ nhập thì cộng vào hàng đang về theo số lượng mới
+                if ($old_order && $old_order['status'] == 'Chờ nhập') {
+                    $stmtAddStock = $this->conn->prepare("UPDATE products SET dang_ve_kho = dang_ve_kho + ? WHERE id = ?");
+                    $stmtAddStock->execute([$item['quantity'], $item['product_id']]);
+                }
+            }
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
+
+    // Hàm xử lý Xóa đơn đặt hàng nhập và hoàn trả lại số lượng Đang về kho
+    public function deletePurchaseOrder($id)
+    {
+        try {
+            $this->conn->beginTransaction();
+            $order = $this->getOrderById($id);
+
+            if ($order) {
+                // Nếu đơn đang "Chờ nhập", bắt buộc phải TRỪ số lượng "Đang về kho" của sản phẩm đó đi
+                if ($order['status'] == 'Chờ nhập') {
+                    $details = $this->getOrderDetails($id);
+                    $stmtStock = $this->conn->prepare("UPDATE products SET dang_ve_kho = dang_ve_kho - ? WHERE id = ?");
+                    foreach ($details as $item) {
+                        $stmtStock->execute([$item['quantity'], $item['product_id']]);
+                    }
+                }
+
+                // Xóa dữ liệu đơn hàng trong Database
+                $this->conn->prepare("DELETE FROM purchase_order_details WHERE order_id = ?")->execute([$id]);
+                $this->conn->prepare("DELETE FROM purchase_orders WHERE id = ?")->execute([$id]);
+            }
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
 }

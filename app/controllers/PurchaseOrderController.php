@@ -222,4 +222,72 @@ class PurchaseOrderController
             exit;
         }
     }
+    // Hàm xử lý Giao diện và Ghi nhận dữ liệu Form Sửa đơn đặt hàng nhập
+    public function edit()
+    {
+        $id = $_GET['id'] ?? 0;
+        $db = (new Database())->getConnection();
+        $poModel = new PurchaseOrderModel($db);
+        $productModel = new ProductModel($db);
+
+        $order = $poModel->getOrderById($id);
+        if (!$order || $order['status'] == 'Nhập toàn bộ' || $order['status'] == 'Đã hủy') {
+            // Không cho sửa các đơn đã hoàn thành hoặc đã hủy theo logic Sapo
+            header("Location: index.php?action=purchase_list");
+            exit;
+        }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $supplier_name = $_POST['supplier_name'] ?? 'Khách lẻ';
+            $branch = $_POST['branch'] ?? 'Cửa hàng chính';
+            $employee = $_POST['employee'] ?? 'Admin';
+            $expected_date = $_POST['expected_date'] ?? date('Y-m-d');
+            $reference = $_POST['reference'] ?? '';
+
+            $product_ids = $_POST['product_id'] ?? [];
+            $quantities = $_POST['quantity'] ?? [];
+            $prices = $_POST['price'] ?? [];
+
+            $products = [];
+            $total_amount = 0;
+
+            for ($i = 0; $i < count($product_ids); $i++) {
+                if (!empty($product_ids[$i])) {
+                    $qty = (int)$quantities[$i];
+                    $price = (float)$prices[$i];
+                    $products[] = [
+                        'product_id' => $product_ids[$i],
+                        'quantity' => $qty,
+                        'price' => $price
+                    ];
+                    $total_amount += ($qty * $price);
+                }
+            }
+
+            if (!empty($products)) {
+                if ($poModel->updatePurchaseOrder($id, $supplier_name, $branch, $employee, $expected_date, $reference, $products, $total_amount)) {
+                    header("Location: index.php?action=view_purchase&id=" . $id . "&success_edit=1");
+                    exit;
+                }
+            }
+        }
+
+        $details = $poModel->getOrderDetails($id);
+        $allProducts = $productModel->getAllProducts();
+
+        require_once __DIR__ . '/../views/purchase_order/edit.php';
+    }
+
+    // Hàm xử lý hành động Xóa đơn đặt hàng nhập
+    public function delete()
+    {
+        $id = $_GET['id'] ?? 0;
+        if ($id) {
+            $db = (new Database())->getConnection();
+            $poModel = new PurchaseOrderModel($db);
+            $poModel->deletePurchaseOrder($id);
+        }
+        header("Location: index.php?action=purchase_list&success_delete=1");
+        exit;
+    }
 }

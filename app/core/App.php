@@ -56,6 +56,12 @@ class App
         'pay_purchase'     => ['PurchaseOrderController', 'pay'],
         'edit_inventory_check'   => ['InventoryCheckController', 'edit'],
         'delete_inventory_check' => ['InventoryCheckController', 'delete'],
+        'transfer_list'     => ['InventoryTransferController', 'list'],
+        'add_transfer'      => ['InventoryTransferController', 'add'],
+        'view_transfer'     => ['InventoryTransferController', 'detail'],
+        'update_transfer'   => ['InventoryTransferController', 'updateStatus'],
+        'edit_purchase'    => ['PurchaseOrderController', 'edit'],
+        'delete_purchase'  => ['PurchaseOrderController', 'delete'],
 
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],

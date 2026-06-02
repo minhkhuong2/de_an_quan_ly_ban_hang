@@ -9,11 +9,28 @@ class InventoryCheckModel
         $this->conn = $db;
     }
 
-    public function getAllChecks()
+    public function getAllChecks($search = '', $status = '')
     {
-        $query = "SELECT * FROM inventory_checks ORDER BY id DESC";
+        $query = "SELECT * FROM inventory_checks WHERE 1=1 ";
+        $params = [];
+
+        // Xử lý Tìm kiếm theo mã phiếu (Hỗ trợ gõ #CHK1, CHK1 hoặc chỉ gõ 1)
+        if (!empty($search)) {
+            $cleanSearch = str_replace(['#CHK', 'CHK', '#'], '', strtoupper(trim($search)));
+            $query .= " AND id LIKE ? ";
+            $params[] = "%$cleanSearch%";
+        }
+
+        // Xử lý Lọc theo Trạng thái
+        if (!empty($status)) {
+            $query .= " AND status = ? ";
+            $params[] = $status;
+        }
+
+        $query .= " ORDER BY id DESC";
+
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

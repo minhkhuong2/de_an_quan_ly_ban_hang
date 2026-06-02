@@ -12,7 +12,12 @@ class InventoryCheckController
     {
         $db = (new Database())->getConnection();
         $checkModel = new InventoryCheckModel($db);
-        $checks = $checkModel->getAllChecks();
+
+        // Hứng dữ liệu tìm kiếm & lọc từ thanh địa chỉ (URL)
+        $search = $_GET['search'] ?? '';
+        $status = $_GET['status'] ?? '';
+
+        $checks = $checkModel->getAllChecks($search, $status);
         require_once __DIR__ . '/../views/inventory_check/list.php';
     }
 

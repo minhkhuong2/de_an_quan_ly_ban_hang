@@ -14,10 +14,11 @@
         <button style="background: #fff; border: 1px solid #c4cdd5; padding: 8px 16px; border-radius: 4px; cursor: pointer;">🖨️ In đơn</button>
 
         <?php if (in_array($order['status'], ['Đơn nháp', 'Chờ nhập'])): ?>
-            <a href="index.php?action=cancel_purchase&id=<?php echo $order['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Số lượng Đang về kho sẽ được hoàn lại.');" style="background: #fff; border: 1px solid #ff4d4f; color: #ff4d4f; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">Hủy đơn</a>
-            <?php if ($order['status'] == 'Chờ nhập'): ?>
-                <a href="index.php?action=receive_purchase&id=<?php echo $order['id']; ?>" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">Nhập hàng vào kho và sửa thẻ</a>
-            <?php endif; ?>
+            <a href="index.php?action=edit_purchase&id=<?php echo $order['id']; ?>" style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">Sửa đơn</a>
+
+            <a href="index.php?action=delete_purchase&id=<?php echo $order['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn XÓA hẳn đơn đặt hàng này? Số lượng Đang về kho sẽ được hoàn trả lại.');" style="background: #fff; border: 1px solid #ff4d4f; color: #ff4d4f; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">Xóa đơn</a>
+
+            <a href="index.php?action=cancel_purchase&id=<?php echo $order['id']; ?>" ...>Hủy đơn</a>
         <?php endif; ?>
     </div>
 </div>
