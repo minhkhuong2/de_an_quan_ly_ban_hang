@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
-<?php /** @var array $products */ ?>
+<?php /** @var array $allProducts */ ?>
+
 <style>
     .sapo-card {
         background: #fff;
@@ -11,149 +12,166 @@
 
     .form-control {
         width: 100%;
-        padding: 10px;
+        padding: 8px 12px;
         border: 1px solid #c4cdd5;
         border-radius: 4px;
-        outline: none;
-        margin-top: 5px;
         box-sizing: border-box;
     }
 
-    .btn-save {
-        background: #0088ff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: 500;
-        cursor: pointer;
-    }
-
-    .table-import {
+    .ic-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
     }
 
-    .table-import th {
-        background: #fafbfc;
-        padding: 10px;
-        text-align: left;
-        font-size: 14px;
-        color: #637381;
+    .ic-table th,
+    .ic-table td {
+        padding: 12px 10px;
         border-bottom: 1px solid #dfe3e8;
+        text-align: center;
     }
 
-    .table-import td {
-        padding: 10px;
-        border-bottom: 1px solid #f4f6f8;
-    }
-
-    .input-readonly {
-        background: #f4f6f8;
+    .ic-table th {
+        background: #fafbfc;
         color: #637381;
-        pointer-events: none;
+        font-weight: 500;
     }
+
+    .diff-positive {
+        color: #108043;
+        font-weight: bold;
+    }
+
+    /* Tăng */
+    .diff-negative {
+        color: #cf1322;
+        font-weight: bold;
+    }
+
+    /* Giảm */
 </style>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2><a href="index.php?action=inventory_check_list" style="text-decoration:none; color:#637381;">←</a> Tạo phiếu kiểm kho</h2>
+</div>
+
 <form action="index.php?action=add_inventory_check" method="POST">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 20px; color: #212b36;"><a href="index.php?action=inventory_check_list" style="text-decoration:none; color:#637381;">←</a> Tạo phiếu kiểm kho</h2>
-        <button type="submit" class="btn-save">Hoàn tất & Cân bằng kho</button>
+    <div style="display: flex; gap: 20px;">
+        <div style="flex: 0 0 70%;">
+            <div class="sapo-card">
+                <div style="font-weight: bold; margin-bottom: 15px;">Sản phẩm cần kiểm</div>
+
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 10px; top: 8px;">🔍</span>
+                    <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
+                        <option value="">Tìm kiếm sản phẩm để kiểm kho...</option>
+                        <?php foreach ($allProducts as $p): ?>
+                            <option value="<?php echo $p['id']; ?>" data-sku="<?php echo htmlspecialchars($p['sku'] ?? ''); ?>" data-stock="<?php echo $p['stock'] ?? 0; ?>">
+                                <?php echo htmlspecialchars($p['product_name']); ?> (Tồn: <?php echo $p['stock'] ?? 0; ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <table class="ic-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Sản phẩm</th>
+                            <th>Tồn chi nhánh</th>
+                            <th>Tồn thực tế</th>
+                            <th>SL Chênh lệch</th>
+                            <th>Lý do</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ic-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="flex: 0 0 calc(30% - 20px);">
+            <div class="sapo-card">
+                <div style="font-weight: bold; margin-bottom: 15px;">Thông tin phiếu</div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #637381; font-size: 13px;">Chi nhánh</label>
+                    <select name="branch" class="form-control">
+                        <option>Cửa hàng chính</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #637381; font-size: 13px;">Nhân viên kiểm</label>
+                    <input type="text" name="employee" class="form-control" value="Admin">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #637381; font-size: 13px;">Ghi chú</label>
+                    <textarea name="note" class="form-control" rows="3" placeholder="Ví dụ: Kiểm kho định kỳ tháng..."></textarea>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="sapo-card">
-        <h3 style="font-size: 16px; margin-bottom: 10px;">Sản phẩm kiểm kho</h3>
-        <table class="table-import" id="checkTable">
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th style="width: 150px;">Tồn kho HT</th>
-                    <th style="width: 150px;">Thực tế <span style="color:red;">*</span></th>
-                    <th style="width: 150px;">Chênh lệch</th>
-                    <th style="width: 50px;"></th>
-                </tr>
-            </thead>
-            <tbody id="checkBody">
-                <tr class="item-row">
-                    <td>
-                        <select name="product_id[]" class="form-control" required onchange="selectProduct(this)">
-                            <option value="">-- Chọn sản phẩm --</option>
-                            <?php foreach ($products as $p): ?>
-                                <option value="<?php echo $p['id']; ?>" data-stock="<?php echo $p['ton_kho'] ?? 0; ?>">
-                                    <?php echo htmlspecialchars($p['product_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="number" name="system_stock[]" class="form-control sys-stock input-readonly" value="0" readonly tabindex="-1"></td>
-                    <td><input type="number" name="actual_stock[]" class="form-control actual-stock" value="0" min="0" required oninput="calcDiscrepancy(this)"></td>
-                    <td>
-                        <input type="number" name="discrepancy[]" class="form-control diff-stock input-readonly" value="0" readonly tabindex="-1">
-                        <span class="diff-hint" style="font-size: 12px; font-weight: bold; margin-top: 5px; display:block;">Khớp</span>
-                    </td>
-                    <td style="padding-top: 15px;"><a href="javascript:void(0)" onclick="this.closest('tr').remove();" style="color: red; text-decoration: none;">✖</a></td>
-                </tr>
-            </tbody>
-        </table>
-        <button type="button" onclick="addRow()" style="background: #e6f7ff; color: #0088ff; border: 1px dashed #0088ff; padding: 8px 15px; border-radius: 4px; margin-top: 15px; cursor: pointer;">+ Thêm dòng sản phẩm</button>
+    <div style="text-align: right; border-top: 1px solid #dfe3e8; padding-top: 20px;">
+        <button type="submit" style="padding: 10px 20px; background: #0088ff; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            Xác nhận Cân Bằng Kho
+        </button>
     </div>
 </form>
 
 <script>
-    // JS Tự động điền Tồn kho Hệ thống khi chọn SP
-    function selectProduct(selectObj) {
-        let row = selectObj.closest('tr');
-        let sysStockInput = row.querySelector('.sys-stock');
-        let actualStockInput = row.querySelector('.actual-stock');
+    function addProductRow() {
+        const select = document.getElementById('product-select');
+        const option = select.options[select.selectedIndex];
+        if (!option.value) return;
 
-        if (selectObj.selectedIndex > 0) {
-            let selectedOption = selectObj.options[selectObj.selectedIndex];
-            let stock = selectedOption.getAttribute('data-stock');
-            sysStockInput.value = stock;
-            actualStockInput.value = stock; // Mặc định thực tế = hệ thống
-        } else {
-            sysStockInput.value = 0;
-            actualStockInput.value = 0;
+        const id = option.value;
+        const name = option.text.split(' (')[0];
+        const sysStock = parseInt(option.getAttribute('data-stock')) || 0;
+
+        if (document.getElementById('row-' + id)) {
+            alert('Sản phẩm này đã có trong danh sách kiểm!');
+            select.value = '';
+            return;
         }
-        calcDiscrepancy(actualStockInput);
+
+        const tbody = document.getElementById('ic-body');
+        const tr = document.createElement('tr');
+        tr.id = 'row-' + id;
+        tr.innerHTML = `
+            <td style="text-align: left; font-weight: 500; color: #0088ff;">${name}</td>
+            <td style="color: #637381;">
+                ${sysStock}
+                <input type="hidden" name="product_id[]" value="${id}">
+                <input type="hidden" name="system_stock[]" id="sys-${id}" value="${sysStock}">
+            </td>
+            <td>
+                <input type="number" name="actual_stock[]" id="act-${id}" value="${sysStock}" class="form-control" style="width: 80px; font-weight: bold;" oninput="calcDiff('${id}')">
+            </td>
+            <td id="diff-${id}">0</td>
+            <td>
+                <select name="reason[]" class="form-control"><option value="">-- Chọn --</option><option value="Hàng hỏng">Hàng hỏng/lỗi</option><option value="Mất cắp">Thất thoát</option><option value="Nhập sai">Sai số liệu nhập</option></select>
+            </td>
+            <td><a href="javascript:void(0)" onclick="document.getElementById('row-${id}').remove()" style="color: #ff4d4f; text-decoration:none; font-weight:bold;">×</a></td>
+        `;
+        tbody.appendChild(tr);
+        select.value = '';
     }
 
-    // JS Tự động tính độ chênh lệch (Thực tế - Hệ thống)
-    function calcDiscrepancy(inputObj) {
-        let row = inputObj.closest('tr');
-        let sysStock = parseInt(row.querySelector('.sys-stock').value) || 0;
-        let actualStock = parseInt(row.querySelector('.actual-stock').value) || 0;
-        let diffInput = row.querySelector('.diff-stock');
-        let diffHint = row.querySelector('.diff-hint');
+    function calcDiff(id) {
+        const sys = parseInt(document.getElementById('sys-' + id).value);
+        let actInput = document.getElementById('act-' + id).value;
+        const act = actInput === '' ? 0 : parseInt(actInput);
 
-        let diff = actualStock - sysStock;
-        diffInput.value = diff;
+        const diff = act - sys;
+        const diffCell = document.getElementById('diff-' + id);
 
         if (diff > 0) {
-            diffHint.innerText = 'Thừa ' + diff;
-            diffHint.style.color = '#108043';
+            diffCell.innerHTML = `<span class="diff-positive">+${diff}</span>`;
         } else if (diff < 0) {
-            diffHint.innerText = 'Thiếu ' + Math.abs(diff);
-            diffHint.style.color = '#ff4d4f';
+            diffCell.innerHTML = `<span class="diff-negative">${diff}</span>`;
         } else {
-            diffHint.innerText = 'Khớp';
-            diffHint.style.color = '#212b36';
+            diffCell.innerHTML = `0`;
         }
     }
-
-    function addRow() {
-        let tbody = document.getElementById('checkBody');
-        let tr = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = document.querySelector('.item-row').innerHTML;
-        // Reset values for new row
-        tr.querySelector('.sys-stock').value = 0;
-        tr.querySelector('.actual-stock').value = 0;
-        tr.querySelector('.diff-stock').value = 0;
-        tr.querySelector('.diff-hint').innerText = 'Khớp';
-        tr.querySelector('.diff-hint').style.color = '#212b36';
-        tbody.appendChild(tr);
-    }
 </script>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

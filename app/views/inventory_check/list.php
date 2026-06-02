@@ -1,77 +1,53 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
-<style>
-    .sapo-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
+<?php /** @var array $checks */ ?>
 
-    .sapo-table th,
-    .sapo-table td {
-        padding: 15px 12px;
-        border-bottom: 1px solid #f4f6f8;
-        text-align: left;
-        font-size: 14px;
-    }
-
-    .sapo-table th {
-        background: #fafbfc;
-        color: #637381;
-        font-weight: 500;
-    }
-
-    .badge-status {
-        background: #eafff0;
-        color: #108043;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
-        border: 1px solid #33d067;
-    }
-</style>
-
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Phiếu kiểm kho</h2>
-    <a href="index.php?action=add_inventory_check" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Tạo phiếu kiểm kho</a>
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <h2>Danh sách Phiếu kiểm kho</h2>
+    <a href="index.php?action=add_inventory_check" style="background:#0088ff; color:white; padding:8px 16px; border-radius:4px; text-decoration:none;">+ Tạo phiếu kiểm</a>
 </div>
 
-<?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Cân bằng kho thành công! Tồn kho đã được điều chỉnh về đúng số lượng thực tế.</div><?php endif; ?>
-
-<?php if (!empty($checks)): ?>
-    <table class="sapo-table">
-        <thead>
-            <tr>
-                <th>Mã phiếu kiểm</th>
-                <th>Trạng thái</th>
-                <th>SL Thực tế</th>
-                <th>SL Chênh lệch</th>
-                <th>Ngày tạo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($checks as $row): ?>
-                <tr>
-                    <td style="color: #0088ff; font-weight: 500;"><?php echo htmlspecialchars($row['check_code']); ?></td>
-                    <td><span class="badge-status"><?php echo htmlspecialchars($row['status']); ?></span></td>
-                    <td style="font-weight: bold;"><?php echo number_format($row['total_actual']); ?></td>
-                    <td style="font-weight: bold; color: <?php echo $row['total_discrepancy'] < 0 ? '#ff4d4f' : ($row['total_discrepancy'] > 0 ? '#108043' : '#212b36'); ?>;">
-                        <?php echo ($row['total_discrepancy'] > 0 ? '+' : '') . number_format($row['total_discrepancy']); ?>
-                    </td>
-                    <td style="color: #637381;"><?php echo date('d/m/Y H:i', strtotime($row['created_at'])); ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php else: ?>
-    <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 8px;">
-        <div style="font-size: 60px; margin-bottom: 15px;">📋</div>
-        <h3 style="font-size: 18px; color: #212b36;">Chưa có phiếu kiểm kho nào</h3>
-        <p style="color: #637381; font-size: 14px; margin-bottom: 20px;">Kiểm kho định kỳ giúp bạn nắm bắt chính xác số lượng hàng hóa thực tế và hạn chế thất thoát.</p>
-        <a href="index.php?action=add_inventory_check" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">+ Kiểm kho ngay</a>
+<?php if (isset($_GET['success'])): ?>
+    <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px;">
+        ✅ Cân bằng kho thành công! Số lượng đã được cập nhật.
     </div>
 <?php endif; ?>
+<?php if (isset($_GET['success_edit'])): ?>
+    <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px;">
+        ✅ Đã cập nhật thông tin phiếu kiểm!
+    </div>
+<?php endif; ?>
+<?php if (isset($_GET['deleted'])): ?>
+    <div style="background:#fff1f0; color:#cf1322; padding:15px; border-radius:6px; margin-bottom:20px;">
+        🗑️ Đã xóa phiếu kiểm và hoàn lại tồn kho thành công!
+    </div>
+<?php endif; ?>
+
+<div class="card" style="background:#fff; padding:20px; border-radius:8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <tr style="border-bottom: 1px solid #dfe3e8; background: #fafbfc;">
+            <th style="padding: 12px; color: #637381;">Mã phiếu</th>
+            <th style="padding: 12px; color: #637381;">Ngày kiểm</th>
+            <th style="padding: 12px; color: #637381;">Nhân viên</th>
+            <th style="padding: 12px; color: #637381;">Ghi chú</th>
+            <th style="padding: 12px; color: #637381;">Trạng thái</th>
+            <th style="padding: 12px; color: #637381; text-align: center;">Thao tác</th>
+        </tr>
+        <?php foreach ($checks as $c): ?>
+            <tr style="border-bottom: 1px solid #f4f6f8;">
+                <td style="padding: 12px; color:#0088ff; font-weight: bold;">#CHK<?php echo $c['id']; ?></td>
+                <td style="padding: 12px;"><?php echo date('d/m/Y H:i', strtotime($c['created_at'])); ?></td>
+                <td style="padding: 12px;"><?php echo htmlspecialchars($c['employee']); ?></td>
+                <td style="padding: 12px;"><?php echo htmlspecialchars($c['note']); ?></td>
+                <td style="padding: 12px;">
+                    <span style="background:#eafff0; color:#108043; padding:4px 8px; border-radius:4px; font-size:12px; border: 1px solid #8ce09f;">Đã cân bằng</span>
+                </td>
+                <td style="padding: 12px; text-align: center;">
+                    <a href="index.php?action=edit_inventory_check&id=<?php echo $c['id']; ?>" style="color: #0088ff; text-decoration: none; margin-right: 10px;">✏️ Sửa</a>
+                    <a href="index.php?action=delete_inventory_check&id=<?php echo $c['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa phiếu kiểm kho này? Tồn kho sẽ được tính toán hoàn lại như cũ.');" style="color: #ff4d4f; text-decoration: none;">🗑️ Xóa</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</div>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

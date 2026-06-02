@@ -1,5 +1,5 @@
 <?php
-// Đường dẫn file: app/models/InventoryCheckModel.php
+// Đường dẫn: app/models/InventoryCheckModel.php
 class InventoryCheckModel
 {
     private $conn;
@@ -17,45 +17,99 @@ class InventoryCheckModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createCheck($product_ids, $system_stocks, $actual_stocks, $discrepancies)
+    // Hàm tạo phiếu kiểm và CÂN BẰNG KHO
+    public function createAndBalance($branch, $employee, $note, $products)
     {
         try {
             $this->conn->beginTransaction();
 
-            $check_code = 'PKK' . time(); // Mã phiếu kiểm kho
-
-            $total_actual = 0;
-            $total_discrepancy = 0;
-            for ($i = 0; $i < count($product_ids); $i++) {
-                $total_actual += $actual_stocks[$i];
-                $total_discrepancy += $discrepancies[$i];
-            }
-
             // 1. Lưu Phiếu kiểm kho
-            $queryOrder = "INSERT INTO inventory_checks (check_code, total_actual, total_discrepancy) VALUES (?, ?, ?)";
-            $stmtOrder = $this->conn->prepare($queryOrder);
-            $stmtOrder->execute([$check_code, $total_actual, $total_discrepancy]);
+            $query = "INSERT INTO inventory_checks (branch, employee, note, created_at) VALUES (?, ?, ?, NOW())";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$branch, $employee, $note]);
             $check_id = $this->conn->lastInsertId();
 
-            // 2. Lưu Chi tiết & Cân bằng Tồn kho
-            $queryDetail = "INSERT INTO inventory_check_details (check_id, product_id, system_stock, actual_stock, discrepancy) VALUES (?, ?, ?, ?, ?)";
+            // 2. Lưu chi tiết và Cập nhật lại Bảng Products
+            $queryDetail = "INSERT INTO inventory_check_details (check_id, product_id, system_stock, actual_stock, difference, reason) VALUES (?, ?, ?, ?, ?, ?)";
             $stmtDetail = $this->conn->prepare($queryDetail);
 
-            // Cập nhật lại tồn kho: Lấy đúng số thực tế, Có thể bán = Có thể bán + Chênh lệch
-            $queryUpdateStock = "UPDATE products SET stock = ?, available = available + ? WHERE id = ?";
-            $stmtUpdateStock = $this->conn->prepare($queryUpdateStock);
+            $updateStock = "UPDATE products SET stock = ?, available = available + ? WHERE id = ?";
+            $stmtStock = $this->conn->prepare($updateStock);
 
-            for ($i = 0; $i < count($product_ids); $i++) {
-                $p_id = $product_ids[$i];
-                $sys_qty = $system_stocks[$i];
-                $act_qty = $actual_stocks[$i];
-                $diff = $discrepancies[$i];
+            foreach ($products as $item) {
+                // Lưu lịch sử
+                $stmtDetail->execute([
+                    $check_id,
+                    $item['product_id'],
+                    $item['system_stock'],
+                    $item['actual_stock'],
+                    $item['difference'],
+                    $item['reason']
+                ]);
 
-                if (!empty($p_id)) {
-                    $stmtDetail->execute([$check_id, $p_id, $sys_qty, $act_qty, $diff]);
-                    $stmtUpdateStock->execute([$act_qty, $diff, $p_id]);
-                }
+                // Ép Cân bằng kho: Set tồn kho = số thực tế, Có thể bán = Có thể bán + Chênh lệch
+                $stmtStock->execute([
+                    $item['actual_stock'],
+                    $item['difference'],
+                    $item['product_id']
+                ]);
             }
+
+            $this->conn->commit();
+            return $check_id;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
+    // Lấy thông tin phiếu kiểm
+    public function getCheckById($id)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM inventory_checks WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy chi tiết sản phẩm trong phiếu kiểm
+    public function getCheckDetails($id)
+    {
+        $stmt = $this->conn->prepare("
+            SELECT d.*, p.product_name, p.sku 
+            FROM inventory_check_details d
+            JOIN products p ON d.product_id = p.id
+            WHERE d.check_id = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Sửa thông tin phiếu (Chỉ cho sửa Nhân viên & Ghi chú để bảo vệ kho)
+    public function updateCheck($id, $employee, $note)
+    {
+        $stmt = $this->conn->prepare("UPDATE inventory_checks SET employee = ?, note = ? WHERE id = ?");
+        return $stmt->execute([$employee, $note, $id]);
+    }
+
+    // Xóa phiếu kiểm và HOÀN LẠI KHO về trạng thái trước khi kiểm
+    public function deleteCheck($id)
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // 1. Lấy chi tiết để biết số lượng chênh lệch cần hoàn lại
+            $details = $this->getCheckDetails($id);
+
+            $updateStock = "UPDATE products SET stock = stock - ?, available = available - ? WHERE id = ?";
+            $stmtStock = $this->conn->prepare($updateStock);
+
+            // 2. Trừ đi số chênh lệch (Nếu lúc trước cộng thêm thì giờ trừ đi, lúc trước trừ đi thì giờ cộng lại)
+            foreach ($details as $item) {
+                $stmtStock->execute([$item['difference'], $item['difference'], $item['product_id']]);
+            }
+
+            // 3. Xóa dữ liệu trong database
+            $this->conn->prepare("DELETE FROM inventory_check_details WHERE check_id = ?")->execute([$id]);
+            $this->conn->prepare("DELETE FROM inventory_checks WHERE id = ?")->execute([$id]);
 
             $this->conn->commit();
             return true;
