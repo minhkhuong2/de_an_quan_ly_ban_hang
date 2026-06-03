@@ -1,137 +1,64 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
-<style>
-    .sapo-card {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+<?php
+/** @var array $order */
+/** @var array $details */
+?>
 
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #c4cdd5;
-        border-radius: 4px;
-        outline: none;
-        margin-top: 5px;
-    }
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2><a href="index.php?action=view_purchase&id=<?php echo $order['id']; ?>" style="text-decoration:none; color:#637381;">←</a> Hoàn trả hàng cho phiếu nhập: <span style="color:#0088ff;">#PN<?php echo $order['id']; ?></span></h2>
+</div>
 
-    .btn-save {
-        background: #ff4d4f;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: 500;
-        cursor: pointer;
-    }
+<?php if (isset($_GET['error'])): ?><div style="background:#fff1f0; color:#cf1322; padding:15px; border-radius:6px; margin-bottom:20px;">Vui lòng nhập số lượng > 0 cho ít nhất 1 sản phẩm cần trả.</div><?php endif; ?>
 
-    .table-import {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-
-    .table-import th {
-        background: #fafbfc;
-        padding: 10px;
-        text-align: left;
-        font-size: 14px;
-        color: #637381;
-        border-bottom: 1px solid #dfe3e8;
-    }
-
-    .table-import td {
-        padding: 10px;
-        border-bottom: 1px solid #f4f6f8;
-    }
-</style>
-
-<form action="index.php?action=add_purchase_return" method="POST">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 20px; color: #212b36;"><a href="index.php?action=purchase_return_list" style="text-decoration:none; color:#637381;">←</a> Tạo đơn trả hàng nhập</h2>
-        <button type="submit" class="btn-save">Hoàn tất trả hàng</button>
-    </div>
+<form action="index.php?action=process_purchase_return" method="POST">
+    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+    <input type="hidden" name="supplier_name" value="<?php echo htmlspecialchars($order['supplier_name']); ?>">
 
     <div style="display: flex; gap: 20px;">
-        <div style="flex: 0 0 70%;">
-            <div class="sapo-card">
-                <h3 style="font-size: 16px; margin-bottom: 10px;">Chi tiết sản phẩm hoàn trả</h3>
-
-                <table class="table-import" id="importTable">
-                    <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th style="width: 120px;">Số lượng trả</th>
-                            <th style="width: 150px;">Đơn giá trả (₫)</th>
-                            <th style="width: 150px;">Thành tiền</th>
-                            <th style="width: 50px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="importBody">
-                        <tr class="item-row">
-                            <td>
-                                <select name="product_id[]" class="form-control" required>
-                                    <option value="">-- Chọn sản phẩm --</option>
-                                    <?php foreach ($products as $p): ?>
-                                        <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['product_name']); ?> (Tồn: <?php echo $p['stock']; ?>)</option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td><input type="number" name="quantity[]" class="form-control qty-input" value="1" min="1" required oninput="calcTotal()"></td>
-                            <td><input type="number" name="return_price[]" class="form-control price-input" value="0" min="0" required oninput="calcTotal()"></td>
-                            <td class="row-total" style="font-weight: bold; color: #ff4d4f; padding-top: 15px;">0 ₫</td>
-                            <td style="padding-top: 15px;"><a href="javascript:void(0)" onclick="this.closest('tr').remove(); calcTotal();" style="color: red; text-decoration: none;">✖</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button type="button" onclick="addRow()" style="background: #fff; color: #ff4d4f; border: 1px dashed #ff4d4f; padding: 8px 15px; border-radius: 4px; margin-top: 15px; cursor: pointer; width: 100%;">+ Thêm dòng sản phẩm</button>
-            </div>
+        <div style="flex: 0 0 70%; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 15px;">Sản phẩm hoàn trả</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <tr style="background: #fafbfc; border-bottom: 1px solid #dfe3e8;">
+                    <th style="padding: 10px;">Sản phẩm</th>
+                    <th style="padding: 10px; text-align: center;">SL Đã Nhập</th>
+                    <th style="padding: 10px; text-align: center;">Đơn giá</th>
+                    <th style="padding: 10px; text-align: center;">SL Hoàn trả</th>
+                </tr>
+                <?php foreach ($details as $item): ?>
+                    <tr style="border-bottom: 1px solid #f4f6f8;">
+                        <td style="padding: 10px; color:#0088ff; font-weight: 500;"><?php echo htmlspecialchars($item['product_name']); ?></td>
+                        <td style="padding: 10px; text-align: center; font-weight: bold;"><?php echo $item['quantity']; ?></td>
+                        <td style="padding: 10px; text-align: center;">
+                            <?php echo number_format($item['unit_price'], 0, ',', '.'); ?>
+                            <input type="hidden" name="price[]" value="<?php echo $item['unit_price']; ?>">
+                        </td>
+                        <td style="padding: 10px; text-align: center;">
+                            <input type="hidden" name="product_id[]" value="<?php echo $item['product_id']; ?>">
+                            <input type="number" name="return_qty[]" value="0" min="0" max="<?php echo $item['quantity']; ?>" style="width: 80px; padding: 6px; text-align: center; border: 1px solid #c4cdd5; border-radius: 4px; font-weight: bold; color: #cf1322;">
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
         </div>
 
-        <div style="flex: 1;">
-            <div class="sapo-card">
-                <h3 style="font-size: 16px; margin-bottom: 10px;">Nhà cung cấp</h3>
-                <select name="supplier_id" class="form-control" required>
-                    <option value="">-- Chọn nhà cung cấp --</option>
-                    <?php foreach ($suppliers as $s): ?>
-                        <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['supplier_name']); ?></option>
-                    <?php endforeach; ?>
+        <div style="flex: 0 0 calc(30% - 20px); background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 15px;">Thông tin bổ sung</h3>
+            <div style="margin-bottom: 15px;">
+                <label style="color:#637381; font-size:13px; display:block; margin-bottom:5px;">Chi nhánh trả</label>
+                <select name="branch" style="width:100%; padding:8px; border:1px solid #c4cdd5; border-radius:4px;">
+                    <option>Cửa hàng chính</option>
                 </select>
             </div>
-
-            <div class="sapo-card">
-                <h3 style="font-size: 16px; margin-bottom: 15px;">Giá trị hoàn trả</h3>
-                <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #ff4d4f;">
-                    <span>Tổng tiền:</span>
-                    <span id="grandTotal">0 ₫</span>
-                </div>
+            <div style="margin-bottom: 15px;">
+                <label style="color:#637381; font-size:13px; display:block; margin-bottom:5px;">Lý do hoàn trả</label>
+                <textarea name="reason" rows="3" style="width:100%; padding:8px; border:1px solid #c4cdd5; border-radius:4px;" placeholder="Ví dụ: Hàng lỗi, sai mẫu mã..."></textarea>
             </div>
+
+            <button type="submit" style="width: 100%; padding: 10px; background: #ff9900; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px;">
+                Tạo phiếu Trả Hàng & Trừ Kho
+            </button>
         </div>
     </div>
 </form>
 
-<script>
-    function calcTotal() {
-        let total = 0;
-        document.querySelectorAll('.item-row').forEach(row => {
-            let qty = row.querySelector('.qty-input').value || 0;
-            let price = row.querySelector('.price-input').value || 0;
-            let rowTotal = qty * price;
-            row.querySelector('.row-total').innerText = rowTotal.toLocaleString() + ' ₫';
-            total += rowTotal;
-        });
-        document.getElementById('grandTotal').innerText = total.toLocaleString() + ' ₫';
-    }
-
-    function addRow() {
-        let tbody = document.getElementById('importBody');
-        let tr = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = document.querySelector('.item-row').innerHTML;
-        tbody.appendChild(tr);
-        calcTotal();
-    }
-</script>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

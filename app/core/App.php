@@ -31,18 +31,16 @@ class App
         'customer_list'    => ['CustomerController', 'list'],
         'add_customer'     => ['CustomerController', 'add'],
         'delete_customer'  => ['CustomerController', 'delete'],
-        'supplier_list'    => ['SupplierController', 'list'],
-        'add_supplier'     => ['SupplierController', 'add'],
-        'edit_supplier'    => ['SupplierController', 'edit'],
-        'delete_supplier'  => ['SupplierController', 'delete'],
+        'supplier_list' => ['SupplierController', 'list'],
+        'add_supplier'  => ['SupplierController', 'add'],
+        'edit_supplier'   => ['SupplierController', 'edit'],
+        'delete_supplier' => ['SupplierController', 'delete'],
 
         // --- Quản lý Kho ---
         'inventory_list'   => ['InventoryController', 'list'],
         'update_stock'     => ['InventoryController', 'update_stock'],
         'purchase_list'    => ['PurchaseOrderController', 'list'],
         'add_purchase'     => ['PurchaseOrderController', 'add'],
-        'purchase_return_list' => ['PurchaseReturnController', 'list'], // Thêm dòng này
-        'add_purchase_return'  => ['PurchaseReturnController', 'add'],
 
         'inventory_check_list' => ['InventoryCheckController', 'list'],
         'add_inventory_check'  => ['InventoryCheckController', 'add'], // <--- Phải có dấu phẩy ở đây
@@ -62,6 +60,10 @@ class App
         'update_transfer'   => ['InventoryTransferController', 'updateStatus'],
         'edit_purchase'    => ['PurchaseOrderController', 'edit'],
         'delete_purchase'  => ['PurchaseOrderController', 'delete'],
+        'purchase_return_list'    => ['PurchaseReturnController', 'list'],
+        'add_purchase_return'     => ['PurchaseReturnController', 'add'],
+        'process_purchase_return' => ['PurchaseReturnController', 'process'],
+        'add_direct_return'       => ['PurchaseReturnController', 'addDirect'],
 
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],
@@ -71,10 +73,13 @@ class App
         'returnItem'       => ['ImeiController', 'returnItem'],
         'search'           => ['ImeiController', 'search'],
 
+
+
         // --- POS Bán hàng ---
         'pos'              => ['OrderController', 'pos'],
         'scan_imei'        => ['OrderController', 'scanImei'],
         'checkout'         => ['OrderController', 'checkout']
+
     ];
 
     public function __construct()
