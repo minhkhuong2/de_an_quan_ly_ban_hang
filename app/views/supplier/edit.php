@@ -117,10 +117,12 @@
                         <option>Đại lý</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>Nhân viên phụ trách</label>
-                    <input type="text" class="form-control" value="Admin" readonly style="background:#f4f6f8; cursor:not-allowed;">
+                    <input type="text" name="employee" class="form-control" value="<?php echo htmlspecialchars($_SESSION['user']['full_name'] ?? 'Admin'); ?>" readonly style="background:#f4f6f8; cursor:not-allowed; color:#0088ff; font-weight:bold;">
                 </div>
+
                 <div class="form-group">
                     <label>Ghi chú</label>
                     <textarea class="form-control" rows="4"></textarea>

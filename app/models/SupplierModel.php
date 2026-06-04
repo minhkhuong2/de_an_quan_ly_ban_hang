@@ -77,4 +77,9 @@ class SupplierModel
         $stmt = $this->conn->prepare("DELETE FROM suppliers WHERE id = ?");
         return $stmt->execute([$id]);
     }
+    public function updateDebt($supplier_name, $amount)
+    {
+        $stmt = $this->conn->prepare("UPDATE suppliers SET debt = debt + ? WHERE supplier_name = ?");
+        return $stmt->execute([$amount, $supplier_name]);
+    }
 }

@@ -51,7 +51,7 @@ class App
         'process_receive'  => ['PurchaseOrderController', 'processReceive'],
         'direct_receive'   => ['PurchaseOrderController', 'direct_receive'],
         'receipt_list'     => ['PurchaseOrderController', 'receiptList'],
-        'pay_purchase'     => ['PurchaseOrderController', 'pay'],
+        'pay_purchase' => ['PurchaseOrderController', 'pay'],
         'edit_inventory_check'   => ['InventoryCheckController', 'edit'],
         'delete_inventory_check' => ['InventoryCheckController', 'delete'],
         'transfer_list'     => ['InventoryTransferController', 'list'],

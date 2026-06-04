@@ -203,20 +203,10 @@ class PurchaseOrderModel
     // Xử lý Thanh toán công nợ cho Đơn nhập hàng
     public function addPayment($order_id, $amount)
     {
-        $order = $this->getOrderById($order_id);
-        if (!$order) return false;
-
-        $new_paid = $order['paid_amount'] + $amount;
-        $payment_status = 'Thanh toán một phần';
-
-        // Nếu số tiền trả lớn hơn hoặc bằng tổng tiền -> Đã thanh toán đủ
-        if ($new_paid >= $order['total_amount']) {
-            $payment_status = 'Đã thanh toán';
-            $new_paid = $order['total_amount']; // Chặn việc nhập dư tiền
-        }
-
-        $stmt = $this->conn->prepare("UPDATE purchase_orders SET paid_amount = ?, payment_status = ? WHERE id = ?");
-        return $stmt->execute([$new_paid, $payment_status, $order_id]);
+        // Dùng COALESCE để phòng trường hợp paid_amount đang bị NULL
+        $query = "UPDATE purchase_orders SET paid_amount = COALESCE(paid_amount, 0) + ? WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$amount, $order_id]);
     }
     // Hàm xử lý Cập nhật đơn đặt hàng nhập và tính toán lại số lượng Đang về kho
     public function updatePurchaseOrder($order_id, $supplier_name, $branch, $employee, $expected_date, $reference, $products, $total_amount)

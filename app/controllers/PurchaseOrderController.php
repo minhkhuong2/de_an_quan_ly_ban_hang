@@ -206,21 +206,33 @@ class PurchaseOrderController
     // Xử lý nút Xác nhận thanh toán
     public function pay()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $order_id = $_POST['order_id'];
-            $amount = (float)$_POST['amount'];
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $order_id = $_POST['order_id'] ?? 0;
+            $amount = (float)$_POST['amount'] ?? 0;
 
-            $db = (new Database())->getConnection();
-            $poModel = new PurchaseOrderModel($db);
+            if ($order_id && $amount > 0) {
+                $db = (new Database())->getConnection();
+                $poModel = new PurchaseOrderModel($db);
 
-            if ($amount > 0) {
-                $poModel->addPayment($order_id, $amount);
+                // Lấy thông tin đơn hàng để biết tên Nhà cung cấp
+                $order = $poModel->getOrderById($order_id);
+                if ($order) {
+                    // 1. Cập nhật số tiền đã thanh toán vào đơn hàng
+                    $poModel->addPayment($order_id, $amount);
+
+                    // 2. TỰ ĐỘNG TRỪ CÔNG NỢ CỦA NHÀ CUNG CẤP (Truyền vào số âm)
+                    require_once __DIR__ . '/../models/SupplierModel.php';
+                    $supplierModel = new SupplierModel($db);
+                    $supplierModel->updateDebt($order['supplier_name'], -$amount);
+
+                    // Quay lại trang chi tiết đơn hàng và báo thành công
+                    header("Location: index.php?action=view_purchase&id=$order_id&success_pay=1");
+                    exit;
+                }
             }
-
-            // Chuyển hướng lại về trang chi tiết kèm thông báo
-            header("Location: index.php?action=view_purchase&id=" . $order_id . "&success_pay=1");
-            exit;
         }
+        header("Location: index.php?action=purchase_list");
+        exit;
     }
     // Hàm xử lý Giao diện và Ghi nhận dữ liệu Form Sửa đơn đặt hàng nhập
     public function edit()
