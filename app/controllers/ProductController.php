@@ -48,17 +48,22 @@ class ProductController
                 }
             }
 
+            // XỬ LÝ DẤU CHẤM TIỀN TỆ TRƯỚC KHI LƯU VÀO DB
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
+            $compare_price = (float)str_replace(['.', ','], '', $_POST['compare_price'] ?? 0);
+            $cost_price = (float)str_replace(['.', ','], '', $_POST['cost_price'] ?? 0);
+
             $is_added = $productModel->addProduct(
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
-                $_POST['base_price'] ?? 0,
+                $base_price,
                 $_POST['sku'] ?? '',
                 $_POST['barcode'] ?? '',
                 $_POST['unit'] ?? '',
                 $_POST['description'] ?? '',
                 $imagePath,
-                $_POST['compare_price'] ?? 0,
-                $_POST['cost_price'] ?? 0,
+                $compare_price,
+                $cost_price,
                 isset($_POST['apply_tax']) ? 1 : 0,
                 $_POST['category'] ?? '',
                 $_POST['tags'] ?? ''
@@ -112,18 +117,23 @@ class ProductController
                 }
             }
 
+            // XỬ LÝ DẤU CHẤM TIỀN TỆ TRƯỚC KHI LƯU VÀO DB
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
+            $compare_price = (float)str_replace(['.', ','], '', $_POST['compare_price'] ?? 0);
+            $cost_price = (float)str_replace(['.', ','], '', $_POST['cost_price'] ?? 0);
+
             $is_updated = $productModel->updateProduct(
                 $id,
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
-                $_POST['base_price'] ?? 0,
+                $base_price,
                 $_POST['sku'] ?? '',
                 $_POST['barcode'] ?? '',
                 $_POST['unit'] ?? '',
                 $_POST['description'] ?? '',
                 $imagePath,
-                $_POST['compare_price'] ?? 0,
-                $_POST['cost_price'] ?? 0,
+                $compare_price,
+                $cost_price,
                 isset($_POST['apply_tax']) ? 1 : 0,
                 $_POST['category'] ?? '',
                 $_POST['tags'] ?? ''
@@ -323,7 +333,9 @@ class ProductController
             $conversion_qty = $_POST['conversion_qty'];
             $sku = $_POST['sku'];
             $barcode = $_POST['barcode'];
-            $base_price = $_POST['base_price'];
+
+            // Lọc định dạng tiền
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
 
             $baseProduct = $productModel->getProductById($parent_id);
             $newName = $baseProduct['product_name'] . ' (' . $unit . ' ' . $conversion_qty . ' ' . $baseProduct['unit'] . ')';
@@ -354,6 +366,10 @@ class ProductController
                 }
             }
 
+            // Lọc định dạng tiền
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
+            $compare_price = (float)str_replace(['.', ','], '', $_POST['compare_price'] ?? 0);
+
             $component_ids = $_POST['component_id'] ?? [];
             $component_qtys = $_POST['component_qty'] ?? [];
 
@@ -364,8 +380,8 @@ class ProductController
                 $_POST['unit'] ?? '',
                 $_POST['description'] ?? '',
                 $imagePath,
-                $_POST['base_price'] ?? 0,
-                $_POST['compare_price'] ?? 0,
+                $base_price,
+                $compare_price,
                 isset($_POST['apply_tax']) ? 1 : 0,
                 $_POST['category'] ?? '',
                 $_POST['brand'] ?? '',
@@ -384,7 +400,6 @@ class ProductController
         require_once __DIR__ . '/../views/product/add_combo.php';
     }
 
-    // Hàm cập nhật tồn kho nhanh tích hợp tính toán tự động chuẩn Sapo
     public function quick_update_stock()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
@@ -401,7 +416,6 @@ class ProductController
 
                 $stock_diff = $new_stock - $current_stock;
 
-                // Sử dụng hàm chuẩn updateInventory thay vì updateStock
                 if ($stock_diff != 0) {
                     $new_available = $current_available + $stock_diff;
                     $productModel->updateInventory($id, $new_stock, $new_available);

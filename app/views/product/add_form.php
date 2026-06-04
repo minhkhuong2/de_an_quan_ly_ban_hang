@@ -213,14 +213,14 @@ require_once __DIR__ . '/../layout/header.php';
                     <div class="form-group">
                         <label>Giá bán</label>
                         <div style="display: flex; position: relative;">
-                            <input type="number" name="base_price" class="form-control" value="0">
+                            <input type="text" name="base_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #212b36;">
                             <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Giá so sánh ⓘ</label>
                         <div style="display: flex; position: relative;">
-                            <input type="number" name="compare_price" class="form-control" value="0">
+                            <input type="text" name="compare_price" class="form-control currency-input" value="0" style="padding-right: 30px;">
                             <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                         </div>
                     </div>
@@ -228,7 +228,7 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="form-group" style="width: 48%;">
                     <label>Giá vốn ⓘ</label>
                     <div style="display: flex; position: relative;">
-                        <input type="number" name="cost_price" class="form-control" value="0">
+                        <input type="text" name="cost_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #cf1322;">
                         <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                     </div>
                 </div>
@@ -254,7 +254,6 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
             </div>
 
-            <!-- KHỐI THUỘC TÍNH (ĐÃ BỔ SUNG ĐẦY ĐỦ) -->
             <div class="sapo-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
@@ -264,7 +263,6 @@ require_once __DIR__ . '/../layout/header.php';
 
                 <table style="width: 100%; border-collapse: collapse;" id="attributeTable">
                     <tbody id="attributeBody">
-                        <!-- Các dòng thuộc tính sẽ được chèn vào đây bằng Javascript khi bấm nút -->
                     </tbody>
                 </table>
             </div>
@@ -288,7 +286,6 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
             </div>
 
-            <!-- CHỌN PHÂN LOẠI ĐỘNG -->
             <div class="sapo-card">
                 <div class="form-group">
                     <label>Danh mục ⓘ</label>
@@ -387,6 +384,18 @@ require_once __DIR__ . '/../layout/header.php';
         `;
         tbody.appendChild(tr);
     }
+
+    // ĐÃ CẬP NHẬT: JS TỰ ĐỘNG ĐỊNH DẠNG TIỀN TỆ KHI GÕ
+    document.querySelectorAll('.currency-input').forEach(function(input) {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, ''); // Xóa chữ, chỉ lấy số
+            if (value !== '') {
+                e.target.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+            } else {
+                e.target.value = '';
+            }
+        });
+    });
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

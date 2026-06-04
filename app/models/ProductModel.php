@@ -195,7 +195,6 @@ class ProductModel
         }
     }
 
-    // Hàm cập nhật kho đồng bộ chuẩn nhất
     public function updateInventory($id, $new_stock, $new_available)
     {
         $query = "UPDATE " . $this->table_name . " SET stock = :stock, available = :available WHERE id = :id";

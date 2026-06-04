@@ -167,7 +167,7 @@ $product = $product ?? [];
     }
 </style>
 
-<form action="" method="POST" enctype="multipart/form-data">
+<form action="index.php?action=edit_product&id=<?php echo $product['id'] ?? ''; ?>" method="POST" enctype="multipart/form-data">
 
     <div class="sapo-header-bar">
         <h2><a href="index.php?action=product_list">←</a> Chỉnh sửa: <?php echo htmlspecialchars($product['product_name'] ?? ''); ?></h2>
@@ -212,18 +212,21 @@ $product = $product ?? [];
 
             <div class="sapo-card">
                 <div class="sapo-card-title">Thông tin giá</div>
+                <div style="background: #e6f7ff; padding: 12px 15px; border-radius: 4px; border: 1px solid #91d5ff; color: #0050b3; font-size: 13px; margin-bottom: 20px;">
+                    ℹ️ <b>Lưu ý:</b> Giá vốn mới sẽ chỉ áp dụng cho các giao dịch và đơn hàng phát sinh sau khi bạn lưu. Các đơn hàng cũ vẫn giữ nguyên giá vốn cũ để đảm bảo tính toàn vẹn của báo cáo lợi nhuận.
+                </div>
                 <div class="row-flex">
                     <div class="form-group">
                         <label>Giá bán</label>
                         <div style="display: flex; position: relative;">
-                            <input type="number" name="base_price" class="form-control" value="<?php echo htmlspecialchars($product['base_price'] ?? 0); ?>">
+                            <input type="text" name="price" class="form-control currency-input" value="<?php echo number_format($product['price'] ?? ($product['base_price'] ?? 0), 0, '', '.'); ?>" style="padding-right: 30px; font-weight: bold; color: #212b36;">
                             <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Giá so sánh ⓘ</label>
                         <div style="display: flex; position: relative;">
-                            <input type="number" name="compare_price" class="form-control" value="<?php echo htmlspecialchars($product['compare_price'] ?? 0); ?>">
+                            <input type="text" name="compare_price" class="form-control currency-input" value="<?php echo number_format($product['compare_price'] ?? 0, 0, '', '.'); ?>" style="padding-right: 30px;">
                             <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                         </div>
                     </div>
@@ -231,7 +234,7 @@ $product = $product ?? [];
                 <div class="form-group" style="width: 48%;">
                     <label>Giá vốn ⓘ</label>
                     <div style="display: flex; position: relative;">
-                        <input type="number" name="cost_price" class="form-control" value="<?php echo htmlspecialchars($product['cost_price'] ?? 0); ?>">
+                        <input type="text" name="cost_price" class="form-control currency-input" value="<?php echo number_format($product['cost_price'] ?? 0, 0, '', '.'); ?>" style="padding-right: 30px; font-weight: bold; color: #cf1322;">
                         <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                     </div>
                 </div>
@@ -453,7 +456,7 @@ $product = $product ?? [];
         tbody.appendChild(tr);
     }
 
-    // JS XỬ LÝ TÍNH TOÁN TỒN KHO TỰ ĐỘNG
+    // JS XỬ LÝ TÍNH TOÁN TỒN KHO TỰ ĐỘNG CỦA KHƯƠNG
     const originalStock = <?php echo (int)($product['stock'] ?? 0); ?>;
 
     function toggleStockEdit() {
@@ -477,6 +480,18 @@ $product = $product ?? [];
         let adjustment = parseInt(document.getElementById('stock_adjustment').value) || 0;
         document.getElementById('new_stock').value = originalStock + adjustment;
     }
+
+    // JS TỰ ĐỘNG ĐỊNH DẠNG TIỀN TỆ KHI GÕ (MỚI BỔ SUNG)
+    document.querySelectorAll('.currency-input').forEach(function(input) {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value !== '') {
+                e.target.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+            } else {
+                e.target.value = '';
+            }
+        });
+    });
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

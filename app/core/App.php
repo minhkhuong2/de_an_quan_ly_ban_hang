@@ -16,7 +16,7 @@ class App
         'add_product'      => ['ProductController', 'add'],
         'add_conversion'   => ['ProductController', 'add_conversion'],
         'add_combo'        => ['ProductController', 'add_combo'],
-        'edit_product'     => ['ProductController', 'edit'],
+        'edit_product' => ['ProductController', 'edit'],
         'delete_product'   => ['ProductController', 'delete'],
         'product_category' => ['ProductController', 'category_list'],
         'add_category'     => ['ProductController', 'add_category'],
