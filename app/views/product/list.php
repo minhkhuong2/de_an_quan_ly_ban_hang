@@ -177,6 +177,57 @@
     .stock-form-input:focus {
         border-color: #0088ff;
     }
+
+    /* BỔ SUNG CSS CHO PHIÊN BẢN (VARIANTS) */
+    .master-row:hover {
+        background: #f9fafb;
+        cursor: pointer;
+    }
+
+    .variant-container {
+        background: #fafbfc;
+        padding: 15px 30px;
+        border-radius: 6px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin: 5px 0;
+        border: 1px solid #dfe3e8;
+    }
+
+    .variant-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #dfe3e8;
+        table-layout: fixed;
+    }
+
+    .variant-table th {
+        background: #f4f6f8;
+        color: #212b36;
+        font-size: 13px;
+        padding: 10px;
+        border-bottom: 1px solid #dfe3e8;
+    }
+
+    .variant-table td {
+        padding: 10px;
+        border-bottom: 1px solid #f4f6f8;
+        font-size: 13px;
+    }
+
+    .badge-variant {
+        background: #e6f7ff;
+        color: #0050b3;
+        border: 1px solid #91d5ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+        margin-top: 4px;
+    }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -264,73 +315,125 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($products as $row): ?>
-                    <tr class="product-row">
-                        <td class="col-cb"><input type="checkbox" class="row-checkbox" value="<?php echo $row['id']; ?>" onclick="toggleRow(this)"></td>
+                <?php foreach ($products as $row):
+                    // BỔ SUNG: Chỉ hiển thị sản phẩm cha, ẩn sản phẩm con đi trừ khi đang tìm kiếm
+                    if (!empty($_GET['search']) || empty($row['parent_id'])):
+                        $hasVariants = !empty($row['variants']);
+                ?>
+                        <tr class="product-row master-row" onclick="toggleVariants('<?php echo $row['id']; ?>', event)">
+                            <td class="col-cb"><input type="checkbox" class="row-checkbox" value="<?php echo $row['id']; ?>" onclick="event.stopPropagation(); toggleRow(this)"></td>
 
-                        <td class="col-img">
-                            <?php if (!empty($row['image'])): ?>
-                                <img src="<?php echo htmlspecialchars($row['image']); ?>" style="width:40px; height:40px; border-radius:4px; object-fit:cover; border:1px solid #dfe3e8;">
-                            <?php else: ?>
-                                <div style="width:40px; height:40px; background:#f4f6f8; border: 1px solid #dfe3e8; border-radius:4px; text-align:center; line-height:40px; font-size: 20px;">📱</div>
-                            <?php endif; ?>
-                        </td>
-
-                        <td class="col-name">
-                            <a href="index.php?action=edit_product&id=<?php echo $row['id']; ?>" style="color: #0088ff; font-weight: 500; text-decoration: none; font-size: 15px;">
-                                <?php echo htmlspecialchars($row['product_name']); ?>
-                            </a><br>
-                            <span style="color: #637381; font-size: 12px;"><?php echo !empty($row['sku']) ? htmlspecialchars($row['sku']) : '---'; ?></span>
-
-                            <?php if (!empty($row['parent_id'])): ?>
-                                <br><span class="badge-type">📦 Sản phẩm quy đổi</span>
-                            <?php elseif (isset($row['product_type']) && $row['product_type'] == 'Combo'): ?>
-                                <br><span class="badge-type">🎁 Sản phẩm Combo</span>
-                            <?php endif; ?>
-                        </td>
-
-                        <td class="col-num" style="color: <?php echo (isset($row['co_the_ban']) && $row['co_the_ban'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
-                            <?php echo isset($row['co_the_ban']) ? $row['co_the_ban'] : '0'; ?>
-                        </td>
-
-                        <td class="col-num" style="position: relative; color: <?php echo (isset($row['ton_kho']) && $row['ton_kho'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
-
-                            <div id="stock-view-<?php echo $row['id']; ?>" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-                                <span><?php echo isset($row['ton_kho']) ? $row['ton_kho'] : '0'; ?></span>
-                                <?php if (empty($row['parent_id']) && ($row['product_type'] ?? '') != 'Combo'): ?>
-                                    <a href="javascript:void(0)" onclick="openStockPopup(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)" style="color: #0088ff; text-decoration: none; font-size: 14px;" title="Cập nhật tồn kho">✏️</a>
+                            <td class="col-img">
+                                <?php if (!empty($row['image'])): ?>
+                                    <img src="<?php echo htmlspecialchars($row['image']); ?>" style="width:40px; height:40px; border-radius:4px; object-fit:cover; border:1px solid #dfe3e8;">
+                                <?php else: ?>
+                                    <div style="width:40px; height:40px; background:#f4f6f8; border: 1px solid #dfe3e8; border-radius:4px; text-align:center; line-height:40px; font-size: 20px;">📱</div>
                                 <?php endif; ?>
-                            </div>
+                            </td>
 
-                            <div id="stock-popup-<?php echo $row['id']; ?>" style="display: none; position: absolute; right: 10px; top: 45px; background: #fff; border: 1px solid #dfe3e8; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; padding: 15px; width: 240px; z-index: 100; text-align: left;">
-                                <div style="font-weight: bold; margin-bottom: 12px; color: #212b36; font-size: 14px; border-bottom: 1px solid #f4f6f8; padding-bottom: 8px;">Chỉnh sửa tồn kho</div>
-                                <form action="index.php?action=quick_update_stock" method="POST">
-                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                            <td class="col-name">
+                                <div style="display: flex; align-items: flex-start; gap: 6px;">
+                                    <?php if ($hasVariants): ?>
+                                        <span id="icon-<?php echo $row['id']; ?>" style="color: #637381; font-size: 11px; margin-top: 4px; display: inline-block; width: 12px;">▶</span>
+                                    <?php endif; ?>
 
-                                    <div style="margin-bottom: 12px;">
-                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Tồn kho mới</label>
-                                        <input type="number" name="new_stock" id="new_stock_<?php echo $row['id']; ?>" class="stock-form-input" value="<?php echo $row['ton_kho'] ?? 0; ?>" oninput="calcAdj(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
+                                    <div>
+                                        <a href="index.php?action=edit_product&id=<?php echo $row['id']; ?>" style="color: #0088ff; font-weight: 500; text-decoration: none; font-size: 15px;" onclick="event.stopPropagation();">
+                                            <?php echo htmlspecialchars($row['product_name']); ?>
+                                        </a><br>
+                                        <span style="color: #637381; font-size: 12px;"><?php echo !empty($row['sku']) ? htmlspecialchars($row['sku']) : '---'; ?></span>
+
+                                        <?php if ($hasVariants): ?>
+                                            <br><span class="badge-variant"><?php echo count($row['variants']); ?> phiên bản</span>
+                                        <?php elseif (!empty($row['parent_id'])): ?>
+                                            <br><span class="badge-type">📦 Sản phẩm quy đổi</span>
+                                        <?php elseif (isset($row['product_type']) && $row['product_type'] == 'Combo'): ?>
+                                            <br><span class="badge-type">🎁 Sản phẩm Combo</span>
+                                        <?php endif; ?>
                                     </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Điều chỉnh (+/-)</label>
-                                        <input type="number" id="adj_<?php echo $row['id']; ?>" class="stock-form-input" value="0" oninput="calcNew(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
-                                    </div>
-                                    <div style="display: flex; gap: 8px; justify-content: flex-end; padding-top: 5px; border-top: 1px solid #f4f6f8;">
-                                        <button type="button" onclick="closeStockPopup(<?php echo $row['id']; ?>)" style="background: #fff; border: 1px solid #c4cdd5; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Hủy</button>
-                                        <button type="submit" style="background: #0088ff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Lưu</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </td>
+                                </div>
+                            </td>
 
-                        <td class="col-text" style="color: #0088ff; font-weight: 500;">
-                            <?php echo htmlspecialchars($row['smart_categories'] ?? '---'); ?>
-                        </td>
+                            <td class="col-num" style="color: <?php echo (isset($row['co_the_ban']) && $row['co_the_ban'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
+                                <?php echo isset($row['co_the_ban']) ? $row['co_the_ban'] : '0'; ?>
+                            </td>
 
-                        <td class="col-text"><?php echo !empty($row['brand']) ? htmlspecialchars($row['brand']) : '---'; ?></td>
-                        <td class="col-text" style="color: #637381;"><?php echo date('d/m/Y', strtotime($row['created_at'] ?? date('Y-m-d'))); ?></td>
-                    </tr>
-                <?php endforeach; ?>
+                            <td class="col-num" style="position: relative; color: <?php echo (isset($row['ton_kho']) && $row['ton_kho'] > 0) ? '#108043' : '#212b36'; ?>; font-weight: 500;">
+
+                                <div id="stock-view-<?php echo $row['id']; ?>" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                                    <span><?php echo isset($row['ton_kho']) ? $row['ton_kho'] : '0'; ?></span>
+                                    <?php if (empty($row['parent_id']) && ($row['product_type'] ?? '') != 'Combo'): ?>
+                                        <a href="javascript:void(0)" onclick="event.stopPropagation(); openStockPopup(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)" style="color: #0088ff; text-decoration: none; font-size: 14px;" title="Cập nhật tồn kho">✏️</a>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div id="stock-popup-<?php echo $row['id']; ?>" onclick="event.stopPropagation();" style="display: none; position: absolute; right: 10px; top: 45px; background: #fff; border: 1px solid #dfe3e8; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; padding: 15px; width: 240px; z-index: 100; text-align: left;">
+                                    <div style="font-weight: bold; margin-bottom: 12px; color: #212b36; font-size: 14px; border-bottom: 1px solid #f4f6f8; padding-bottom: 8px;">Chỉnh sửa tồn kho</div>
+                                    <form action="index.php?action=quick_update_stock" method="POST">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+                                        <div style="margin-bottom: 12px;">
+                                            <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Tồn kho mới</label>
+                                            <input type="number" name="new_stock" id="new_stock_<?php echo $row['id']; ?>" class="stock-form-input" value="<?php echo $row['ton_kho'] ?? 0; ?>" oninput="calcAdj(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
+                                        </div>
+                                        <div style="margin-bottom: 15px;">
+                                            <label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px; font-weight: 500;">Điều chỉnh (+/-)</label>
+                                            <input type="number" id="adj_<?php echo $row['id']; ?>" class="stock-form-input" value="0" oninput="calcNew(<?php echo $row['id']; ?>, <?php echo $row['ton_kho'] ?? 0; ?>)">
+                                        </div>
+                                        <div style="display: flex; gap: 8px; justify-content: flex-end; padding-top: 5px; border-top: 1px solid #f4f6f8;">
+                                            <button type="button" onclick="closeStockPopup(<?php echo $row['id']; ?>)" style="background: #fff; border: 1px solid #c4cdd5; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Hủy</button>
+                                            <button type="submit" style="background: #0088ff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;">Lưu</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <td class="col-text" style="color: #0088ff; font-weight: 500;">
+                                <?php echo htmlspecialchars($row['smart_categories'] ?? '---'); ?>
+                            </td>
+
+                            <td class="col-text"><?php echo !empty($row['brand']) ? htmlspecialchars($row['brand']) : '---'; ?></td>
+                            <td class="col-text" style="color: #637381;"><?php echo date('d/m/Y', strtotime($row['created_at'] ?? date('Y-m-d'))); ?></td>
+                        </tr>
+
+                        <?php if ($hasVariants): ?>
+                            <tr id="variant-row-<?php echo $row['id']; ?>" style="display: none; background: #fafbfc;">
+                                <td colspan="8" style="padding: 10px 20px;">
+                                    <div class="variant-container">
+                                        <h4 style="margin: 0 0 10px 0; font-size: 14px; color:#212b36;">📋 Các phiên bản quy đổi / thuộc tính con:</h4>
+                                        <table class="variant-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 20%;">Mã SKU</th>
+                                                    <th style="width: 40%;">Tên phiên bản</th>
+                                                    <th style="width: 15%; text-align: right;">Giá vốn</th>
+                                                    <th style="width: 15%; text-align: right;">Giá bán lẻ</th>
+                                                    <th style="width: 10%; text-align: center;">Tồn kho</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($row['variants'] as $variant): ?>
+                                                    <tr>
+                                                        <td style="font-weight: 600; color: #637381;"><?php echo htmlspecialchars($variant['sku']); ?></td>
+                                                        <td>
+                                                            <a href="index.php?action=edit_product&id=<?php echo $variant['id']; ?>" style="color: #0088ff; font-weight: 500; text-decoration: none;">
+                                                                <?php echo htmlspecialchars($variant['product_name']); ?>
+                                                            </a>
+                                                        </td>
+                                                        <td style="text-align: right; color: #cf1322; font-weight: 500;"><?php echo number_format($variant['cost_price'] ?? 0, 0, ',', '.'); ?> ₫</td>
+                                                        <td style="text-align: right; color: #212b36; font-weight: bold;"><?php echo number_format($variant['price'] ?? ($variant['base_price'] ?? 0), 0, ',', '.'); ?> ₫</td>
+                                                        <td style="text-align: center; font-weight: bold; color: #108043;"><?php echo (int)($variant['stock'] ?? 0); ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+
+                <?php endif;
+                endforeach; ?>
             </tbody>
         </table>
 
@@ -362,7 +465,7 @@
 </div>
 
 <script>
-    // JS HIỆU ỨNG CHECKBOX & CHỌN HÀNG LOẠT
+    // JS HIỆU ỨNG CHECKBOX & CHỌN HÀNG LOẠT (CỦA KHƯƠNG)
     function toggleRow(checkbox) {
         checkbox.closest('tr').style.background = checkbox.checked ? '#f4f6f8' : 'transparent';
         updateActionBar();
@@ -391,22 +494,19 @@
         }
     }
 
-    // JS XỬ LÝ POPUP TỒN KHO THÔNG MINH
+    // JS XỬ LÝ POPUP TỒN KHO THÔNG MINH (CỦA KHƯƠNG)
     let currentPopupId = null;
 
     function openStockPopup(id, currentStock) {
-        // Đóng popup đang mở (nếu có)
         if (currentPopupId && currentPopupId !== id) {
             closeStockPopup(currentPopupId);
         }
-
         const popup = document.getElementById('stock-popup-' + id);
         const view = document.getElementById('stock-view-' + id);
 
         if (popup.style.display === 'none' || popup.style.display === '') {
             popup.style.display = 'block';
             view.style.display = 'none';
-            // Đặt lại giá trị ban đầu mỗi khi mở
             document.getElementById('new_stock_' + id).value = currentStock;
             document.getElementById('adj_' + id).value = 0;
             currentPopupId = id;
@@ -421,30 +521,46 @@
         if (currentPopupId === id) currentPopupId = null;
     }
 
-    // Tự động tính Điều chỉnh khi nhập Tồn kho mới
     function calcAdj(id, originalStock) {
         let newStock = parseInt(document.getElementById('new_stock_' + id).value) || 0;
         document.getElementById('adj_' + id).value = newStock - originalStock;
     }
 
-    // Tự động tính Tồn kho mới khi nhập Điều chỉnh (+/-)
     function calcNew(id, originalStock) {
         let adjustment = parseInt(document.getElementById('adj_' + id).value) || 0;
         document.getElementById('new_stock_' + id).value = originalStock + adjustment;
     }
 
-    // Đóng popup khi click ra ngoài vùng popup
     document.addEventListener('click', function(event) {
         if (currentPopupId) {
             const popup = document.getElementById('stock-popup-' + currentPopupId);
             const view = document.getElementById('stock-view-' + currentPopupId);
-
-            // Nếu click không nằm trong popup và không nằm trong nút mở popup
             if (!popup.contains(event.target) && !view.contains(event.target)) {
                 closeStockPopup(currentPopupId);
             }
         }
     });
+
+    // BỔ SUNG: JS MỞ RỘNG PHIÊN BẢN SẢN PHẨM (VARIANTS)
+    function toggleVariants(productId, event) {
+        // Tránh tình trạng bấm vào checkbox hoặc ô nhập liệu mà nó cũng bị sổ xuống
+        if (event.target.tagName.toLowerCase() === 'a' || event.target.tagName.toLowerCase() === 'input' || event.target.tagName.toLowerCase() === 'button') {
+            return;
+        }
+
+        const variantRow = document.getElementById('variant-row-' + productId);
+        const icon = document.getElementById('icon-' + productId);
+
+        if (variantRow) {
+            if (variantRow.style.display === 'none') {
+                variantRow.style.display = 'table-row';
+                if (icon) icon.innerText = '▼';
+            } else {
+                variantRow.style.display = 'none';
+                if (icon) icon.innerText = '▶';
+            }
+        }
+    }
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

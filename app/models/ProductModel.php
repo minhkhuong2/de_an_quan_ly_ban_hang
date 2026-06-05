@@ -204,4 +204,13 @@ class ProductModel
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+    // BỔ SUNG: Lấy danh sách các phiên bản thuộc tính con của sản phẩm cha
+    public function getVariantsByProductId($parent_id)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE parent_id = :parent_id ORDER BY id ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -6,7 +6,6 @@ require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <style>
-    /* CSS CHUẨN FORM SAPO */
     .sapo-header-bar {
         display: flex;
         justify-content: space-between;
@@ -128,7 +127,7 @@ require_once __DIR__ . '/../layout/header.php';
 
     .checkbox-group {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 10px;
         margin-bottom: 12px;
         font-size: 14px;
@@ -140,6 +139,7 @@ require_once __DIR__ . '/../layout/header.php';
         height: 16px;
         cursor: pointer;
         accent-color: #0088ff;
+        margin-top: 2px;
     }
 
     .upload-box {
@@ -163,10 +163,69 @@ require_once __DIR__ . '/../layout/header.php';
         text-decoration: none;
         font-size: 14px;
     }
+
+    .variant-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        background: #fff;
+    }
+
+    .variant-table th {
+        background: #f4f6f8;
+        padding: 10px;
+        font-size: 13px;
+        color: #212b36;
+        text-align: left;
+        border-bottom: 1px solid #dfe3e8;
+    }
+
+    .variant-table td {
+        padding: 10px;
+        border-bottom: 1px solid #f4f6f8;
+        vertical-align: middle;
+    }
+
+    .variant-input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #c4cdd5;
+        border-radius: 4px;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .variant-input:focus {
+        border-color: #0088ff;
+    }
+
+    .bulk-edit-toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: #fff;
+        padding: 10px;
+        border: 1px solid #dfe3e8;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+
+    .bulk-btn {
+        padding: 6px 12px;
+        background: #f4f6f8;
+        border: 1px solid #c4cdd5;
+        border-radius: 4px;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .bulk-btn:hover {
+        background: #dfe3e8;
+    }
 </style>
 
-<form action="index.php?action=add_product" method="POST" enctype="multipart/form-data">
-
+<form action="index.php?action=add_product" method="POST" enctype="multipart/form-data" id="productForm">
     <div class="sapo-header-bar">
         <h2><a href="index.php?action=product_list">←</a> Thêm mới sản phẩm</h2>
         <div class="sapo-btn-group">
@@ -178,42 +237,52 @@ require_once __DIR__ . '/../layout/header.php';
     <?php if (!empty($message)) echo $message; ?>
 
     <div class="sapo-grid">
-
         <div class="sapo-col-left">
-
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin sản phẩm</div>
+                <div class="sapo-card-title">1. Thông tin chung</div>
                 <div class="form-group">
-                    <label>Tên sản phẩm <span style="color:red;">*</span></label>
-                    <input type="text" name="product_name" class="form-control" placeholder="Nhập tên sản phẩm..." required>
+                    <label>Tên sản phẩm <span style="color:red;">*</span> 🌟</label>
+                    <input type="text" id="main_product_name" name="product_name" class="form-control" placeholder="Nhập tên sản phẩm..." required>
                 </div>
                 <div class="row-flex">
                     <div class="form-group">
-                        <label>Mã SKU</label>
-                        <input type="text" name="sku" class="form-control" placeholder="Để trống hệ thống tự tạo">
+                        <label>Mã sản phẩm / SKU</label>
+                        <input type="text" id="main_sku" name="sku" class="form-control" placeholder="Để trống hệ thống tự tạo">
                     </div>
                     <div class="form-group">
-                        <label>Mã vạch/ Barcode</label>
-                        <input type="text" name="barcode" class="form-control" placeholder="Quét mã vạch...">
+                        <label>Barcode</label>
+                        <input type="text" name="barcode" class="form-control" placeholder="Mã vạch chuẩn Code 128">
                     </div>
                 </div>
-                <div class="form-group" style="width: 48%;">
-                    <label>Đơn vị tính</label>
-                    <input type="text" name="unit" class="form-control" value="Cái">
+                <div class="row-flex">
+                    <div class="form-group">
+                        <label>Đơn vị tính</label>
+                        <input type="text" name="unit" class="form-control" placeholder="cái, chiếc, hộp...">
+                    </div>
+                    <div class="form-group">
+                        <label>Khối lượng</label>
+                        <div style="display: flex;">
+                            <input type="number" name="weight" class="form-control" value="0" style="border-radius: 4px 0 0 4px; border-right: none;">
+                            <select name="weight_unit" class="form-control" style="width: 80px; border-radius: 0 4px 4px 0; background: #fafbfc;">
+                                <option value="g">g</option>
+                                <option value="kg">kg</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Mô tả</label>
-                    <textarea class="form-control" name="description" rows="5" placeholder="Nhập mô tả sản phẩm..."></textarea>
+                    <label>Mô tả sản phẩm 🌟</label>
+                    <textarea class="form-control" name="description" rows="5" placeholder="Nhập thông tin chi tiết về sản phẩm..."></textarea>
                 </div>
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin giá</div>
+                <div class="sapo-card-title">2. Thiết lập giá sản phẩm</div>
                 <div class="row-flex">
                     <div class="form-group">
                         <label>Giá bán</label>
                         <div style="display: flex; position: relative;">
-                            <input type="text" name="base_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #212b36;">
+                            <input type="text" id="main_price" name="base_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #212b36;">
                             <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                         </div>
                     </div>
@@ -228,7 +297,7 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="form-group" style="width: 48%;">
                     <label>Giá vốn ⓘ</label>
                     <div style="display: flex; position: relative;">
-                        <input type="text" name="cost_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #cf1322;">
+                        <input type="text" id="main_cost" name="cost_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #cf1322;">
                         <span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span>
                     </div>
                 </div>
@@ -239,69 +308,123 @@ require_once __DIR__ . '/../layout/header.php';
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin kho (Khởi tạo)</div>
-                <div class="form-group">
-                    <label>Lưu kho tại</label>
-                    <select class="form-control" style="background-color: #fff;">
-                        <option>Cửa hàng chính</option>
-                    </select>
+                <div class="sapo-card-title">4. Thông tin kho hàng</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" checked disabled>
+                    <label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label>
                 </div>
-                <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="allow_negative" id="allow_negative">
+                    <label for="allow_negative" style="margin:0;">Cho phép bán âm</label>
+                </div>
+
+                <div class="row-flex" style="margin-top: 15px; border-top: 1px solid #dfe3e8; padding-top: 15px;">
+                    <div class="form-group">
+                        <label>Kho lưu trữ</label>
+                        <select class="form-control" style="background-color: #fafbfc;">
+                            <option>Cửa hàng chính</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vị trí lưu kho ⓘ</label>
+                        <input type="text" name="stock_location" class="form-control" placeholder="VD: A-D10-K456">
+                    </div>
+                </div>
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">Vận chuyển</div>
-                <div class="checkbox-group"><input type="checkbox" checked><label style="margin:0;">Sản phẩm yêu cầu vận chuyển</label></div>
+                <div class="sapo-card-title">5. Thông tin vận chuyển</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" checked name="require_shipping" id="require_shipping">
+                    <label for="require_shipping" style="margin:0;">Sản phẩm yêu cầu vận chuyển</label>
+                </div>
             </div>
 
             <div class="sapo-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div class="sapo-card-title" style="margin:0;">Thuộc tính</div>
+                    <div class="sapo-card-title" style="margin:0;">6. Quản lý Phiên bản sản phẩm</div>
                     <a href="javascript:void(0)" class="link-blue" onclick="addAttributeRow()">+ Thêm thuộc tính</a>
                 </div>
-                <p style="font-size: 14px; color: #212b36; margin: 0; margin-bottom: 15px;" id="attr-hint">Sản phẩm có nhiều thuộc tính khác nhau. Ví dụ: kích thước, màu sắc.</p>
-
+                <p style="font-size: 14px; color: #637381; margin: 0; margin-bottom: 15px;" id="attr-hint">Thêm các thuộc tính như Màu sắc, Kích thước (Tối đa 3 thuộc tính).</p>
                 <table style="width: 100%; border-collapse: collapse;" id="attributeTable">
-                    <tbody id="attributeBody">
-                    </tbody>
+                    <tbody id="attributeBody"></tbody>
+                </table>
+            </div>
+
+            <div class="sapo-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
+                <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản</div>
+                <p style="font-size: 13px; color: #637381; margin-bottom: 15px;">Chỉnh sửa hàng loạt thông tin cho các phiên bản bên dưới:</p>
+
+                <div class="bulk-edit-toolbar">
+                    <strong style="font-size: 13px; color: #212b36;">Chỉnh sửa hàng loạt:</strong>
+                    <input type="text" id="bulk_price" class="variant-input currency-input" placeholder="Giá bán..." style="width: 100px;">
+                    <button type="button" class="bulk-btn" onclick="applyBulk('var_price', 'bulk_price')">Áp dụng Giá</button>
+                    <input type="text" id="bulk_cost" class="variant-input currency-input" placeholder="Giá vốn..." style="width: 100px; margin-left: 10px;">
+                    <button type="button" class="bulk-btn" onclick="applyBulk('var_cost', 'bulk_cost')">Áp dụng Vốn</button>
+                    <input type="number" id="bulk_stock" class="variant-input" placeholder="Tồn kho..." style="width: 90px; margin-left: 10px;">
+                    <button type="button" class="bulk-btn" onclick="applyBulk('var_stock', 'bulk_stock')">Áp dụng Kho</button>
+                </div>
+
+                <table class="variant-table" id="variantsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tên phiên bản</th>
+                            <th style="width: 20%;">Mã SKU</th>
+                            <th style="width: 20%;">Giá bán (₫)</th>
+                            <th style="width: 20%;">Giá vốn (₫)</th>
+                            <th style="width: 15%; text-align: center;">Tồn kho</th>
+                        </tr>
+                    </thead>
+                    <tbody id="variantsBody"></tbody>
                 </table>
             </div>
 
         </div>
 
         <div class="sapo-col-right">
-
             <div class="sapo-card">
-                <div class="sapo-card-title">Ảnh sản phẩm</div>
+                <div class="sapo-card-title">3. Thêm ảnh sản phẩm</div>
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
-
                     <div id="upload-placeholder">
                         <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>
-                        Kéo thả hoặc <a href="javascript:void(0)" class="link-blue">thêm ảnh từ thiết bị</a><br>
+                        Kéo thả hoặc tải ảnh từ thiết bị<br>
                         <span style="font-size: 12px; margin-top: 5px; display: block;">(Dung lượng tối đa 2MB)</span>
                     </div>
-
-                    <img id="image-preview" src="" style="display: none; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
+                    <img id="image-preview" src="" style="display: none; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px;">
                 </div>
             </div>
 
             <div class="sapo-card">
+                <div class="sapo-card-title">8. Kênh bán hàng</div>
+                <div class="checkbox-group" style="align-items: flex-start;">
+                    <input type="checkbox" checked>
+                    <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked>
+                    <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
+                </div>
+                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                    <input type="checkbox" checked>
+                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label></div>
+                </div>
+            </div>
+
+            <div class="sapo-card">
+                <div class="sapo-card-title">10. Thông tin bổ sung</div>
                 <div class="form-group">
-                    <label>Danh mục ⓘ</label>
+                    <label>10.1 Danh mục</label>
                     <select class="form-control" name="category">
                         <option value="">Chọn danh mục</option>
                         <?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?>
-                                <option value="<?php echo htmlspecialchars($catName); ?>">
-                                    <?php echo htmlspecialchars($catName); ?>
-                                </option>
+                                <option value="<?php echo htmlspecialchars($catName); ?>"><?php echo htmlspecialchars($catName); ?></option>
                         <?php endforeach;
                         endif; ?>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label>Nhãn hiệu</label>
+                    <label>10.2 Nhãn hiệu</label>
                     <input type="text" name="brand" list="brand_list" class="form-control" placeholder="Gõ hoặc chọn nhãn hiệu...">
                     <datalist id="brand_list">
                         <?php if (!empty($dynamic_brands)): foreach ($dynamic_brands as $brandName): ?>
@@ -310,10 +433,9 @@ require_once __DIR__ . '/../layout/header.php';
                         endif; ?>
                     </datalist>
                 </div>
-
                 <div class="form-group">
-                    <label>Loại sản phẩm</label>
-                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại sản phẩm...">
+                    <label>10.3 Loại sản phẩm</label>
+                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại SP...">
                     <datalist id="type_list">
                         <?php if (!empty($dynamic_types)): foreach ($dynamic_types as $typeName): ?>
                                 <option value="<?php echo htmlspecialchars($typeName); ?>"></option>
@@ -323,30 +445,26 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
 
                 <div class="form-group">
-                    <label>Tag</label>
-                    <input type="text" name="tags" class="form-control" placeholder="VD: Khuyến mãi, Hàng mới...">
+                    <label>10.4 Nhóm ngành nghề tính thuế TNCN, GTGT ⓘ</label>
+                    <select class="form-control" name="tax_category">
+                        <option value="">Chọn nhóm ngành nghề</option>
+                        <option value="101">101 - Hoạt động bán buôn, bán lẻ hàng hóa</option>
+                        <option value="201">201 - Dịch vụ lưu trú, bốc xếp, bưu chính...</option>
+                        <option value="301">301 - Sản xuất, gia công, chế biến...</option>
+                        <option value="401">401 - Hoạt động kinh doanh khác (thuế 5%)</option>
+                        <option value="501">501 - Cung cấp SP/dịch vụ nội dung số giải trí...</option>
+                    </select>
                 </div>
             </div>
-
-            <div class="sapo-card">
-                <div class="sapo-card-title">Khung giao diện</div>
-                <select class="form-control">
-                    <option value="product">product</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="sapo-header-bar" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dfe3e8; justify-content: flex-end;">
-        <div class="sapo-btn-group">
-            <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=product_list'">Hủy</button>
-            <button type="submit" class="btn-save">Lưu sản phẩm</button>
         </div>
     </div>
 </form>
 
 <script>
-    // JS cho tính năng upload ảnh
+    document.getElementById('productForm').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') e.preventDefault();
+    });
+
     function previewImage(event) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -358,44 +476,101 @@ require_once __DIR__ . '/../layout/header.php';
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    // JS cho tính năng thêm Thuộc tính động
-    function addAttributeRow() {
-        // Ẩn dòng chữ gợi ý khi bắt đầu thêm
-        document.getElementById('attr-hint').style.display = 'none';
+    let attributeCount = 0;
 
+    function addAttributeRow() {
+        if (attributeCount >= 3) {
+            alert("Tối đa 3 thuộc tính cho một sản phẩm.");
+            return;
+        }
+        document.getElementById('attr-hint').style.display = 'none';
         let tbody = document.getElementById('attributeBody');
         let tr = document.createElement('tr');
+        tr.className = "attr-row";
         tr.innerHTML = `
             <td style="padding: 10px 0; border-top: 1px solid #f4f6f8;">
                 <div class="row-flex" style="align-items: flex-end;">
-                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                        <label style="font-size: 13px; color: #637381;">Tên thuộc tính</label>
-                        <input type="text" name="attr_name[]" class="form-control" placeholder="VD: Màu sắc, Dung lượng..." required>
-                    </div>
-                    <div class="form-group" style="flex: 2; margin-bottom: 0;">
-                        <label style="font-size: 13px; color: #637381;">Giá trị</label>
-                        <input type="text" name="attr_value[]" class="form-control" placeholder="VD: Đen, Trắng, Vàng (cách nhau bằng phẩy)" required>
-                    </div>
-                    <div style="padding-bottom: 8px;">
-                        <a href="javascript:void(0)" onclick="this.closest('tr').remove()" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold; padding: 0 10px;">×</a>
-                    </div>
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;"><label style="font-size: 13px;">Tên thuộc tính</label><input type="text" class="form-control attr-name-input" placeholder="VD: Màu sắc, Kích thước..."></div>
+                    <div class="form-group" style="flex: 2; margin-bottom: 0;"><label style="font-size: 13px;">Giá trị (Nhập rồi bấm Enter hoặc phẩy)</label><input type="text" class="form-control attr-val-input" placeholder="VD: Đỏ, Xanh" onkeyup="handleAttrInput(event, this)"></div>
+                    <div style="padding-bottom: 8px;"><a href="javascript:void(0)" onclick="removeAttributeRow(this)" style="color: #ff4d4f; font-size: 20px; font-weight: bold; padding: 0 10px; text-decoration: none;">×</a></div>
                 </div>
-            </td>
-        `;
+            </td>`;
         tbody.appendChild(tr);
+        attributeCount++;
     }
 
-    // ĐÃ CẬP NHẬT: JS TỰ ĐỘNG ĐỊNH DẠNG TIỀN TỆ KHI GÕ
-    document.querySelectorAll('.currency-input').forEach(function(input) {
-        input.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, ''); // Xóa chữ, chỉ lấy số
-            if (value !== '') {
-                e.target.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
-            } else {
-                e.target.value = '';
-            }
-        });
-    });
-</script>
+    function handleAttrInput(e, inputElem) {
+        if (e.key === 'Enter' || e.key === ',') {
+            if (e.key === 'Enter') inputElem.value += ', ';
+            generateVariants();
+        }
+    }
 
+    function removeAttributeRow(btn) {
+        btn.closest('tr').remove();
+        attributeCount--;
+        if (attributeCount === 0) document.getElementById('attr-hint').style.display = 'block';
+        generateVariants();
+    }
+
+    function cartesianProduct(arr) {
+        return arr.reduce((a, b) => a.flatMap(x => b.map(y => [...x, y])), [
+            []
+        ]);
+    }
+
+    function generateVariants() {
+        let attrRows = document.querySelectorAll('.attr-row');
+        let validAttributes = [];
+        attrRows.forEach(row => {
+            let vals = row.querySelector('.attr-val-input').value.split(',').map(v => v.trim()).filter(v => v !== '');
+            if (vals.length > 0) validAttributes.push(vals);
+        });
+        let variantsCard = document.getElementById('variants-card');
+        let variantsBody = document.getElementById('variantsBody');
+        variantsBody.innerHTML = '';
+        if (validAttributes.length === 0) {
+            variantsCard.style.display = 'none';
+            return;
+        }
+        variantsCard.style.display = 'block';
+        let mainPrice = document.getElementById('main_price').value || "0";
+        let mainCost = document.getElementById('main_cost').value || "0";
+        let mainSku = document.getElementById('main_sku').value || "SKU";
+        let combinations = cartesianProduct(validAttributes);
+        combinations.forEach((combo, index) => {
+            let variantName = combo.join(' - ');
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight: bold; color: #0088ff;">${variantName}<input type="hidden" name="var_name[]" value="${variantName}"></td>
+                <td><input type="text" name="var_sku[]" class="variant-input" value="${mainSku}-${Math.floor(Math.random() * 1000)}"></td>
+                <td><input type="text" name="var_price[]" class="variant-input var-currency var_price" value="${mainPrice}"></td>
+                <td><input type="text" name="var_cost[]" class="variant-input var-currency var_cost" value="${mainCost}"></td>
+                <td><input type="number" name="var_stock[]" class="variant-input var_stock" value="0" style="text-align: center;"></td>`;
+            variantsBody.appendChild(tr);
+        });
+        attachCurrencyFormat();
+    }
+
+    function applyBulk(targetClass, inputId) {
+        let val = document.getElementById(inputId).value;
+        if (val === "") return;
+        document.querySelectorAll('.' + targetClass).forEach(input => {
+            input.value = val;
+        });
+    }
+
+    function attachCurrencyFormat() {
+        document.querySelectorAll('.var-currency, .currency-input').forEach(function(input) {
+            let newObj = input.cloneNode(true);
+            input.parentNode.replaceChild(newObj, input);
+            newObj.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value !== '') e.target.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+                else e.target.value = '';
+            });
+        });
+    }
+    attachCurrencyFormat();
+</script>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

@@ -20,10 +20,14 @@ class ProductController
         $productModel = new ProductModel($db);
         $categoryModel = new CategoryModel($db);
 
+        // Lấy danh sách sản phẩm theo bộ lọc hiện tại của bạn
         $products = $productModel->getProductsWithStock($search, $category, $brand, $tags, $type);
 
         foreach ($products as $key => $prod) {
             $products[$key]['smart_categories'] = $categoryModel->getCategoriesOfProduct($prod);
+
+            // BỔ SUNG THÔNG MINH: Đi tìm các phiên bản thuộc tính/quy đổi con của sản phẩm này
+            $products[$key]['variants'] = $productModel->getVariantsByProductId($prod['id']);
         }
 
         $categories = $categoryModel->getAllCategories();
@@ -48,11 +52,11 @@ class ProductController
                 }
             }
 
-            // XỬ LÝ DẤU CHẤM TIỀN TỆ TRƯỚC KHI LƯU VÀO DB
-            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? 0);
             $compare_price = (float)str_replace(['.', ','], '', $_POST['compare_price'] ?? 0);
             $cost_price = (float)str_replace(['.', ','], '', $_POST['cost_price'] ?? 0);
 
+            // 1. LƯU SẢN PHẨM CHA
             $is_added = $productModel->addProduct(
                 $_POST['product_name'] ?? '',
                 $_POST['brand'] ?? '',
@@ -70,26 +74,47 @@ class ProductController
             );
 
             if ($is_added) {
+                // 2. LƯU CÁC PHIÊN BẢN CON VÀO DATABASE (Nơi hôm qua bị thiếu)
+                if (!empty($_POST['var_name'])) {
+                    $var_names = $_POST['var_name'];
+                    $var_skus = $_POST['var_sku'];
+                    $var_prices = $_POST['var_price'];
+                    $var_costs = $_POST['var_cost'];
+                    $var_stocks = $_POST['var_stock'];
+
+                    $stmtVar = $db->prepare("INSERT INTO products (parent_id, product_name, sku, base_price, cost_price, stock, available, category, brand, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+                    for ($i = 0; $i < count($var_names); $i++) {
+                        $v_price = (float)str_replace(['.', ','], '', $var_prices[$i]);
+                        $v_cost = (float)str_replace(['.', ','], '', $var_costs[$i]);
+                        $v_stock = (int)$var_stocks[$i];
+
+                        $stmtVar->execute([
+                            $is_added, // Map với ID cha
+                            trim($_POST['product_name'] . ' - ' . $var_names[$i], ' -'),
+                            $var_skus[$i],
+                            $v_price,
+                            $v_cost,
+                            $v_stock,
+                            $v_stock,
+                            $_POST['category'] ?? '',
+                            $_POST['brand'] ?? '',
+                            $imagePath
+                        ]);
+                    }
+                }
                 header("Location: index.php?action=edit_product&id=" . $is_added . "&success=1");
                 exit;
-            } else {
-                $message = "<div style='background:#fff1f0; color:#ff4d4f; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #ffa39e;'>❌ Có lỗi xảy ra, vui lòng thử lại!</div>";
             }
         }
 
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
-
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
-        if (empty($dynamic_brands)) {
-            $dynamic_brands = ['Apple', 'Samsung', 'Xiaomi', 'Oppo'];
-        }
-
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
-
         require_once __DIR__ . '/../views/product/add_form.php';
     }
 
@@ -98,7 +123,6 @@ class ProductController
         $db = (new Database())->getConnection();
         $productModel = new ProductModel($db);
         $id = $_GET['id'] ?? 0;
-        $message = "";
 
         $product = $productModel->getProductById($id);
         if (!$product) {
@@ -117,8 +141,7 @@ class ProductController
                 }
             }
 
-            // XỬ LÝ DẤU CHẤM TIỀN TỆ TRƯỚC KHI LƯU VÀO DB
-            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? $_POST['price'] ?? 0);
+            $base_price = (float)str_replace(['.', ','], '', $_POST['base_price'] ?? 0);
             $compare_price = (float)str_replace(['.', ','], '', $_POST['compare_price'] ?? 0);
             $cost_price = (float)str_replace(['.', ','], '', $_POST['cost_price'] ?? 0);
 
@@ -141,35 +164,45 @@ class ProductController
 
             if ($is_updated) {
                 if (isset($_POST['new_stock'])) {
-                    $current_stock = $product['stock'] ?? 0;
-                    $current_available = $product['available'] ?? 0;
-                    $new_stock = (int)$_POST['new_stock'];
-
-                    $stock_diff = $new_stock - $current_stock;
+                    $stock_diff = (int)$_POST['new_stock'] - ($product['stock'] ?? 0);
                     if ($stock_diff != 0) {
-                        $new_available = $current_available + $stock_diff;
-                        $productModel->updateInventory($id, $new_stock, $new_available);
+                        $productModel->updateInventory($id, (int)$_POST['new_stock'], ($product['available'] ?? 0) + $stock_diff);
                     }
                 }
 
-                $message = "<div style='background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;'>✅ Cập nhật sản phẩm và Tồn kho thành công!</div>";
-                $product = $productModel->getProductById($id);
+                // LƯU THÊM PHIÊN BẢN MỚI TẠO TỪ FORM SỬA
+                if (!empty($_POST['var_name'])) {
+                    $stmtVar = $db->prepare("INSERT INTO products (parent_id, product_name, sku, base_price, cost_price, stock, available, category, brand, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    for ($i = 0; $i < count($_POST['var_name']); $i++) {
+                        $v_price = (float)str_replace(['.', ','], '', $_POST['var_price'][$i]);
+                        $v_cost = (float)str_replace(['.', ','], '', $_POST['var_cost'][$i]);
+                        $v_stock = (int)$_POST['var_stock'][$i];
+                        $stmtVar->execute([
+                            $id,
+                            trim($_POST['product_name'] . ' - ' . $_POST['var_name'][$i], ' -'),
+                            $_POST['var_sku'][$i],
+                            $v_price,
+                            $v_cost,
+                            $v_stock,
+                            $v_stock,
+                            $_POST['category'] ?? '',
+                            $_POST['brand'] ?? '',
+                            $imagePath
+                        ]);
+                    }
+                }
+                header("Location: index.php?action=edit_product&id=" . $id . "&success=1");
+                exit;
             }
         }
 
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
-
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
-        if (empty($dynamic_brands)) {
-            $dynamic_brands = ['Apple', 'Samsung', 'Xiaomi', 'Oppo'];
-        }
-
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
-
         require_once __DIR__ . '/../views/product/edit_form.php';
     }
 
