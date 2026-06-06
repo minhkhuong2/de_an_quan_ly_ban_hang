@@ -236,6 +236,7 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
     </div>
 
     <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Cập nhật sản phẩm thành công!</div><?php endif; ?>
+    <?php if (isset($_GET['success_delete'])): ?><div style="background:#fff1f0; color:#cf1322; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #ffa39e; font-weight:500;">🗑️ Đã xóa phiên bản sản phẩm thành công!</div><?php endif; ?>
 
     <div class="sapo-grid">
         <div class="sapo-col-left">
@@ -328,7 +329,10 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                                     <td style="color: #637381; font-weight: 500;"><?php echo htmlspecialchars($v['sku']); ?></td>
                                     <td style="font-weight: bold; color: #212b36;"><?php echo number_format($v['price'] ?? $v['base_price'] ?? 0, 0, ',', '.'); ?> ₫</td>
                                     <td style="text-align: center; font-weight: bold; color: #108043;"><?php echo $v['stock']; ?></td>
-                                    <td style="text-align: center;"><a href="index.php?action=edit_product&id=<?php echo $v['id']; ?>" style="color:#ff9900; text-decoration:none; font-weight:bold; background:#fff8ea; padding:4px 8px; border-radius:4px;">✏️ Sửa</a></td>
+                                    <td style="text-align: center;">
+                                        <a href="index.php?action=edit_product&id=<?php echo $v['id']; ?>" style="color:#ff9900; text-decoration:none; font-weight:bold; background:#fff8ea; padding:4px 8px; border-radius:4px;">✏️ Sửa</a>
+                                        <a href="index.php?action=delete_product&id=<?php echo $v['id']; ?>&parent_id=<?php echo $product['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa phiên bản này?');" style="color:#cf1322; text-decoration:none; font-weight:bold; background:#fff1f0; padding:4px 8px; border-radius:4px; margin-left: 5px;">🗑️ Xóa</a>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -348,7 +352,7 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
             </div>
 
             <div class="sapo-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
-                <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Phiên bản mới sẽ được lưu</div>
+                <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản mới</div>
 
                 <div class="bulk-edit-toolbar">
                     <strong style="font-size: 13px; color: #212b36;">Sửa nhanh hàng loạt:</strong>
@@ -364,10 +368,11 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                     <thead>
                         <tr>
                             <th style="width: 25%;">Phiên bản mới</th>
-                            <th style="width: 20%;">Mã SKU</th>
-                            <th style="width: 20%;">Giá bán (₫)</th>
-                            <th style="width: 20%;">Giá vốn (₫)</th>
-                            <th style="width: 15%; text-align: center;">Tồn kho</th>
+                            <th style="width: 18%;">Mã SKU</th>
+                            <th style="width: 18%;">Giá bán (₫)</th>
+                            <th style="width: 18%;">Giá vốn (₫)</th>
+                            <th style="width: 11%; text-align: center;">Tồn kho</th>
+                            <th style="width: 10%; text-align: center;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="variantsBody"></tbody>
@@ -417,7 +422,9 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
                     <div id="upload-placeholder" style="display: <?php echo !empty($product['image']) ? 'none' : 'block'; ?>;">
-                        <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>Kéo thả hoặc thêm ảnh
+                        <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>
+                        Kéo thả hoặc tải ảnh từ thiết bị<br>
+                        <span style="font-size: 12px; margin-top: 5px; display: block;">(Dung lượng tối đa 2MB)</span>
                     </div>
                     <img id="image-preview" src="<?php echo !empty($product['image']) ? htmlspecialchars($product['image']) : ''; ?>" style="display: <?php echo !empty($product['image']) ? 'block' : 'none'; ?>; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
                 </div>
@@ -463,7 +470,7 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 </div>
                 <div class="form-group">
                     <label>10.3 Loại sản phẩm</label>
-                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại sản phẩm...">
+                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại SP...">
                     <datalist id="type_list">
                         <?php if (!empty($dynamic_types)): foreach ($dynamic_types as $typeName): ?>
                                 <option value="<?php echo htmlspecialchars($typeName); ?>"></option>
@@ -471,6 +478,7 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                         endif; ?>
                     </datalist>
                 </div>
+
                 <div class="form-group">
                     <label>10.4 Nhóm ngành nghề tính thuế TNCN, GTGT ⓘ</label>
                     <select class="form-control" name="tax_category">
@@ -553,27 +561,34 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
             let vals = row.querySelector('.attr-val-input').value.split(',').map(v => v.trim()).filter(v => v !== '');
             if (vals.length > 0) validAttributes.push(vals);
         });
+
         let variantsCard = document.getElementById('variants-card');
         let variantsBody = document.getElementById('variantsBody');
         variantsBody.innerHTML = '';
+
         if (validAttributes.length === 0) {
             variantsCard.style.display = 'none';
             return;
         }
+
         variantsCard.style.display = 'block';
         let mainPrice = document.getElementById('main_price').value || "0";
         let mainCost = document.getElementById('main_cost').value || "0";
         let mainSku = document.getElementById('main_sku').value || "SKU";
         let combinations = cartesianProduct(validAttributes);
+
         combinations.forEach((combo, index) => {
             let variantName = combo.join(' - ');
             let tr = document.createElement('tr');
+
+            // BỔ SUNG NÚT XÓA Ở CUỐI DÒNG
             tr.innerHTML = `
                 <td style="font-weight: bold; color: #0088ff;">${variantName}<input type="hidden" name="var_name[]" value="${variantName}"></td>
                 <td><input type="text" name="var_sku[]" class="variant-input" value="${mainSku}-${Math.floor(Math.random() * 1000)}"></td>
                 <td><input type="text" name="var_price[]" class="variant-input var-currency var_price" value="${mainPrice}"></td>
                 <td><input type="text" name="var_cost[]" class="variant-input var-currency var_cost" value="${mainCost}"></td>
-                <td><input type="number" name="var_stock[]" class="variant-input var_stock" value="0" style="text-align: center;"></td>`;
+                <td><input type="number" name="var_stock[]" class="variant-input var_stock" value="0" style="text-align: center;"></td>
+                <td style="text-align: center;"><a href="javascript:void(0)" onclick="this.closest('tr').remove()" style="color:#cf1322; font-size:16px; text-decoration:none;" title="Xóa bản này">🗑️</a></td>`;
             variantsBody.appendChild(tr);
         });
         attachCurrencyFormat();

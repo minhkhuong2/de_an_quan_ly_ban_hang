@@ -208,11 +208,20 @@ class ProductController
 
     public function delete()
     {
+        $parent_id = $_GET['parent_id'] ?? 0;
+
         if (isset($_GET['id'])) {
             $db = (new Database())->getConnection();
             (new ProductModel($db))->deleteProduct($_GET['id']);
         }
-        header("Location: index.php?action=product_list");
+
+        // Nếu đang xóa một phiên bản con, quay lại trang Sửa của sản phẩm cha
+        if ($parent_id > 0) {
+            header("Location: index.php?action=edit_product&id=" . $parent_id . "&success_delete=1");
+        } else {
+            // Nếu xóa sản phẩm gốc thì quay ra danh sách tổng
+            header("Location: index.php?action=product_list&success_delete=1");
+        }
         exit;
     }
 

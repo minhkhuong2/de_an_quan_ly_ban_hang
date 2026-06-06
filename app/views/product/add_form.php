@@ -369,10 +369,11 @@ require_once __DIR__ . '/../layout/header.php';
                     <thead>
                         <tr>
                             <th style="width: 25%;">Tên phiên bản</th>
-                            <th style="width: 20%;">Mã SKU</th>
-                            <th style="width: 20%;">Giá bán (₫)</th>
-                            <th style="width: 20%;">Giá vốn (₫)</th>
-                            <th style="width: 15%; text-align: center;">Tồn kho</th>
+                            <th style="width: 18%;">Mã SKU</th>
+                            <th style="width: 18%;">Giá bán (₫)</th>
+                            <th style="width: 18%;">Giá vốn (₫)</th>
+                            <th style="width: 11%; text-align: center;">Tồn kho</th>
+                            <th style="width: 10%; text-align: center;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="variantsBody"></tbody>
@@ -414,7 +415,7 @@ require_once __DIR__ . '/../layout/header.php';
             <div class="sapo-card">
                 <div class="sapo-card-title">10. Thông tin bổ sung</div>
                 <div class="form-group">
-                    <label>10.1 Danh mục</label>
+                    <label>10.1 Danh mục ⓘ</label>
                     <select class="form-control" name="category">
                         <option value="">Chọn danh mục</option>
                         <?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?>
@@ -526,27 +527,34 @@ require_once __DIR__ . '/../layout/header.php';
             let vals = row.querySelector('.attr-val-input').value.split(',').map(v => v.trim()).filter(v => v !== '');
             if (vals.length > 0) validAttributes.push(vals);
         });
+
         let variantsCard = document.getElementById('variants-card');
         let variantsBody = document.getElementById('variantsBody');
         variantsBody.innerHTML = '';
+
         if (validAttributes.length === 0) {
             variantsCard.style.display = 'none';
             return;
         }
+
         variantsCard.style.display = 'block';
         let mainPrice = document.getElementById('main_price').value || "0";
         let mainCost = document.getElementById('main_cost').value || "0";
         let mainSku = document.getElementById('main_sku').value || "SKU";
         let combinations = cartesianProduct(validAttributes);
+
         combinations.forEach((combo, index) => {
             let variantName = combo.join(' - ');
             let tr = document.createElement('tr');
+
+            // BỔ SUNG NÚT XÓA Ở CUỐI DÒNG
             tr.innerHTML = `
                 <td style="font-weight: bold; color: #0088ff;">${variantName}<input type="hidden" name="var_name[]" value="${variantName}"></td>
                 <td><input type="text" name="var_sku[]" class="variant-input" value="${mainSku}-${Math.floor(Math.random() * 1000)}"></td>
                 <td><input type="text" name="var_price[]" class="variant-input var-currency var_price" value="${mainPrice}"></td>
                 <td><input type="text" name="var_cost[]" class="variant-input var-currency var_cost" value="${mainCost}"></td>
-                <td><input type="number" name="var_stock[]" class="variant-input var_stock" value="0" style="text-align: center;"></td>`;
+                <td><input type="number" name="var_stock[]" class="variant-input var_stock" value="0" style="text-align: center;"></td>
+                <td style="text-align: center;"><a href="javascript:void(0)" onclick="this.closest('tr').remove()" style="color:#cf1322; font-size:16px; text-decoration:none;" title="Xóa bản này">🗑️</a></td>`;
             variantsBody.appendChild(tr);
         });
         attachCurrencyFormat();
