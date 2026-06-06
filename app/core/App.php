@@ -28,9 +28,10 @@ class App
         'quick_update_stock' => ['ProductController', 'quick_update_stock'],
 
         // --- Đối tác ---
-        'customer_list'    => ['CustomerController', 'list'],
-        'add_customer'     => ['CustomerController', 'add'],
-        'delete_customer'  => ['CustomerController', 'delete'],
+        'customer_list'   => ['CustomerController', 'list'],
+        'add_customer'    => ['CustomerController', 'add'],
+        'edit_customer'   => ['CustomerController', 'edit'],
+        'delete_customer' => ['CustomerController', 'delete'],
         'supplier_list' => ['SupplierController', 'list'],
         'add_supplier'  => ['SupplierController', 'add'],
         'edit_supplier'   => ['SupplierController', 'edit'],
@@ -72,6 +73,7 @@ class App
         'warranty'         => ['ImeiController', 'warranty'],
         'returnItem'       => ['ImeiController', 'returnItem'],
         'search'           => ['ImeiController', 'search'],
+
 
 
 
