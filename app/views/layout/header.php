@@ -145,6 +145,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
         <div class="menu">
             <a href="index.php?action=dashboard" class="menu-item <?php echo ($current_action == 'dashboard') ? 'active' : ''; ?>">📊 Tổng quan</a>
             <a href="index.php?action=pos" class="menu-item pos-btn">🛍️ Bán hàng (POS)</a>
+            <a href="index.php?action=shipping_list">🚚 Đối tác vận chuyển</a>
 
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold;">Quản lý Sản phẩm</div>
             <a href="index.php?action=product_list" class="menu-item <?php echo ($current_action == 'product_list' || $current_action == 'add_product' || $current_action == 'edit_product') ? 'active' : ''; ?>">📦 Danh sách sản phẩm</a>
