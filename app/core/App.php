@@ -86,6 +86,10 @@ class App
         'edit_shipping'   => ['ShippingController', 'edit'],
         'delete_shipping' => ['ShippingController', 'delete'],
 
+        // Quản lý Cấu hình (Settings)
+        'settings'          => ['SettingController', 'index'],
+        'general_settings'  => ['SettingController', 'general'],
+
 
         // --- POS Bán hàng ---
         'pos'              => ['OrderController', 'pos'],

@@ -145,7 +145,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
         <div class="menu">
             <a href="index.php?action=dashboard" class="menu-item <?php echo ($current_action == 'dashboard') ? 'active' : ''; ?>">📊 Tổng quan</a>
             <a href="index.php?action=pos" class="menu-item pos-btn">🛍️ Bán hàng (POS)</a>
-            <a href="index.php?action=shipping_list">🚚 Đối tác vận chuyển</a>
+            <a href="index.php?action=shipping_list" class="menu-item <?php echo ($current_action == 'shipping_list') ? 'active' : ''; ?>">🚚 Đối tác vận chuyển</a>
 
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold;">Quản lý Sản phẩm</div>
             <a href="index.php?action=product_list" class="menu-item <?php echo ($current_action == 'product_list' || $current_action == 'add_product' || $current_action == 'edit_product') ? 'active' : ''; ?>">📦 Danh sách sản phẩm</a>
@@ -167,19 +167,13 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
 
             <div style="padding: 15px 20px 5px 20px; font-size: 11px; text-transform: uppercase; color: #637381; font-weight: bold;">Đối tác & Khác</div>
             <a href="index.php?action=supplier_list" class="menu-item <?php echo ($current_action == 'supplier_list' || $current_action == 'add_supplier' || $current_action == 'edit_supplier') ? 'active' : ''; ?>">🤝 Nhà cung cấp</a>
-            <li>
-                <a href="index.php?action=customer_list" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; color: #212b36; text-decoration: none; border-radius: 4px; font-weight: 500;">
-                    <span style="font-size: 18px;">👥</span> Khách hàng
-                </a>
-            </li>
+
+            <a href="index.php?action=customer_list" class="menu-item <?php echo ($current_action == 'customer_list') ? 'active' : ''; ?>">👥</span> Khách hàng </a>
+
             <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">🔍 Quản lý IMEI</a>
             <a href="#" class="menu-item">📄 Đơn hàng</a>
-            <li>
-                <a href="index.php?action=staff_list" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; color: #212b36; text-decoration: none; border-radius: 4px; font-weight: 500;">
-                    <span style="font-size: 18px;">⚙️</span> Quản lý nhân viên
-                </a>
-            </li>
-            <a href="#" class="menu-item">⚙️ Cài đặt</a>
+
+            <a href="index.php?action=settings" class="menu-item <?php echo ($current_action == 'settings') ? 'active' : ''; ?>">⚙️ Cài đặt</a>
         </div>
     </div>
 
