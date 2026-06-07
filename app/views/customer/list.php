@@ -1,8 +1,8 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
-<?php
-/** * Khai báo cho trình soạn thảo code biết biến $customers tồn tại 
- * @var array $customers 
- */
+<?php 
+/** @var array|null $customers */ 
+// Đảm bảo $customers luôn là mảng, chống lỗi null
+$safe_customers = is_array($customers) ? $customers : [];
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -32,9 +32,9 @@
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($customers)): ?>
-                <?php foreach ($customers as $c): ?>
-                    <tr style="border-bottom: 1px solid #f4f6f8; font-size: 14px;">
+            <?php if (!empty($safe_customers)): ?>
+                <?php foreach ($safe_customers as $c): ?>
+                    <tr style="border-bottom: 1px solid #f4f6f8; font-size: 14px;"> 
                         <td style="padding: 12px 15px; color:#0088ff; font-weight: bold;"><?php echo htmlspecialchars($c['customer_code'] ?? ''); ?></td>
                         <td style="padding: 12px 15px; font-weight: 500;">
                             <?php echo htmlspecialchars(trim(($c['last_name'] ?? '') . ' ' . ($c['first_name'] ?? ''))); ?>
@@ -44,8 +44,8 @@
                             <?php echo number_format($c['debt'] ?? 0, 0, ',', '.'); ?> ₫
                         </td>
                         <td style="padding: 12px 15px; text-align: center;">
-                            <a href="index.php?action=edit_customer&id=<?php echo $c['id']; ?>" style="text-decoration: none; margin-right: 10px;" title="Sửa">✏️</a>
-                            <a href="index.php?action=delete_customer&id=<?php echo $c['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?');" style="text-decoration: none;" title="Xóa">🗑️</a>
+                            <a href="index.php?action=edit_customer&id=<?php echo $c['id'] ?? 0; ?>" style="text-decoration: none; margin-right: 10px;" title="Sửa">✏️</a>
+                            <a href="index.php?action=delete_customer&id=<?php echo $c['id'] ?? 0; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?');" style="text-decoration: none;" title="Xóa">🗑️</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

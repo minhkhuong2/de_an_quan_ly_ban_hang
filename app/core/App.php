@@ -73,8 +73,18 @@ class App
         'warranty'         => ['ImeiController', 'warranty'],
         'returnItem'       => ['ImeiController', 'returnItem'],
         'search'           => ['ImeiController', 'search'],
+        // Quản lý Nhân viên
+        'staff_list'      => ['StaffController', 'list'],
+        'add_staff'       => ['StaffController', 'add'],
+        'edit_staff'      => ['StaffController', 'edit'],
+        'delete_staff'    => ['StaffController', 'delete'],
+        'activate_staff'  => ['StaffController', 'activate'],
 
-
+        // Quản lý Vận chuyển (Sapo Express)
+        'shipping_list'   => ['ShippingController', 'list'],
+        'add_shipping'    => ['ShippingController', 'add'],
+        'edit_shipping'   => ['ShippingController', 'edit'],
+        'delete_shipping' => ['ShippingController', 'delete'],
 
 
         // --- POS Bán hàng ---
