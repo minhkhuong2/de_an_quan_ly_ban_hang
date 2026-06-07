@@ -380,119 +380,117 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">4. Thông tin kho tổng (Sản phẩm gốc)</div>
-                <div class="checkbox-group">
-                    <input type="checkbox" name="allow_negative" id="allow_negative" checked>
-                    <label for="allow_negative" style="margin:0;">Cho phép bán âm</label>
-                </div>
+                <div class="sapo-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
+                <div class="checkbox-group"><input type="checkbox" name="allow_negative" id="allow_negative" checked><label for="allow_negative" style="margin:0;">Cho phép bán âm</label></div>
+
                 <table style="width: 100%; border-collapse: collapse; margin-top:15px;">
                     <thead>
                         <tr style="background: #fafbfc; border-top: 1px solid #dfe3e8; border-bottom: 1px solid #dfe3e8;">
-                            <th style="padding: 12px; font-size: 14px; color: #212b36;">Kho lưu trữ</th>
-                            <th style="padding: 12px; font-size: 14px; color: #212b36; width: 250px;">Tồn kho</th>
+                            <th style="padding: 12px; font-size: 14px; color: #212b36; text-align: left;">Kho / Chi nhánh</th>
+                            <th style="padding: 12px; font-size: 14px; color: #212b36; width: 120px; text-align: left;">Tồn kho</th>
+                            <th style="padding: 12px; font-size: 14px; color: #212b36; text-align: left;">Vị trí lưu kho (Bin Location)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="padding: 15px 12px; font-size: 14px; color: #212b36; vertical-align: top;">
-                                <strong>Cửa hàng chính</strong><br>
-                                <span style="font-size: 12px; color: #637381;">Vị trí lưu kho: A-D10-K456</span>
-                            </td>
-                            <td style="padding: 15px 12px; vertical-align: top;">
-                                <div id="stock-display" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-weight: bold; font-size: 16px; color: #108043;"><?php echo htmlspecialchars($product['stock'] ?? 0); ?></span>
-                                    <a href="javascript:void(0)" onclick="toggleStockEdit()" style="color: #0088ff; text-decoration: none; font-size: 14px;">✏️ Sửa</a>
-                                </div>
-                                <div id="stock-edit-box" style="display: none; background: #fafbfc; padding: 12px; border-radius: 4px; margin-top: 5px; border: 1px solid #c4cdd5;">
-                                    <div style="margin-bottom: 10px;"><label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px;">Tồn kho mới</label><input type="number" name="new_stock" id="new_stock" style="width:100%; padding:6px; outline:none; border:1px solid #c4cdd5;" value="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" oninput="calculateStockDiff()"></div>
-                                    <div style="margin-bottom: 10px;"><label style="font-size: 12px; color: #637381; display: block; margin-bottom: 4px;">Điều chỉnh (+/-)</label><input type="number" id="stock_adjustment" style="width:100%; padding:6px; outline:none; border:1px solid #c4cdd5;" value="0" oninput="calculateNewStock()"></div>
-                                    <div style="text-align: right;"><button type="button" onclick="toggleStockEdit()" style="padding: 4px 10px; font-size: 12px; border: 1px solid #c4cdd5; background: #fff; border-radius: 4px; cursor: pointer;">Đóng</button></div>
-                                </div>
-                            </td>
-                        </tr>
+                        <?php if (!empty($branches_db)): foreach ($branches_db as $b):
+                                // Lấy dữ liệu tồn và vị trí cũ nếu có
+                                $current_stock = $inventory_data[$b['id']]['stock_quantity'] ?? 0;
+                                $current_location = $inventory_data[$b['id']]['bin_location'] ?? '';
+                        ?>
+                                <tr>
+                                    <td style="padding: 15px 12px; font-size: 14px; color: #212b36; border-bottom: 1px solid #f4f6f8;">
+                                        <strong>🏢 <?php echo htmlspecialchars($b['branch_name']); ?></strong>
+                                    </td>
+                                    <td style="padding: 15px 12px; border-bottom: 1px solid #f4f6f8;">
+                                        <input type="number" name="branch_stock[<?php echo $b['id']; ?>]" class="form-control" value="<?php echo $current_stock; ?>" style="padding: 6px; font-weight:bold; color:#108043;">
+                                    </td>
+                                    <td style="padding: 15px 12px; border-bottom: 1px solid #f4f6f8;">
+                                        <input type="text" name="branch_location[<?php echo $b['id']; ?>]" class="form-control" value="<?php echo htmlspecialchars($current_location); ?>" placeholder="VD: A-D10-K456" style="padding: 6px;">
+                                    </td>
+                                </tr>
+                        <?php endforeach;
+                        endif; ?>
                     </tbody>
                 </table>
             </div>
 
-        </div>
-
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">3. Thêm ảnh sản phẩm</div>
-                <div class="upload-box" onclick="document.getElementById('file-upload').click()">
-                    <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
-                    <div id="upload-placeholder" style="display: <?php echo !empty($product['image']) ? 'none' : 'block'; ?>;">
-                        <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>
-                        Kéo thả hoặc tải ảnh từ thiết bị<br>
-                        <span style="font-size: 12px; margin-top: 5px; display: block;">(Dung lượng tối đa 2MB)</span>
+            <div class="sapo-col-right">
+                <div class="sapo-card">
+                    <div class="sapo-card-title">3. Thêm ảnh sản phẩm</div>
+                    <div class="upload-box" onclick="document.getElementById('file-upload').click()">
+                        <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
+                        <div id="upload-placeholder" style="display: <?php echo !empty($product['image']) ? 'none' : 'block'; ?>;">
+                            <div style="font-size: 24px; color: #0088ff; margin-bottom: 10px;">+</div>
+                            Kéo thả hoặc tải ảnh từ thiết bị<br>
+                            <span style="font-size: 12px; margin-top: 5px; display: block;">(Dung lượng tối đa 2MB)</span>
+                        </div>
+                        <img id="image-preview" src="<?php echo !empty($product['image']) ? htmlspecialchars($product['image']) : ''; ?>" style="display: <?php echo !empty($product['image']) ? 'block' : 'none'; ?>; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
                     </div>
-                    <img id="image-preview" src="<?php echo !empty($product['image']) ? htmlspecialchars($product['image']) : ''; ?>" style="display: <?php echo !empty($product['image']) ? 'block' : 'none'; ?>; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
-                </div>
-            </div>
-
-            <div class="sapo-card">
-                <div class="sapo-card-title">8. Kênh bán hàng</div>
-                <div class="checkbox-group" style="align-items: flex-start;">
-                    <input type="checkbox" checked>
-                    <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
-                </div>
-                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
-                    <input type="checkbox" checked>
-                    <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
-                </div>
-                <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
-                    <input type="checkbox" checked>
-                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label></div>
-                </div>
-            </div>
-
-            <div class="sapo-card">
-                <div class="sapo-card-title">10. Thông tin bổ sung</div>
-                <div class="form-group">
-                    <label>10.1 Danh mục ⓘ</label>
-                    <select class="form-control" name="category">
-                        <option value="">Chọn danh mục</option>
-                        <?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?>
-                                <option value="<?php echo htmlspecialchars($catName); ?>" <?php echo (strcasecmp(($product['category'] ?? ''), $catName) == 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($catName); ?></option>
-                        <?php endforeach;
-                        endif; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>10.2 Nhãn hiệu</label>
-                    <input type="text" name="brand" list="brand_list" class="form-control" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>" placeholder="Gõ hoặc chọn nhãn hiệu...">
-                    <datalist id="brand_list">
-                        <?php if (!empty($dynamic_brands)): foreach ($dynamic_brands as $brandName): ?>
-                                <option value="<?php echo htmlspecialchars($brandName); ?>"></option>
-                        <?php endforeach;
-                        endif; ?>
-                    </datalist>
-                </div>
-                <div class="form-group">
-                    <label>10.3 Loại sản phẩm</label>
-                    <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại SP...">
-                    <datalist id="type_list">
-                        <?php if (!empty($dynamic_types)): foreach ($dynamic_types as $typeName): ?>
-                                <option value="<?php echo htmlspecialchars($typeName); ?>"></option>
-                        <?php endforeach;
-                        endif; ?>
-                    </datalist>
                 </div>
 
-                <div class="form-group">
-                    <label>10.4 Nhóm ngành nghề tính thuế TNCN, GTGT ⓘ</label>
-                    <select class="form-control" name="tax_category">
-                        <option value="">Chọn nhóm ngành nghề</option>
-                        <option value="101">101 - Hoạt động bán buôn, bán lẻ hàng hóa</option>
-                        <option value="201">201 - Dịch vụ lưu trú, bốc xếp, bưu chính...</option>
-                        <option value="301">301 - Sản xuất, gia công, chế biến...</option>
-                        <option value="401">401 - Hoạt động kinh doanh khác (thuế 5%)</option>
-                        <option value="501">501 - Cung cấp SP/dịch vụ nội dung số giải trí...</option>
-                    </select>
+                <div class="sapo-card">
+                    <div class="sapo-card-title">8. Kênh bán hàng</div>
+                    <div class="checkbox-group" style="align-items: flex-start;">
+                        <input type="checkbox" checked>
+                        <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
+                    </div>
+                    <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                        <input type="checkbox" checked>
+                        <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
+                    </div>
+                    <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;">
+                        <input type="checkbox" checked>
+                        <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label></div>
+                    </div>
+                </div>
+
+                <div class="sapo-card">
+                    <div class="sapo-card-title">10. Thông tin bổ sung</div>
+                    <div class="form-group">
+                        <label>10.1 Danh mục ⓘ</label>
+                        <select class="form-control" name="category">
+                            <option value="">Chọn danh mục</option>
+                            <?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?>
+                                    <option value="<?php echo htmlspecialchars($catName); ?>" <?php echo (strcasecmp(($product['category'] ?? ''), $catName) == 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($catName); ?></option>
+                            <?php endforeach;
+                            endif; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>10.2 Nhãn hiệu</label>
+                        <input type="text" name="brand" list="brand_list" class="form-control" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>" placeholder="Gõ hoặc chọn nhãn hiệu...">
+                        <datalist id="brand_list">
+                            <?php if (!empty($dynamic_brands)): foreach ($dynamic_brands as $brandName): ?>
+                                    <option value="<?php echo htmlspecialchars($brandName); ?>"></option>
+                            <?php endforeach;
+                            endif; ?>
+                        </datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>10.3 Loại sản phẩm</label>
+                        <input type="text" list="type_list" class="form-control" placeholder="Gõ hoặc chọn loại SP...">
+                        <datalist id="type_list">
+                            <?php if (!empty($dynamic_types)): foreach ($dynamic_types as $typeName): ?>
+                                    <option value="<?php echo htmlspecialchars($typeName); ?>"></option>
+                            <?php endforeach;
+                            endif; ?>
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label>10.4 Nhóm ngành nghề tính thuế TNCN, GTGT ⓘ</label>
+                        <select class="form-control" name="tax_category">
+                            <option value="">Chọn nhóm ngành nghề</option>
+                            <option value="101">101 - Hoạt động bán buôn, bán lẻ hàng hóa</option>
+                            <option value="201">201 - Dịch vụ lưu trú, bốc xếp, bưu chính...</option>
+                            <option value="301">301 - Sản xuất, gia công, chế biến...</option>
+                            <option value="401">401 - Hoạt động kinh doanh khác (thuế 5%)</option>
+                            <option value="501">501 - Cung cấp SP/dịch vụ nội dung số giải trí...</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </form>
 
 <script>

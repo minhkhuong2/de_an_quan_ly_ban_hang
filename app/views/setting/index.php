@@ -92,7 +92,7 @@
             </div>
         </a>
 
-        <a href="#" class="setting-card">
+        <a href="index.php?action=branch_list" class="setting-card">
             <div class="setting-icon">🏢</div>
             <div class="setting-info">
                 <h3>Quản lý chi nhánh</h3>

@@ -66,6 +66,12 @@ class App
         'process_purchase_return' => ['PurchaseReturnController', 'process'],
         'add_direct_return'       => ['PurchaseReturnController', 'addDirect'],
 
+        // Quản lý Chi nhánh (Kho lưu trữ)
+        'branch_list'   => ['BranchController', 'list'],
+        'add_branch'    => ['BranchController', 'add'],
+        'edit_branch'   => ['BranchController', 'edit'],
+        'delete_branch' => ['BranchController', 'delete'],
+
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],
         'add'              => ['ImeiController', 'add'],

@@ -74,7 +74,16 @@ class ProductController
             );
 
             if ($is_added) {
-                // 2. LƯU CÁC PHIÊN BẢN CON VÀO DATABASE (Nơi hôm qua bị thiếu)
+                // LƯU TỒN KHO THEO CHI NHÁNH VÀO BẢNG product_inventory
+                if (!empty($_POST['branch_stock'])) {
+                    $stmtInv = $db->prepare("INSERT INTO product_inventory (product_id, branch_id, stock_quantity, bin_location) VALUES (?, ?, ?, ?)");
+                    foreach ($_POST['branch_stock'] as $branch_id => $quantity) {
+                        $location = $_POST['branch_location'][$branch_id] ?? '';
+                        $stmtInv->execute([$is_added, $branch_id, (int)$quantity, $location]);
+                    }
+                }
+
+                // 2. LƯU CÁC PHIÊN BẢN CON VÀO DATABASE
                 if (!empty($_POST['var_name'])) {
                     $var_names = $_POST['var_name'];
                     $var_skus = $_POST['var_sku'];
@@ -111,10 +120,24 @@ class ProductController
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
+
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
+
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
+
+        // Lấy danh sách Chi nhánh thật từ Database để truyền ra View
+        require_once __DIR__ . '/../models/BranchModel.php';
+        $branchModel = new BranchModel($db);
+        $all_branches = $branchModel->getAllBranches();
+        $branches_db = [];
+        foreach ($all_branches as $b) {
+            if ($b['status'] === 'Hoạt động' && $b['is_inventory'] == 1) {
+                $branches_db[] = $b;
+            }
+        }
+
         require_once __DIR__ . '/../views/product/add_form.php';
     }
 
@@ -163,10 +186,13 @@ class ProductController
             );
 
             if ($is_updated) {
-                if (isset($_POST['new_stock'])) {
-                    $stock_diff = (int)$_POST['new_stock'] - ($product['stock'] ?? 0);
-                    if ($stock_diff != 0) {
-                        $productModel->updateInventory($id, (int)$_POST['new_stock'], ($product['available'] ?? 0) + $stock_diff);
+                // CẬP NHẬT TỒN KHO THEO CHI NHÁNH VÀO BẢNG product_inventory
+                if (!empty($_POST['branch_stock'])) {
+                    $stmtUpdateInv = $db->prepare("INSERT INTO product_inventory (product_id, branch_id, stock_quantity, bin_location) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE stock_quantity = ?, bin_location = ?");
+                    foreach ($_POST['branch_stock'] as $branch_id => $quantity) {
+                        $location = $_POST['branch_location'][$branch_id] ?? '';
+                        $qty = (int)$quantity;
+                        $stmtUpdateInv->execute([$id, $branch_id, $qty, $location, $qty, $location]);
                     }
                 }
 
@@ -199,10 +225,32 @@ class ProductController
         $stmtCat = $db->prepare("SELECT category_name FROM categories ORDER BY id DESC");
         $stmtCat->execute();
         $dynamic_categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
+
         $stmtBrand = $db->prepare("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''");
         $stmtBrand->execute();
         $dynamic_brands = $stmtBrand->fetchAll(PDO::FETCH_COLUMN);
+
         $dynamic_types = ['Điện thoại', 'Phụ kiện', 'Đồng hồ', 'Tai nghe', 'Sạc dự phòng'];
+
+        // Lấy danh sách Chi nhánh thật
+        require_once __DIR__ . '/../models/BranchModel.php';
+        $branchModel = new BranchModel($db);
+        $all_branches = $branchModel->getAllBranches();
+        $branches_db = [];
+        foreach ($all_branches as $b) {
+            if ($b['status'] === 'Hoạt động' && $b['is_inventory'] == 1) {
+                $branches_db[] = $b;
+            }
+        }
+
+        // Lấy dữ liệu tồn kho hiện tại của sản phẩm này ở các kho
+        $stmtInv = $db->prepare("SELECT * FROM product_inventory WHERE product_id = ?");
+        $stmtInv->execute([$id]);
+        $inventory_data = [];
+        while ($row = $stmtInv->fetch(PDO::FETCH_ASSOC)) {
+            $inventory_data[$row['branch_id']] = $row;
+        }
+
         require_once __DIR__ . '/../views/product/edit_form.php';
     }
 

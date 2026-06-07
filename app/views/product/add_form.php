@@ -308,28 +308,40 @@ require_once __DIR__ . '/../layout/header.php';
             </div>
 
             <div class="sapo-card">
-                <div class="sapo-card-title">4. Thông tin kho hàng</div>
-                <div class="checkbox-group">
-                    <input type="checkbox" checked disabled>
-                    <label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" name="allow_negative" id="allow_negative">
-                    <label for="allow_negative" style="margin:0;">Cho phép bán âm</label>
-                </div>
+                <div class="sapo-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
+                <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
+                <div class="checkbox-group"><input type="checkbox" name="allow_negative" id="allow_negative"><label for="allow_negative" style="margin:0;">Cho phép bán âm</label></div>
 
-                <div class="row-flex" style="margin-top: 15px; border-top: 1px solid #dfe3e8; padding-top: 15px;">
-                    <div class="form-group">
-                        <label>Kho lưu trữ</label>
-                        <select class="form-control" style="background-color: #fafbfc;">
-                            <option>Cửa hàng chính</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Vị trí lưu kho ⓘ</label>
-                        <input type="text" name="stock_location" class="form-control" placeholder="VD: A-D10-K456">
-                    </div>
-                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="background: #fafbfc; border-top: 1px solid #dfe3e8; border-bottom: 1px solid #dfe3e8;">
+                            <th style="padding: 10px 12px; text-align: left; font-size: 13px; color: #212b36;">Kho / Chi nhánh</th>
+                            <th style="padding: 10px 12px; text-align: left; font-size: 13px; color: #212b36; width: 120px;">Tồn kho</th>
+                            <th style="padding: 10px 12px; text-align: left; font-size: 13px; color: #212b36;">Vị trí lưu kho (Bin Location) ⓘ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($branches_db)): foreach ($branches_db as $b): ?>
+                                <tr style="border-bottom: 1px solid #f4f6f8;">
+                                    <td style="padding: 10px 12px; font-weight: 500; font-size: 13px; color: #0088ff;">
+                                        🏢 <?php echo htmlspecialchars($b['branch_name']); ?>
+                                        <?php if ($b['is_default']): ?><span style="font-size:10px; background:#ffea8a; color:#8a6100; padding:2px 4px; border-radius:4px; margin-left:4px;">Mặc định</span><?php endif; ?>
+                                    </td>
+                                    <td style="padding: 10px 12px;">
+                                        <input type="number" name="branch_stock[<?php echo $b['id']; ?>]" class="form-control" value="0" style="padding: 6px;">
+                                    </td>
+                                    <td style="padding: 10px 12px;">
+                                        <input type="text" name="branch_location[<?php echo $b['id']; ?>]" class="form-control" placeholder="VD: A-D10-K456" style="padding: 6px;">
+                                    </td>
+                                </tr>
+                            <?php endforeach;
+                        else: ?>
+                            <tr>
+                                <td colspan="3" style="padding: 15px; text-align: center; color: #cf1322;">Vui lòng vào Cấu hình -> Quản lý chi nhánh để tạo kho trước!</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
 
             <div class="sapo-card">
