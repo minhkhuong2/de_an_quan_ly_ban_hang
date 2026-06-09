@@ -28,7 +28,20 @@ class StaffController
             );
 
             if ($id) {
-                $activation_link = "index.php?action=activate_staff&id=" . $id;
+                // Tự động sinh link kích hoạt
+                $activation_link = "http://localhost/quanly_imei/index.php?action=activate_staff&id=" . $id; // (Sửa lại localhost cho đúng domain của bạn)
+
+                // GỌI HỆ THỐNG GỬI EMAIL THẬT
+                require_once __DIR__ . '/../helpers/Mailer.php';
+                $email_subject = "Thư mời tham gia quản trị hệ thống Sapo";
+                $email_body = "<h3>Xin chào " . $_POST['first_name'] . ",</h3>";
+                $email_body .= "<p>Bạn vừa được mời tham gia quản trị hệ thống bán hàng.</p>";
+                $email_body .= "<p>Vui lòng click vào link sau để thiết lập mật khẩu: <a href='{$activation_link}'>{$activation_link}</a></p>";
+
+                // Phát lệnh gửi
+                Mailer::sendEmail($_POST['email'], $email_subject, $email_body);
+
+                // Chuyển hướng
                 header("Location: index.php?action=staff_list&success_add=1&invite_link=" . urlencode($activation_link));
                 exit;
             }
