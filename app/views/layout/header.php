@@ -169,6 +169,12 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
 
             <a href="index.php?action=customer_list" class="menu-item <?php echo ($current_action == 'customer_list') ? 'active' : ''; ?>">👥</span> Khách hàng </a>
 
+
+
+            <a href="index.php?action=promo_list" style="display: block; padding: 10px 15px; color: #212b36; text-decoration: none; border-radius: 4px; font-weight: 500;">
+                🎁 Quản lý Khuyến mại
+            </a>
+
             <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">🔍 Quản lý IMEI</a>
             <a href="#" class="menu-item">📄 Đơn hàng</a>
 

@@ -92,6 +92,15 @@ class App
         'edit_shipping'   => ['ShippingController', 'edit'],
         'delete_shipping' => ['ShippingController', 'delete'],
 
+        // Quản lý Khuyến mại
+        'promo_list'   => ['PromotionController', 'list'],
+        'add_promo'    => ['PromotionController', 'add'],
+        'bulk_action_promo' => ['PromotionController', 'bulkAction'],
+        'view_promo'   => ['PromotionController', 'detail'], // Xem chi tiết
+        'edit_promo'   => ['PromotionController', 'edit'],   // Sửa
+        'copy_promo'   => ['PromotionController', 'duplicate'],
+        'promo_settings'   => ['PromotionController', 'settings'],
+
         // Quản lý Cấu hình (Settings)
         'settings'          => ['SettingController', 'index'],
         'general_settings'  => ['SettingController', 'general'],
