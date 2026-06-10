@@ -6,34 +6,31 @@ require_once __DIR__ . '/../models/PromotionModel.php';
 class PromotionController
 {
 
-    // 1. HIỂN THỊ DANH SÁCH KHUYẾN MẠI
+    // 1. HIỂN THỊ DANH SÁCH (CHUẨN V3)
     public function list()
     {
         $db = (new Database())->getConnection();
         $promoModel = new PromotionModel($db);
 
-        // Hứng dữ liệu từ Bộ lọc trên thanh URL
         $search = $_GET['search'] ?? '';
         $status = $_GET['status'] ?? '';
         $type = $_GET['type'] ?? '';
+        $hinh_thuc = $_GET['hinh_thuc'] ?? ''; // Lấy thêm bộ lọc hình thức
 
-        // Đảm bảo tên biến ĐÚNG CHÍNH XÁC là $promotions để view list.php nhận được
-        $promotions = $promoModel->getAllPromotions($search, $status, $type);
+        $promotions = $promoModel->getAllPromotions($search, $status, $type, $hinh_thuc);
 
-        // Tự động cập nhật trạng thái nếu chương trình quá hạn kết thúc
+        // Quét quá hạn -> Đổi thành "Ngừng áp dụng"
         $now = date('Y-m-d H:i:s');
         foreach ($promotions as &$p) {
-            if ($p['no_end_date'] == 0 && $p['end_date'] < $now && $p['status'] != 'Kết thúc') {
-                $db->prepare("UPDATE promotions SET status = 'Kết thúc' WHERE id = ?")->execute([$p['id']]);
-                $p['status'] = 'Kết thúc';
+            if ($p['no_end_date'] == 0 && $p['end_date'] < $now && $p['status'] != 'Ngừng áp dụng') {
+                $db->prepare("UPDATE promotions SET status = 'Ngừng áp dụng' WHERE id = ?")->execute([$p['id']]);
+                $p['status'] = 'Ngừng áp dụng';
             }
         }
-
-        // Gọi view hiển thị danh sách
         require_once __DIR__ . '/../views/promotion/list.php';
     }
 
-    // 2. THÊM MỚI CHƯƠNG TRÌNH KHUYẾN MẠI
+    // 2. THÊM MỚI CHƯƠNG TRÌNH KHUYẾN MẠI (BẢN HOÀN THIỆN)
     public function add()
     {
         $db = (new Database())->getConnection();
@@ -41,9 +38,8 @@ class PromotionController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $promoModel = new PromotionModel($db);
             $promo_name = $_POST['promo_name'] ?? '';
-
-            // Tự sinh mã ngẫu nhiên nếu người dùng để trống
-            $promo_code = !empty($_POST['promo_code']) ? trim($_POST['promo_code']) : 'KM' . strtoupper(uniqid());
+            $is_coupon = isset($_POST['is_coupon']) ? 1 : 0;
+            $promo_code = ($is_coupon && !empty($_POST['promo_code'])) ? trim($_POST['promo_code']) : null;
             $promo_type = $_POST['promo_type'] ?? 'discount_order';
 
             $start_date = $_POST['start_date'] . ' ' . ($_POST['start_time'] ?? '00:00:00');
@@ -51,46 +47,66 @@ class PromotionController
             $end_date = $no_end_date ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
 
             $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
-            $min_order = ($promo_type === 'gift_by_order' || $promo_type === 'discount_order') ? (float)str_replace(['.', ','], '', $_POST['min_order_value'] ?? 0) : 0;
+            $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
 
-            $d_value = ($promo_type === 'discount_order' || $promo_type === 'discount_product') ? (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0) : 0;
+            // Xử lý Giá trị giảm mặc định
+            $d_value = (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0);
             $discount_type = $_POST['discount_type'] ?? 'amount';
+            $max_discount_amount = !empty($_POST['max_discount_amount']) ? (float)str_replace(['.', ','], '', $_POST['max_discount_amount']) : null;
 
-            // ĐÓNG GÓI JSON QUÀ TẶNG THEO QUY TẮC SAPO
+            // Xử lý logic JSON tuỳ theo Loại Khuyến Mại
+            $product_apply_settings = null;
             $gift_settings = null;
-            if ($promo_type === 'gift_by_order') {
-                $gift_settings = json_encode([
-                    'apply_to_type' => $_POST['apply_order_condition'] ?? 'product',
-                    'apply_to_values' => $_POST['apply_order_values'] ?? [],
-                    'gift_product_ids' => $_POST['gift_order_product_ids'] ?? [],
-                    'max_gift_qty' => (int)($_POST['max_gift_order_qty'] ?? 0)
+            $shipping_settings = null;
+
+            if ($promo_type === 'discount_product') {
+                $product_apply_settings = json_encode([
+                    'apply_to' => $_POST['apply_to'] ?? 'all',
+                    'product_ids' => $_POST['apply_product_ids'] ?? [],
+                    'category_ids' => $_POST['apply_category_ids'] ?? []
                 ]);
-            } elseif ($promo_type === 'gift_by_product') {
+            } elseif ($promo_type === 'gift_by_product' || $promo_type === 'gift_by_order') {
+                // Đóng gói Mua X Tặng Y (Chuẩn V3)
                 $gift_settings = json_encode([
-                    'apply_to_type' => $_POST['apply_prod_condition'] ?? 'product',
-                    'apply_to_values' => $_POST['apply_prod_values'] ?? [],
-                    'buy_qty' => (int)($_POST['buy_qty'] ?? 0),
-                    'gift_product_ids' => $_POST['gift_prod_product_ids'] ?? [],
-                    'max_gift_qty' => (int)($_POST['max_gift_prod_qty'] ?? 0),
-                    'apply_multiple' => isset($_POST['apply_multiple']) ? 1 : 0
+                    'buy_condition_type' => $_POST['buy_condition_type'] ?? 'qty',
+                    'buy_min_value' => (float)str_replace(['.', ','], '', $_POST['buy_min_value'] ?? 0),
+                    'buy_apply_to' => $_POST['buy_apply_to'] ?? 'all',
+                    'buy_product_ids' => $_POST['buy_product_ids'] ?? [],
+                    'buy_category_ids' => $_POST['buy_category_ids'] ?? [],
+
+                    'get_qty' => (int)($_POST['get_qty'] ?? 1),
+                    'get_apply_to' => $_POST['get_apply_to'] ?? 'product',
+                    'get_product_ids' => $_POST['get_product_ids'] ?? [],
+                    'get_category_ids' => $_POST['get_category_ids'] ?? [],
+                    'get_discount_type' => $_POST['get_discount_type'] ?? 'free',
+                    'get_discount_value' => (float)str_replace(['.', ','], '', $_POST['get_discount_value'] ?? 0),
+                    'max_gift_applies' => (int)($_POST['max_gift_applies'] ?? 1)
+                ]);
+            } elseif ($promo_type === 'free_shipping') {
+                // Đóng gói Freeship (Chuẩn V3)
+                $max_discount_amount = !empty($_POST['shipping_max_discount']) ? (float)str_replace(['.', ','], '', $_POST['shipping_max_discount']) : null;
+                $shipping_settings = json_encode([
+                    'area_scope' => $_POST['shipping_area_scope'] ?? 'all',
+                    'provinces' => $_POST['shipping_provinces'] ?? [],
+                    'max_shipping_fee' => !empty($_POST['max_shipping_fee']) ? (float)str_replace(['.', ','], '', $_POST['max_shipping_fee']) : null
                 ]);
             }
 
-            // Xử lý các bộ cấu hình nâng cao khác (Giờ vàng, phạm vi chi nhánh, tập khách hàng)
-            $advanced_timing = isset($_POST['enable_advanced_time']) ? json_encode($_POST['advanced_time']) : null;
-            $branch_scope = $_POST['branch_scope'] ?? 'all';
-            $specific_branches = ($branch_scope === 'specific' && !empty($_POST['branches'])) ? json_encode($_POST['branches']) : null;
-            $customer_scope = $_POST['customer_scope'] ?? 'all';
-            $customer_conditions = ($customer_scope === 'specific') ? json_encode($_POST['customer_cond']) : null;
+            $condition_type = $_POST['condition_type'] ?? 'none';
+            $min_order = ($condition_type === 'min_amount' || $condition_type === 'min_product_amount') ? (float)str_replace(['.', ','], '', $_POST['min_order_value'] ?? 0) : 0;
+            $min_qty = ($condition_type === 'min_qty') ? (int)($_POST['min_product_qty'] ?? 0) : 0;
 
-            // Xử lý 2 nút bấm: Nếu bấm "Lưu & Kích hoạt" -> Đang chạy. Bấm "Lưu" -> Chờ chạy.
-            $status = isset($_POST['btn_save_active']) ? 'Đang chạy' : 'Chờ chạy';
+            $sales_channels = !empty($_POST['sales_channels']) ? json_encode($_POST['sales_channels']) : json_encode(['pos', 'web']);
+            $allowed_combinations = !empty($_POST['allowed_combinations']) ? json_encode($_POST['allowed_combinations']) : null;
+            $apply_once_per_order = isset($_POST['apply_once_per_order']) ? 1 : 0;
+            $status = 'Đang áp dụng';
 
             $query = "INSERT INTO promotions (
-                promo_name, promo_code, promo_type, discount_type, discount_value, min_order_value, 
-                start_date, end_date, status, usage_limit, description, no_end_date, 
-                advanced_timing, branch_scope, specific_branches, customer_scope, customer_conditions, gift_settings
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                promo_name, promo_code, promo_type, discount_type, discount_value, max_discount_amount, 
+                min_order_value, min_product_qty, start_date, end_date, status, usage_limit, once_per_customer, 
+                description, no_end_date, gift_settings, shipping_settings, sales_channels, allowed_combinations,
+                apply_once_per_order, product_apply_settings
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $db->prepare($query);
             $stmt->execute([
@@ -99,44 +115,48 @@ class PromotionController
                 $promo_type,
                 $discount_type,
                 $d_value,
+                $max_discount_amount,
                 $min_order,
+                $min_qty,
                 $start_date,
                 $end_date,
                 $status,
                 $usage_limit,
+                $once_per_customer,
                 $_POST['description'] ?? '',
                 $no_end_date,
-                $advanced_timing,
-                $branch_scope,
-                $specific_branches,
-                $customer_scope,
-                $customer_conditions,
-                $gift_settings
+                $gift_settings,
+                $shipping_settings,
+                $sales_channels,
+                $allowed_combinations,
+                $apply_once_per_order,
+                $product_apply_settings
             ]);
 
             header("Location: index.php?action=promo_list&success=1");
             exit;
         }
 
-        // --- ĐOẠN ĐỔ DỮ LIỆU ĐỂ TRUYỀN RA VIEW THÊM MỚI (Tránh lỗi báo đỏ Undefined Variable) ---
         require_once __DIR__ . '/../models/BranchModel.php';
         $branches = (new BranchModel($db))->getAllBranches();
-        $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
-        $categories = $db->query("SELECT id, category_name FROM categories ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
-        $brands = $db->query("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != ''")->fetchAll(PDO::FETCH_COLUMN);
-
+        $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL")->fetchAll(PDO::FETCH_ASSOC);
+        $categories = $db->query("SELECT id, category_name FROM categories")->fetchAll(PDO::FETCH_ASSOC);
         require_once __DIR__ . '/../views/promotion/add.php';
     }
 
-    // 3. XỬ LÝ THAO TÁC HÀNG LOẠT (BẬT/TẮT/XÓA NHIỀU MÃ)
+    // XỬ LÝ THAO TÁC HÀNG LOẠT (CHUẨN V3)
     public function bulkAction()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST['promo_ids']) && !empty($_POST['action'])) {
             $db = (new Database())->getConnection();
             $promoModel = new PromotionModel($db);
 
-            $promoModel->bulkAction($_POST['promo_ids'], $_POST['action']);
+            // OmniAI V3 dùng từ "Tiếp tục" và "Ngừng"
+            $action = $_POST['action'];
+            if ($action === 'Tiếp tục') $action = 'Đang áp dụng';
+            if ($action === 'Ngừng') $action = 'Ngừng áp dụng';
 
+            $promoModel->bulkAction($_POST['promo_ids'], $action);
             header("Location: index.php?action=promo_list&success_bulk=1");
             exit;
         }
@@ -165,7 +185,7 @@ class PromotionController
         require_once __DIR__ . '/../views/promotion/detail.php';
     }
 
-    // 5. CHỈNH SỬA CHƯƠNG TRÌNH KHUYẾN MẠI
+    // 5. CHỈNH SỬA CHƯƠNG TRÌNH KHUYẾN MẠI (CHUẨN V3 OMNIAI)
     public function edit()
     {
         $id = $_GET['id'] ?? 0;
@@ -182,12 +202,12 @@ class PromotionController
             $end_date = isset($_POST['no_end_date']) ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
             $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
 
-            // Nếu chương trình chưa kích hoạt (Chờ chạy/Tạm dừng): Cho sửa tên
-            if ($promo['status'] === 'Chờ chạy' || $promo['status'] === 'Tạm dừng') {
+            // Nếu Chưa áp dụng / Ngừng áp dụng: Cho phép sửa Tên
+            if ($promo['status'] === 'Chưa áp dụng' || $promo['status'] === 'Ngừng áp dụng') {
                 $db->prepare("UPDATE promotions SET promo_name = ?, usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?")
                     ->execute([$_POST['promo_name'], $usage_limit, $end_date, isset($_POST['no_end_date']) ? 1 : 0, $id]);
             } else {
-                // Nếu đang chạy: Chỉ cho sửa Số lượng áp dụng và Ngày kết thúc theo luật Sapo
+                // Nếu Đang áp dụng: Sapo OmniAI chỉ cho sửa Số lượng và Ngày kết thúc
                 $db->prepare("UPDATE promotions SET usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?")
                     ->execute([$usage_limit, $end_date, isset($_POST['no_end_date']) ? 1 : 0, $id]);
             }

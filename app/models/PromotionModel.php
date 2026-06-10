@@ -9,7 +9,7 @@ class PromotionModel
     }
 
     // Nâng cấp: Hỗ trợ Tìm kiếm và Lọc
-    public function getAllPromotions($search = '', $status = '', $type = '')
+    public function getAllPromotions($search = '', $status = '', $type = '', $hinh_thuc = '')
     {
         $query = "SELECT * FROM promotions WHERE 1=1 ";
         $params = [];
@@ -26,6 +26,12 @@ class PromotionModel
         if (!empty($type)) {
             $query .= " AND promo_type = ? ";
             $params[] = $type;
+        }
+        // Bộ lọc V3: Hình thức
+        if ($hinh_thuc === 'coupon') {
+            $query .= " AND promo_code IS NOT NULL AND promo_code != '' ";
+        } elseif ($hinh_thuc === 'auto') {
+            $query .= " AND (promo_code IS NULL OR promo_code = '') ";
         }
 
         $query .= " ORDER BY id DESC";
