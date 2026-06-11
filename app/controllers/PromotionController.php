@@ -261,4 +261,162 @@ class PromotionController
         $settings = $settingModel->getAllSettings();
         require_once __DIR__ . '/../views/promotion/settings.php';
     }
+    /**
+     * THUẬT TOÁN TÍNH TIỀN CHUẨN SAPO OMNIAI V3 (BẢN CHỐNG LỖ CỘNG DỒN)
+     */
+    public function calculateCartTotal($cart_items, $applied_promos, $original_shipping_fee) {
+        $final_cart = [];
+        $total_product_discount = 0;
+        $total_order_discount = 0;
+        $total_shipping_discount = 0;
+
+        // =========================================================================
+        // BƯỚC 1: ÁP DỤNG GIẢM GIÁ SẢN PHẨM (LUẬT "CHỈ CHỌN 1 MỨC GIẢM TỐT NHẤT")
+        // =========================================================================
+        foreach ($cart_items as &$item) {
+            $price_p1 = $item['price'];
+            $best_discount_for_this_item = 0; // Biến lưu mức giảm TỐT NHẤT cho 1 sản phẩm
+
+            foreach ($applied_promos as $promo) {
+                if ($promo['promo_type'] == 'discount_product' && $this->isProductEligible($item['id'], $promo['product_apply_settings'])) {
+                    $current_promo_discount = 0;
+
+                    if ($promo['discount_type'] == 'percent') {
+                        $current_promo_discount = floor(($price_p1 * $promo['discount_value']) / 100);
+                        if (!empty($promo['max_discount_amount']) && $current_promo_discount > $promo['max_discount_amount']) {
+                            $current_promo_discount = $promo['max_discount_amount'];
+                        }
+                    } else if ($promo['discount_type'] == 'amount') {
+                        $current_promo_discount = min($promo['discount_value'], $price_p1);
+                    }
+
+                    // SAPO RULE: So sánh xem khuyến mại này có tốt hơn khuyến mại trước đó không
+                    if ($current_promo_discount > $best_discount_for_this_item) {
+                        $best_discount_for_this_item = $current_promo_discount;
+                    }
+                }
+            }
+            
+            // Chỉ áp dụng Mức giảm TỐT NHẤT duy nhất 1 lần cho sản phẩm này
+            $item_discount_total = $best_discount_for_this_item * $item['qty'];
+            $total_product_discount += $item_discount_total;
+            
+            $item['final_price'] = $price_p1 - $best_discount_for_this_item; 
+            $item['line_total'] = $item['final_price'] * $item['qty'];
+        }
+        unset($item);
+
+        // =========================================================================
+        // BƯỚC 2: MUA X TẶNG Y (Giữ nguyên thuật toán quét và tặng Y giá cao nhất)
+        // =========================================================================
+        foreach ($applied_promos as $promo) {
+            if ($promo['promo_type'] == 'gift_by_product' || $promo['promo_type'] == 'gift_by_order') {
+                $gift = json_decode($promo['gift_settings'], true);
+                $x_count = 0; $y_candidates = [];
+
+                foreach ($cart_items as $k => $item) {
+                    if (in_array($item['id'], $gift['buy_product_ids']) || $gift['buy_apply_to'] == 'all') $x_count += $item['qty'];
+                    if (in_array($item['id'], $gift['get_product_ids'])) {
+                        for ($i = 0; $i < $item['qty']; $i++) $y_candidates[] = ['cart_index' => $k, 'price' => $item['final_price']];
+                    }
+                }
+
+                $req_x = (int)$gift['buy_min_value'];
+                $sets_earned = ($req_x > 0) ? floor($x_count / $req_x) : 1;
+                if (!empty($gift['max_gift_applies']) && $sets_earned > $gift['max_gift_applies']) $sets_earned = $gift['max_gift_applies'];
+                $total_y_to_give = $sets_earned * (int)$gift['get_qty'];
+
+                usort($y_candidates, function($a, $b) { return $b['price'] <=> $a['price']; });
+
+                $given_count = 0;
+                foreach ($y_candidates as $candidate) {
+                    if ($given_count >= $total_y_to_give) break;
+                    $idx = $candidate['cart_index'];
+                    $discount_for_this_y = 0;
+
+                    if ($gift['get_discount_type'] == 'free') $discount_for_this_y = $candidate['price'];
+                    elseif ($gift['get_discount_type'] == 'percent') $discount_for_this_y = floor(($candidate['price'] * $gift['get_discount_value']) / 100);
+                    elseif ($gift['get_discount_type'] == 'amount') $discount_for_this_y = min($gift['get_discount_value'], $candidate['price']);
+
+                    $total_product_discount += $discount_for_this_y;
+                    $cart_items[$idx]['line_total'] -= $discount_for_this_y;
+                    $given_count++;
+                }
+            }
+        }
+
+        $subtotal_after_products = array_sum(array_column($cart_items, 'line_total'));
+
+        // =========================================================================
+        // BƯỚC 3: GIẢM GIÁ ĐƠN HÀNG (Sapo cho phép áp dụng NHIỀU chương trình cùng lúc)
+        // =========================================================================
+        foreach ($applied_promos as $promo) {
+            if ($promo['promo_type'] == 'discount_order') {
+                if ($promo['discount_type'] == 'percent') {
+                    $order_discount = floor(($subtotal_after_products * $promo['discount_value']) / 100);
+                    if (!empty($promo['max_discount_amount']) && $order_discount > $promo['max_discount_amount']) {
+                        $order_discount = $promo['max_discount_amount'];
+                    }
+                } else {
+                    $order_discount = min($promo['discount_value'], $subtotal_after_products);
+                }
+                $total_order_discount += $order_discount;
+            }
+        }
+        
+        // Chốt chặn cuối cùng: Không để tiền giảm lớn hơn tiền hàng
+        $total_order_discount = min($total_order_discount, $subtotal_after_products);
+        $subtotal_after_orders = $subtotal_after_products - $total_order_discount;
+
+        // =========================================================================
+        // BƯỚC 4: VẬN CHUYỂN (LUẬT "CHỈ CHỌN 1 MÃ FREESHIP TỐT NHẤT")
+        // =========================================================================
+        $best_shipping_discount = 0; // Biến lưu mức giảm Freeship lớn nhất
+
+        foreach ($applied_promos as $promo) {
+            if ($promo['promo_type'] == 'free_shipping') {
+                $ship = json_decode($promo['shipping_settings'], true);
+                $max_fee_allowed = (!empty($ship['max_shipping_fee'])) ? $ship['max_shipping_fee'] : 999999999;
+                
+                if ($original_shipping_fee <= $max_fee_allowed) {
+                    $max_ship_discount = !empty($promo['max_discount_amount']) ? $promo['max_discount_amount'] : $original_shipping_fee;
+                    $current_shipping_discount = min($original_shipping_fee, $max_ship_discount);
+                    
+                    // SAPO RULE: Chỉ lấy mã Freeship có lợi nhất
+                    if ($current_shipping_discount > $best_shipping_discount) {
+                        $best_shipping_discount = $current_shipping_discount;
+                    }
+                }
+            }
+        }
+        
+        $total_shipping_discount = $best_shipping_discount;
+        $final_shipping_fee = $original_shipping_fee - $total_shipping_discount;
+
+        // =========================================================================
+        // TỔNG KẾT
+        // =========================================================================
+        $grand_total = $subtotal_after_orders + $final_shipping_fee;
+
+        return [
+            'cart_items' => $cart_items,
+            'summary' => [
+                'total_product_discount' => $total_product_discount,
+                'total_order_discount' => $total_order_discount,
+                'total_shipping_discount' => $total_shipping_discount,
+                'final_shipping_fee' => $final_shipping_fee,
+                'grand_total' => max(0, $grand_total)
+            ]
+        ];
+    }
+
+    // Hàm phụ trợ cho Bước 1
+    private function isProductEligible($product_id, $settings_json)
+    {
+        if (!$settings_json) return true;
+        $settings = json_decode($settings_json, true);
+        if ($settings['apply_to'] == 'all') return true;
+        if ($settings['apply_to'] == 'product' && in_array($product_id, $settings['product_ids'])) return true;
+        return false;
+    }
 }
