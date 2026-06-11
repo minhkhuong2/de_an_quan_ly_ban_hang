@@ -1,0 +1,2 @@
+# Ép GitHub nhận diện đúng ngôn ngữ PHP (không nhầm sang Hack)
+*.php linguist-language=PHP
