@@ -264,7 +264,8 @@ class PromotionController
     /**
      * THUẬT TOÁN TÍNH TIỀN CHUẨN SAPO OMNIAI V3 (BẢN CHỐNG LỖ CỘNG DỒN)
      */
-    public function calculateCartTotal($cart_items, $applied_promos, $original_shipping_fee) {
+    public function calculateCartTotal($cart_items, $applied_promos, $original_shipping_fee)
+    {
         $final_cart = [];
         $total_product_discount = 0;
         $total_order_discount = 0;
@@ -296,12 +297,12 @@ class PromotionController
                     }
                 }
             }
-            
+
             // Chỉ áp dụng Mức giảm TỐT NHẤT duy nhất 1 lần cho sản phẩm này
             $item_discount_total = $best_discount_for_this_item * $item['qty'];
             $total_product_discount += $item_discount_total;
-            
-            $item['final_price'] = $price_p1 - $best_discount_for_this_item; 
+
+            $item['final_price'] = $price_p1 - $best_discount_for_this_item;
             $item['line_total'] = $item['final_price'] * $item['qty'];
         }
         unset($item);
@@ -312,7 +313,8 @@ class PromotionController
         foreach ($applied_promos as $promo) {
             if ($promo['promo_type'] == 'gift_by_product' || $promo['promo_type'] == 'gift_by_order') {
                 $gift = json_decode($promo['gift_settings'], true);
-                $x_count = 0; $y_candidates = [];
+                $x_count = 0;
+                $y_candidates = [];
 
                 foreach ($cart_items as $k => $item) {
                     if (in_array($item['id'], $gift['buy_product_ids']) || $gift['buy_apply_to'] == 'all') $x_count += $item['qty'];
@@ -326,7 +328,9 @@ class PromotionController
                 if (!empty($gift['max_gift_applies']) && $sets_earned > $gift['max_gift_applies']) $sets_earned = $gift['max_gift_applies'];
                 $total_y_to_give = $sets_earned * (int)$gift['get_qty'];
 
-                usort($y_candidates, function($a, $b) { return $b['price'] <=> $a['price']; });
+                usort($y_candidates, function ($a, $b) {
+                    return $b['price'] <=> $a['price'];
+                });
 
                 $given_count = 0;
                 foreach ($y_candidates as $candidate) {
@@ -363,7 +367,7 @@ class PromotionController
                 $total_order_discount += $order_discount;
             }
         }
-        
+
         // Chốt chặn cuối cùng: Không để tiền giảm lớn hơn tiền hàng
         $total_order_discount = min($total_order_discount, $subtotal_after_products);
         $subtotal_after_orders = $subtotal_after_products - $total_order_discount;
@@ -377,11 +381,11 @@ class PromotionController
             if ($promo['promo_type'] == 'free_shipping') {
                 $ship = json_decode($promo['shipping_settings'], true);
                 $max_fee_allowed = (!empty($ship['max_shipping_fee'])) ? $ship['max_shipping_fee'] : 999999999;
-                
+
                 if ($original_shipping_fee <= $max_fee_allowed) {
                     $max_ship_discount = !empty($promo['max_discount_amount']) ? $promo['max_discount_amount'] : $original_shipping_fee;
                     $current_shipping_discount = min($original_shipping_fee, $max_ship_discount);
-                    
+
                     // SAPO RULE: Chỉ lấy mã Freeship có lợi nhất
                     if ($current_shipping_discount > $best_shipping_discount) {
                         $best_shipping_discount = $current_shipping_discount;
@@ -389,7 +393,7 @@ class PromotionController
                 }
             }
         }
-        
+
         $total_shipping_discount = $best_shipping_discount;
         $final_shipping_fee = $original_shipping_fee - $total_shipping_discount;
 
@@ -418,5 +422,102 @@ class PromotionController
         if ($settings['apply_to'] == 'all') return true;
         if ($settings['apply_to'] == 'product' && in_array($product_id, $settings['product_ids'])) return true;
         return false;
+    }
+    /**
+     * HÀM ÁNH XẠ LOẠI KHUYẾN MẠI RA CHUẨN KẾT HỢP
+     */
+    private function mapComboType($db_promo_type)
+    {
+        if ($db_promo_type == 'discount_product' || $db_promo_type == 'gift_by_product' || $db_promo_type == 'gift_by_order') {
+            return 'product';
+        }
+        if ($db_promo_type == 'discount_order') {
+            return 'order';
+        }
+        if ($db_promo_type == 'free_shipping') {
+            return 'shipping';
+        }
+        return '';
+    }
+
+    /**
+     * HÀM KIỂM TRA CHÉO (MUTUAL CONSENT) THEO ĐÚNG TÀI LIỆU
+     * Khuyến mại A phải cho phép loại của B, VÀ Khuyến mại B phải cho phép loại của A
+     */
+    private function checkMutualConsent($promoA, $promoB)
+    {
+        // Nếu là cùng 1 khuyến mại thì bỏ qua
+        if ($promoA['id'] == $promoB['id']) return true;
+
+        $typeA = $this->mapComboType($promoA['promo_type']);
+        $typeB = $this->mapComboType($promoB['promo_type']);
+
+        $comboA = json_decode($promoA['allowed_combinations'], true) ?? [];
+        $comboB = json_decode($promoB['allowed_combinations'], true) ?? [];
+
+        // A có cho phép B không? VÀ B có cho phép A không?
+        $A_allows_B = in_array($typeB, $comboA);
+        $B_allows_A = in_array($typeA, $comboB);
+
+        return ($A_allows_B && $B_allows_A);
+    }
+    /**
+     * HÀM TÌM NHÓM KHUYẾN MẠI TỐT NHẤT (THE BEST VALID GROUP)
+     */
+    public function getBestPromoGroup($eligible_promos, $cart_items, $original_shipping_fee)
+    {
+        $valid_groups = [];
+
+        // Thuật toán sinh các nhóm (Để đơn giản cho hệ thống nhỏ, ta nhóm theo cặp hoặc bộ 3)
+        // Duyệt qua từng promo làm "Node trung tâm"
+        foreach ($eligible_promos as $promoA) {
+            $current_group = [$promoA]; // Khởi tạo nhóm có chứa A
+
+            // Tìm các Promo khác có thể chơi chung với TẤT CẢ các thành viên trong nhóm hiện tại
+            foreach ($eligible_promos as $promoB) {
+                if ($promoA['id'] == $promoB['id']) continue;
+
+                $can_join_group = true;
+                foreach ($current_group as $group_member) {
+                    if (!$this->checkMutualConsent($group_member, $promoB)) {
+                        $can_join_group = false;
+                        break;
+                    }
+                }
+
+                if ($can_join_group) {
+                    $current_group[] = $promoB;
+                }
+            }
+
+            // Sinh ra một ID đại diện cho nhóm (để tránh trùng lặp nhóm)
+            $group_ids = array_column($current_group, 'id');
+            sort($group_ids);
+            $group_key = implode('_', $group_ids);
+
+            $valid_groups[$group_key] = $current_group;
+        }
+
+        // Tính toán thử số tiền giảm giá của từng nhóm để tìm ra "Nhà vô địch"
+        $best_group = [];
+        $max_discount_value = -1;
+
+        foreach ($valid_groups as $group) {
+            // Gọi cái hàm calculateCartTotal() mà mình làm cho bạn ở bài trước để tính nháp
+            $calculation_result = $this->calculateCartTotal($cart_items, $group, $original_shipping_fee);
+
+            // Tính tổng tiền khách ĐƯỢC GIẢM (Càng nhiều càng tốt)
+            $summary = $calculation_result['summary'];
+            $total_discount_for_this_group = $summary['total_product_discount']
+                + $summary['total_order_discount']
+                + $summary['total_shipping_discount'];
+
+            if ($total_discount_for_this_group > $max_discount_value) {
+                $max_discount_value = $total_discount_for_this_group;
+                $best_group = $group; // Chốt nhóm này là nhóm Vô Địch
+            }
+        }
+
+        return $best_group; // Trả về nhóm khuyến mại có lợi nhất cho khách hàng
     }
 }
