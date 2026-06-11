@@ -27,7 +27,7 @@ class Mailer
         $smtp_port = $settings['smtp_port'] ?? '587';
         $smtp_email = $settings['smtp_email'] ?? 'khuongbuivan826@gmail.com';
         $smtp_password = $settings['smtp_password'] ?? 'yaej jcxf rmqw dmub';
-        $store_name = $settings['store_name'] ?? 'Sapo Store';
+        $store_name = $settings['store_name'] ?? 'AAKC Store';
 
         // Nếu người dùng chưa cấu hình Email, ghi log giả lập (tránh sập web)
         if (empty($smtp_email) || empty($smtp_password)) {

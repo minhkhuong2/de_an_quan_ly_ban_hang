@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Đăng ký nhân viên - Sapo AAKC</title>
+    <title>Đăng ký nhân viên - AAKC STORE</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -83,7 +83,7 @@
 <body>
 
     <div class="register-card">
-        <div class="logo-title">🛒 SAPO OMNIAI</div>
+        <div class="logo-title">🛒 AAKC STORE</div>
         <div class="sub-title">Khởi tạo tài khoản nhân viên hệ thống</div>
 
         <?php if (!empty($message)) echo $message; ?>

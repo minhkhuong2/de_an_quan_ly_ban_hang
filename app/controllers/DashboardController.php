@@ -16,7 +16,7 @@ class DashboardController
         // 2. Khởi tạo Model mới
         $productModel = new ProductModel($db);
 
-        // 3. THỐNG KÊ DASHBOARD (Nâng cấp theo hệ thống Sapo mới)
+        // 3. THỐNG KÊ DASHBOARD (Nâng cấp theo hệ thống mới)
 
         // Đếm tổng số lượng dòng sản phẩm đang có
         $allProducts = $productModel->getAllProducts();

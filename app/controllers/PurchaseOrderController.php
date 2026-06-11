@@ -244,7 +244,7 @@ class PurchaseOrderController
 
         $order = $poModel->getOrderById($id);
         if (!$order || $order['status'] == 'Nhập toàn bộ' || $order['status'] == 'Đã hủy') {
-            // Không cho sửa các đơn đã hoàn thành hoặc đã hủy theo logic Sapo
+            // Không cho sửa các đơn đã hoàn thành hoặc đã hủy theo logic
             header("Location: index.php?action=purchase_list");
             exit;
         }

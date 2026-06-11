@@ -47,7 +47,7 @@
 
 <form action="index.php?action=add_branch" method="POST" class="sapo-card">
     <h3 style="font-size: 16px; margin-top:0; border-bottom: 1px solid #dfe3e8; padding-bottom: 10px;">1. Thông tin cơ bản</h3>
-    <div class="form-group"><label>Tên chi nhánh <span style="color:red;">*</span></label><input type="text" name="branch_name" class="form-control" required placeholder="VD: Sapo Cầu Giấy"></div>
+    <div class="form-group"><label>Tên chi nhánh <span style="color:red;">*</span></label><input type="text" name="branch_name" class="form-control" required placeholder="VD: Cầu Giấy"></div>
     <div style="display: flex; gap:15px;">
         <div class="form-group" style="flex:1;"><label>Số điện thoại</label><input type="text" name="phone" class="form-control"></div>
         <div class="form-group" style="flex:1;"><label>Email</label><input type="email" name="email" class="form-control"></div>

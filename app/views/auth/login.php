@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập hệ thống - Sapo AAKC</title>
+    <title>Đăng nhập hệ thống - AAKC STORE</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -99,7 +99,7 @@
 <body>
 
     <div class="login-card">
-        <div class="logo-title">🛒 SAPO OMNIAI</div>
+        <div class="logo-title">🛒 AAKC STORE</div>
         <div class="sub-title">Đăng nhập để quản lý cửa hàng của bạn</div>
 
         <?php if (!empty($error)) echo "<div class='error-msg'>$error</div>"; ?>

@@ -19,7 +19,7 @@ class SettingController
         $settingModel = new SettingModel($db);
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            // Danh sách các trường thông tin chuẩn Sapo
+            // Danh sách các trường thông tin chuẩn
             $allowed_keys = [
                 'store_name',
                 'business_name',

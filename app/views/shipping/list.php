@@ -5,7 +5,7 @@ $safe_partners = is_array($partners) ? $partners : [];
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Đối tác vận chuyển (Sapo Express)</h2>
+    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Đối tác vận chuyển (AAKC Express)</h2>
     <a href="index.php?action=add_shipping" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Thêm ĐVVC mới</a>
 </div>
 

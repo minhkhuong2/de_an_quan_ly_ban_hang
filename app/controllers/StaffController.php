@@ -33,7 +33,7 @@ class StaffController
 
                 // GỌI HỆ THỐNG GỬI EMAIL THẬT
                 require_once __DIR__ . '/../helpers/Mailer.php';
-                $email_subject = "Thư mời tham gia quản trị hệ thống Sapo";
+                $email_subject = "Thư mời tham gia quản trị hệ thống";
                 $email_body = "<h3>Xin chào " . $_POST['first_name'] . ",</h3>";
                 $email_body .= "<p>Bạn vừa được mời tham gia quản trị hệ thống bán hàng.</p>";
                 $email_body .= "<p>Vui lòng click vào link sau để thiết lập mật khẩu: <a href='{$activation_link}'>{$activation_link}</a></p>";

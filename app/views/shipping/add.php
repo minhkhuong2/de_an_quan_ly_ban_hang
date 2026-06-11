@@ -49,7 +49,7 @@
         <div class="form-group" style="flex:1;">
             <label>Giới hạn số lần giao lại (Theo chính sách)</label>
             <input type="number" name="max_retry" class="form-control" value="3" min="1" max="5">
-            <span style="font-size: 12px; color: #637381;">Sapo mặc định 3 lần</span>
+            <span style="font-size: 12px; color: #637381;">AAKC mặc định 3 lần</span>
         </div>
         <div class="form-group" style="flex:1;">
             <label>Trạng thái kết nối</label>

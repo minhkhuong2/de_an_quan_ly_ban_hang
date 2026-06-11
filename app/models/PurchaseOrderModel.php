@@ -28,7 +28,7 @@ class PurchaseOrderModel
             foreach ($products as $item) {
                 $stmtDetail->execute([$order_id, $item['product_id'], $item['quantity'], $item['price']]);
 
-                // Dựa theo tài liệu Sapo: Duyệt đơn thì mới tăng "Đang về kho"
+                // Dựa theo tài liệu: Duyệt đơn thì mới tăng "Đang về kho"
                 if ($status == 'Chờ nhập') {
                     $updateStock = "UPDATE products SET dang_ve_kho = dang_ve_kho + ? WHERE id = ?";
                     $stmtStock = $this->conn->prepare($updateStock);

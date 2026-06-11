@@ -17,7 +17,7 @@ class BranchController
         $db = (new Database())->getConnection();
         $branchModel = new BranchModel($db);
 
-        // Kiểm tra số lượng kho (Mô phỏng giới hạn gói dịch vụ của Sapo)
+        // Kiểm tra số lượng kho (Mô phỏng giới hạn gói dịch vụ)
         $current_branches = count($branchModel->getAllBranches());
         if ($current_branches >= 5) {
             die("<h2 style='text-align:center; margin-top:50px; color:#cf1322;'>Cảnh báo: Gói dịch vụ của bạn đã đạt giới hạn tối đa (5 chi nhánh)! Vui lòng liên hệ CSKH.</h2>");
@@ -83,5 +83,5 @@ class BranchController
         require_once __DIR__ . '/../views/branch/edit.php';
     }
 
-    // Đã xóa hàm delete() vì Sapo không cho phép xóa chi nhánh!
+    // Đã xóa hàm delete() vì không cho phép xóa chi nhánh!
 }

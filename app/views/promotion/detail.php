@@ -6,7 +6,7 @@ require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <style>
-    /* CSS CHUẨN MINIMALISM SAPO OMNIAI V3 */
+    /* CSS CHUẨN MINIMALISM V2 */
     .v3-header {
         display: flex;
         justify-content: space-between;

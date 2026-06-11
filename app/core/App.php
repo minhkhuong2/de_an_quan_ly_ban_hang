@@ -86,7 +86,7 @@ class App
         'delete_staff'    => ['StaffController', 'delete'],
         'activate_staff'  => ['StaffController', 'activate'],
 
-        // Quản lý Vận chuyển (Sapo Express)
+        // Quản lý Vận chuyển (Express)
         'shipping_list'   => ['ShippingController', 'list'],
         'add_shipping'    => ['ShippingController', 'add'],
         'edit_shipping'   => ['ShippingController', 'edit'],
