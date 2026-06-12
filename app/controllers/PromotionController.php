@@ -27,6 +27,7 @@ class PromotionController
                 $p['status'] = 'Ngừng áp dụng';
             }
         }
+        unset($p);
         require_once __DIR__ . '/../views/promotion/list.php';
     }
 
@@ -46,7 +47,7 @@ class PromotionController
             $no_end_date = isset($_POST['no_end_date']) ? 1 : 0;
             $end_date = $no_end_date ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
 
-            $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
+            $usage_limit = (!isset($_POST['has_usage_limit'])) ? null : (int)$_POST['usage_limit'];
             $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
 
             // Xử lý Giá trị giảm mặc định
@@ -99,7 +100,8 @@ class PromotionController
             $sales_channels = !empty($_POST['sales_channels']) ? json_encode($_POST['sales_channels']) : json_encode(['pos', 'web']);
             $allowed_combinations = !empty($_POST['allowed_combinations']) ? json_encode($_POST['allowed_combinations']) : null;
             $apply_once_per_order = isset($_POST['apply_once_per_order']) ? 1 : 0;
-            $status = 'Đang áp dụng';
+            $now = date('Y-m-d H:i:s');
+            $status = ($start_date > $now) ? 'Chưa áp dụng' : 'Đang áp dụng';
 
             $query = "INSERT INTO promotions (
                 promo_name, promo_code, promo_type, discount_type, discount_value, max_discount_amount, 
@@ -199,18 +201,94 @@ class PromotionController
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $end_date = isset($_POST['no_end_date']) ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
-            $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
+            // FIX LỖI UNDEFINED VARIABLE
+            $no_end_date = isset($_POST['no_end_date']) ? 1 : 0;
 
-            // Nếu Chưa áp dụng / Ngừng áp dụng: Cho phép sửa Tên
+            $end_date = $no_end_date ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
+            $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
+            $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
+
+            // KIỂM TRA TRẠNG THÁI THEO LUẬT SAPO V3
             if ($promo['status'] === 'Chưa áp dụng' || $promo['status'] === 'Ngừng áp dụng') {
-                $db->prepare("UPDATE promotions SET promo_name = ?, usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?")
-                    ->execute([$_POST['promo_name'], $usage_limit, $end_date, isset($_POST['no_end_date']) ? 1 : 0, $id]);
+                $promo_name = $_POST['promo_name'] ?? '';
+                $d_value = (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0);
+                $discount_type = $_POST['discount_type'] ?? 'amount';
+                $max_discount_amount = !empty($_POST['max_discount_amount']) ? (float)str_replace(['.', ','], '', $_POST['max_discount_amount']) : null;
+
+                $condition_type = $_POST['condition_type'] ?? 'none';
+                $min_order = ($condition_type === 'min_amount' || $condition_type === 'min_product_amount') ? (float)str_replace(['.', ','], '', $_POST['min_order_value'] ?? 0) : 0;
+                $min_qty = ($condition_type === 'min_qty') ? (int)($_POST['min_product_qty'] ?? 0) : 0;
+
+                $product_apply_settings = null;
+                $gift_settings = null;
+                $shipping_settings = null;
+
+                if ($promo['promo_type'] === 'discount_product') {
+                    $product_apply_settings = json_encode([
+                        'apply_to' => $_POST['apply_to'] ?? 'all',
+                        'product_ids' => $_POST['apply_product_ids'] ?? [],
+                        'category_ids' => $_POST['apply_category_ids'] ?? []
+                    ]);
+                } elseif ($promo['promo_type'] === 'gift_by_product' || $promo['promo_type'] === 'gift_by_order') {
+                    $gift_settings = json_encode([
+                        'buy_condition_type' => $_POST['buy_condition_type'] ?? 'qty',
+                        'buy_min_value' => (float)str_replace(['.', ','], '', $_POST['buy_min_value'] ?? 0),
+                        'buy_apply_to' => $_POST['buy_apply_to'] ?? 'all',
+                        'buy_product_ids' => $_POST['buy_product_ids'] ?? [],
+                        'buy_category_ids' => $_POST['buy_category_ids'] ?? [],
+                        'get_qty' => (int)($_POST['get_qty'] ?? 1),
+                        'get_apply_to' => $_POST['get_apply_to'] ?? 'product',
+                        'get_product_ids' => $_POST['get_product_ids'] ?? [],
+                        'get_category_ids' => $_POST['get_category_ids'] ?? [],
+                        'get_discount_type' => $_POST['get_discount_type'] ?? 'free',
+                        'get_discount_value' => (float)str_replace(['.', ','], '', $_POST['get_discount_value'] ?? 0),
+                        'max_gift_applies' => (int)($_POST['max_gift_applies'] ?? 1)
+                    ]);
+                } elseif ($promo['promo_type'] === 'free_shipping') {
+                    $max_discount_amount = !empty($_POST['shipping_max_discount']) ? (float)str_replace(['.', ','], '', $_POST['shipping_max_discount']) : null;
+                    $shipping_settings = json_encode([
+                        'area_scope' => $_POST['shipping_area_scope'] ?? 'all',
+                        'provinces' => $_POST['shipping_provinces'] ?? [],
+                        'max_shipping_fee' => !empty($_POST['max_shipping_fee']) ? (float)str_replace(['.', ','], '', $_POST['max_shipping_fee']) : null
+                    ]);
+                }
+
+                $sales_channels = !empty($_POST['sales_channels']) ? json_encode($_POST['sales_channels']) : json_encode(['pos', 'web']);
+                $allowed_combinations = !empty($_POST['allowed_combinations']) ? json_encode($_POST['allowed_combinations']) : null;
+                $apply_once_per_order = isset($_POST['apply_once_per_order']) ? 1 : 0;
+
+                $query = "UPDATE promotions SET 
+                    promo_name = ?, discount_type = ?, discount_value = ?, max_discount_amount = ?, 
+                    min_order_value = ?, min_product_qty = ?, end_date = ?, no_end_date = ?, 
+                    usage_limit = ?, once_per_customer = ?, gift_settings = ?, shipping_settings = ?, 
+                    sales_channels = ?, allowed_combinations = ?, apply_once_per_order = ?, product_apply_settings = ?
+                    WHERE id = ?";
+
+                $db->prepare($query)->execute([
+                    $promo_name,
+                    $discount_type,
+                    $d_value,
+                    $max_discount_amount,
+                    $min_order,
+                    $min_qty,
+                    $end_date,
+                    $no_end_date,
+                    $usage_limit,
+                    $once_per_customer,
+                    $gift_settings ?? $promo['gift_settings'],
+                    $shipping_settings ?? $promo['shipping_settings'],
+                    $sales_channels,
+                    $allowed_combinations,
+                    $apply_once_per_order,
+                    $product_apply_settings ?? $promo['product_apply_settings'],
+                    $id
+                ]);
             } else {
-                // Nếu Đang áp dụng: Sapo OmniAI chỉ cho sửa Số lượng và Ngày kết thúc
-                $db->prepare("UPDATE promotions SET usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?")
-                    ->execute([$usage_limit, $end_date, isset($_POST['no_end_date']) ? 1 : 0, $id]);
+                // 2. ĐANG ÁP DỤNG: CHỈ ĐƯỢC PHÉP SỬA SỐ LƯỢNG VÀ NGÀY KẾT THÚC
+                $query = "UPDATE promotions SET usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?";
+                $db->prepare($query)->execute([$usage_limit, $end_date, $no_end_date, $id]);
             }
+
             header("Location: index.php?action=view_promo&id=" . $id . "&success_edit=1");
             exit;
         }
@@ -519,5 +597,56 @@ class PromotionController
         }
 
         return $best_group; // Trả về nhóm khuyến mại có lợi nhất cho khách hàng
+    }
+    // HÀM HIỂN THỊ CHI TIẾT
+    public function view()
+    {
+        $id = $_GET['id'] ?? 0;
+        $db = (new Database())->getConnection();
+        $promoModel = new PromotionModel($db);
+        $promo = $promoModel->getPromotionById($id);
+
+        if (!$promo) {
+            header("Location: index.php?action=promo_list");
+            exit;
+        }
+
+        $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL")->fetchAll(PDO::FETCH_ASSOC);
+        $categories = $db->query("SELECT id, category_name FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+        $applied_orders = []; // Nếu sau này có bảng đơn hàng thì query ở đây
+
+        require_once __DIR__ . '/../views/promotion/detail.php';
+    }
+
+    // HÀM SAO CHÉP (COPY) - ĐÂY LÀ HÀM BẠN ĐANG THIẾU
+    public function copy()
+    {
+        $id = $_GET['id'] ?? 0;
+        $db = (new Database())->getConnection();
+        $promoModel = new PromotionModel($db);
+        $promo = $promoModel->getPromotionById($id);
+
+        if (!$promo) {
+            header("Location: index.php?action=promo_list");
+            exit;
+        }
+
+        // Đổi tên và làm mới Mã KM cho bản sao
+        $promo['promo_name'] = $promo['promo_name'] . ' (Bản sao)';
+        if (!empty($promo['promo_code'])) {
+            $promo['promo_code'] = 'KM' . strtoupper(substr(md5(uniqid()), 0, 6));
+        }
+
+        // Reset trạng thái để không bị khóa
+        $promo['status'] = 'Chưa áp dụng';
+        $promo['used_count'] = 0;
+
+        require_once __DIR__ . '/../models/BranchModel.php';
+        $branches = (new BranchModel($db))->getAllBranches();
+        $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+        $categories = $db->query("SELECT id, category_name FROM categories ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+        // Chuyển sang trang add.php kèm theo dữ liệu mồi
+        require_once __DIR__ . '/../views/promotion/add.php';
     }
 }

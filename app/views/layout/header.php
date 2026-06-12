@@ -171,12 +171,18 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
 
 
 
-            <a href="index.php?action=promo_list" style="display: block; padding: 10px 15px; color: #212b36; text-decoration: none; border-radius: 4px; font-weight: 500;">
-                🎁 Quản lý Khuyến mại
-            </a>
-
+            <a href="index.php?action=promo_list" class="menu-item <?php echo in_array($current_action, ['promo_list', 'add_promo', 'view_promo', 'edit_promo', 'copy_promo', 'promo_settings']) ? 'active' : ''; ?>">🎁 Quản lý Khuyến mại</a>
             <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">🔍 Quản lý IMEI</a>
-            <a href="#" class="menu-item">📄 Đơn hàng</a>
+            <li class="menu-item">
+                <a href="index.php?action=order_list" class="menu-link">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-text">Đơn hàng</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="index.php?action=order_list">Danh sách đơn hàng</a></li>
+                    <li><a href="index.php?action=create_order">Tạo đơn hàng (Online)</a></li>
+                </ul>
+            </li>
 
             <a href="index.php?action=settings" class="menu-item <?php echo ($current_action == 'settings') ? 'active' : ''; ?>">⚙️ Cài đặt</a>
         </div>

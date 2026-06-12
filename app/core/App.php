@@ -105,6 +105,11 @@ class App
         'settings'          => ['SettingController', 'index'],
         'general_settings'  => ['SettingController', 'general'],
 
+        // --- Quản lý Đơn hàng (Online) ---
+        'order_list'       => ['OrderController', 'list'],
+        'create_order'     => ['OrderController', 'create'],
+        'calculate_api'    => ['OrderController', 'calculate_api'],
+
 
         // --- POS Bán hàng ---
         'pos'              => ['OrderController', 'pos'],

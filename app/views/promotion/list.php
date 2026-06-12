@@ -365,7 +365,8 @@ $current_status = $_GET['status'] ?? '';
             </button>
         </div>
 
-        <div class="v3-advanced-filter" id="advancedFilter">
+        <?php $has_advanced_filter = !empty($_GET['hinh_thuc']) || !empty($_GET['type']); ?>
+        <div class="v3-advanced-filter" id="advancedFilter" style="<?php echo $has_advanced_filter ? 'display:flex;' : ''; ?>">
             <select name="hinh_thuc" class="filter-select">
                 <option value="">-- Hình thức --</option>
                 <option value="coupon" <?php if (($_GET['hinh_thuc'] ?? '') == 'coupon') echo 'selected'; ?>>Mã Khuyến mại</option>
