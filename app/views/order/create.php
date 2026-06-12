@@ -380,7 +380,7 @@
         }
 
         // Định tuyến URL theo MVC của bạn
-        let apiUrl = 'index.php?url=order/calculate_api';
+        let apiUrl = 'index.php?action=calculate_api';
         // Nếu file index.php của bạn dùng ?action= thay vì ?url= thì đổi thành: 'index.php?action=calculate_api'
 
         fetch(apiUrl, {
@@ -453,6 +453,68 @@
         // Cập nhật số lượng sản phẩm trên tiêu đề
         document.querySelector('.summary-line span').innerText = `Tổng tiền hàng (${final_cart_items.reduce((sum, i) => sum + i.qty, 0)} sản phẩm)`;
     }
+    // 5. CHỨC NĂNG LƯU ĐƠN HÀNG (SUBMIT TO DATABASE)
+    function submitOrder() {
+        if (cart.length === 0) {
+            alert('Vui lòng chọn ít nhất 1 sản phẩm để tạo đơn!');
+            return;
+        }
+
+        // Lấy thông tin thanh toán từ giao diện
+        let paymentStatus = document.getElementById('payment_status').value;
+        let paymentMethod = document.getElementById('payment_method').value;
+
+        // Lấy lại cái summary hiện tại trên màn hình
+        let summary = {
+            total_product_discount: parseFloat(document.getElementById('txt_discount').innerText.replace(/[^\d]/g, '')) || 0,
+            total_order_discount: 0,
+            final_shipping_fee: parseFloat(document.getElementById('txt_shipping').innerText.replace(/[^\d]/g, '')) || 0,
+            grand_total: parseFloat(document.getElementById('txt_grand_total').innerText.replace(/[^\d]/g, '')) || 0
+        };
+
+        let btn = document.querySelector('.btn-primary');
+        btn.innerText = 'Đang tạo đơn... ⏳';
+        btn.disabled = true;
+
+        // Gửi dữ liệu về backend
+        fetch('index.php?action=store_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cart_items: cart,
+                    summary: summary,
+                    payment_status: paymentStatus,
+                    payment_method: paymentMethod
+                })
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    alert('🎉 ' + res.msg + ' Mã đơn: ' + res.order_code);
+                    window.location.href = 'index.php?action=create_order'; // Reset lại màn hình
+                } else {
+                    alert('❌ Lỗi: ' + res.msg);
+                    btn.innerText = 'Tạo đơn hàng';
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Lỗi kết nối máy chủ!');
+                btn.innerText = 'Tạo đơn hàng';
+                btn.disabled = false;
+            });
+    }
+
+    // Gắn sự kiện vào nút "Tạo đơn hàng" trên giao diện
+    document.addEventListener('DOMContentLoaded', () => {
+        let btnSubmit = document.querySelectorAll('.action-row .btn-primary')[0];
+        if (btnSubmit) {
+            btnSubmit.onclick = submitOrder;
+        }
+    });
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

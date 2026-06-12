@@ -109,6 +109,7 @@ class App
         'order_list'       => ['OrderController', 'list'],
         'create_order'     => ['OrderController', 'create'],
         'calculate_api'    => ['OrderController', 'calculate_api'],
+        'store_order'      => ['OrderController', 'store'],
 
 
         // --- POS Bán hàng ---
