@@ -1,67 +1,62 @@
 <?php
 // Đường dẫn: app/controllers/SettingController.php
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../models/SettingModel.php';
 
 class SettingController
 {
-
-    // 1. Hiển thị Trang Lưới Cấu hình (Hub)
-    public function index()
-    {
-        require_once __DIR__ . '/../views/setting/index.php';
-    }
-
-    // 2. Xử lý Form Cấu hình chung (Tên, SĐT, Địa chỉ shop...)
-    public function general()
+    // Hiển thị giao diện Cấu hình POS
+    public function pos_settings()
     {
         $db = (new Database())->getConnection();
-        $settingModel = new SettingModel($db);
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            // Danh sách các trường thông tin chuẩn
-            $allowed_keys = [
-                'store_name',
-                'business_name',
-                'store_phone',
-                'store_address',
-                'store_country',
-                'store_province',
-                'admin_email',
-                'notification_email',
-                'inventory_type',
-                'costing_method' // <--- Thêm dòng này
+        // Lấy toàn bộ cấu hình từ DB
+        $stmt = $db->query("SELECT setting_key, setting_value FROM settings");
+        $settings_db = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // Trả về mảng ['key' => 'value']
+
+        require_once __DIR__ . '/../views/setting/pos.php';
+    }
+
+    // Lưu cấu hình khi bấm nút Cập nhật
+    public function save_pos_settings()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $db = (new Database())->getConnection();
+
+            // Danh sách các checkbox/toggle (Nếu không check thì POST sẽ không gửi lên, nên cần gán mặc định là 0)
+            $toggles = [
+                'pos_allow_negative_stock',
+                'pos_suggest_amount',
+                'pos_allow_price_edit',
+                'pos_auto_promotions',
+                'pos_use_promo_code',
+                'pos_shift_management',
+                'pos_cash_register',
+                'pos_barcode_scale',
+                'pos_preprint_invoice',
+                'pos_force_full_payment',
+                'pos_sapo_qr',
+                'pos_auto_print',
+                'pos_offline_mode'
             ];
 
-            // Lưu các trường văn bản
-            foreach ($allowed_keys as $key) {
+            // Cập nhật các Toggle
+            foreach ($toggles as $key) {
+                $value = isset($_POST[$key]) ? '1' : '0';
+                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+                $stmt->execute([$key, $value, $value]);
+            }
+
+            // Cập nhật các Text/Select (Khổ in, số bản in, kiểu thanh toán)
+            $texts = ['pos_payment_steps', 'pos_print_copies', 'pos_print_size'];
+            foreach ($texts as $key) {
                 if (isset($_POST[$key])) {
-                    $settingModel->updateSetting($key, $_POST[$key]);
+                    $value = $_POST[$key];
+                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+                    $stmt->execute([$key, $value, $value]);
                 }
             }
 
-            // Xử lý Xóa Logo
-            if (isset($_POST['remove_logo']) && $_POST['remove_logo'] === '1') {
-                $settingModel->updateSetting('store_logo', '');
-            }
-
-            // Xử lý Upload Logo mới
-            if (isset($_FILES['store_logo']) && $_FILES['store_logo']['error'] == 0) {
-                $uploadDir = __DIR__ . '/../../public/uploads/';
-                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
-                $fileName = time() . '_logo_' . basename($_FILES["store_logo"]["name"]);
-                if (move_uploaded_file($_FILES["store_logo"]["tmp_name"], $uploadDir . $fileName)) {
-                    $settingModel->updateSetting('store_logo', 'uploads/' . $fileName);
-                }
-            }
-
-            header("Location: index.php?action=general_settings&success=1");
-            exit;
+            echo "<script>alert('Lưu cấu hình POS thành công!'); window.location.href='index.php?action=pos_settings';</script>";
         }
-
-        // Lấy dữ liệu cũ hiển thị lên Form
-        $settings = $settingModel->getAllSettings();
-        require_once __DIR__ . '/../views/setting/general.php';
     }
 }

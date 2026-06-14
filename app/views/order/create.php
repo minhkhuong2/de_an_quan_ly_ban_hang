@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php 
+/** @var string $products_json */
+require_once __DIR__ . '/../layout/header.php'; 
+?>
 
 <style>
     /* CSS CHUẨN SAPO OMNIAI V3 CHO MÀN HÌNH POS */
@@ -233,13 +236,14 @@
         </div>
 
         <div class="v3-card">
-            <div class="v3-card-title">
-                Khuyến mại & Mã giảm giá
-                <a href="#" style="font-size: 13px; font-weight: normal; color: #0088ff; text-decoration: none;">Chọn mã</a>
-            </div>
+            <div class="v3-card-title">Khuyến mại & Mã giảm giá</div>
             <div style="display: flex; gap: 10px;">
-                <input type="text" class="form-control" placeholder="Nhập mã khuyến mại..." style="text-transform: uppercase;">
-                <button class="btn-outline" style="width: auto;">Áp dụng</button>
+                <input type="text" id="promo_code_input" class="form-control" placeholder="Nhập mã khuyến mại..." style="text-transform: uppercase;">
+                <button type="button" id="btn_apply_promo" class="btn-outline" style="width: auto;">Áp dụng</button>
+            </div>
+            <div id="applied_promo_tag" style="display:none; margin-top:10px; color:#108043; font-size:13px; font-weight:500;">
+                ✅ Đang áp dụng mã: <span id="current_code_text" style="font-weight: bold;"></span>
+                <span style="color:#d82c0d; cursor:pointer; margin-left:10px; font-weight:normal;" onclick="removePromoCode()">[Xóa]</span>
             </div>
         </div>
 
@@ -390,12 +394,15 @@
                 },
                 body: JSON.stringify({
                     cart_items: cart,
-                    shipping_fee: shippingFee
+                    shipping_fee: shippingFee,
+                    promo_code: appliedPromoCode // <--- ĐÃ BỔ SUNG DÒNG NÀY ĐỂ GỬI MÃ LÊN PHP
                 })
             })
             .then(response => response.json())
             .then(res => {
                 if (res.status === 'success') {
+                    // Update global cart so final_price and line_total are sent to store_order API
+                    cart = res.data.cart_items;
                     renderCartUI(res.data.cart_items, res.data.summary);
                 }
             })
@@ -515,6 +522,32 @@
             btnSubmit.onclick = submitOrder;
         }
     });
+    let appliedPromoCode = '';
+
+    // Bắt sự kiện bấm nút ÁP DỤNG
+    document.getElementById('btn_apply_promo').onclick = function() {
+        let code = document.getElementById('promo_code_input').value.trim().toUpperCase();
+        if (code === '') {
+            alert('Vui lòng nhập mã khuyến mại!');
+            return;
+        }
+        appliedPromoCode = code; // Lưu mã vào biến
+
+        // Hiển thị UI
+        document.getElementById('applied_promo_tag').style.display = 'block';
+        document.getElementById('current_code_text').innerText = code;
+        document.getElementById('promo_code_input').value = '';
+
+        // Gọi API tính tiền lại
+        triggerCalculation();
+    };
+
+    // Hàm xóa mã giảm giá
+    function removePromoCode() {
+        appliedPromoCode = '';
+        document.getElementById('applied_promo_tag').style.display = 'none';
+        triggerCalculation(); // Gọi API tính lại để trả về giá gốc
+    }
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

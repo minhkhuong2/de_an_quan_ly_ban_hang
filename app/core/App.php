@@ -102,18 +102,24 @@ class App
         'promo_settings'   => ['PromotionController', 'settings'],
 
         // Quản lý Cấu hình (Settings)
-        'settings'          => ['SettingController', 'index'],
-        'general_settings'  => ['SettingController', 'general'],
+        'settings'          => ['SettingController', 'pos_settings'],
+        'pos_settings'      => ['SettingController', 'pos_settings'],
+        'save_pos_settings' => ['SettingController', 'save_pos_settings'],
 
         // --- Quản lý Đơn hàng (Online) ---
         'order_list'       => ['OrderController', 'list'],
         'create_order'     => ['OrderController', 'create'],
         'calculate_api'    => ['OrderController', 'calculate_api'],
         'store_order'      => ['OrderController', 'store'],
+        'view_order'       => ['OrderController', 'view'],
+        'print_order'      => ['OrderController', 'print'],
+        'update_order_ship'  => ['OrderController', 'update_shipping'], // <--- THÊM DÒNG NÀY
+        'collect_order_pay'  => ['OrderController', 'collect_payment'],
+        'cancel_order'       => ['OrderController', 'cancel'],
 
 
         // --- POS Bán hàng ---
-        'pos'              => ['OrderController', 'pos'],
+        'pos' => ['OrderController', 'pos'],
         'scan_imei'        => ['OrderController', 'scanImei'],
         'checkout'         => ['OrderController', 'checkout']
 
