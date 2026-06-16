@@ -148,14 +148,18 @@ class OrderController
 
             // Sinh mã đơn hàng ngẫu nhiên
             $order_code = 'SON' . strtoupper(substr(uniqid(), -6));
-            $payment_status = $data['payment_status'] ?? 'pending';
+            // Lấy thông tin từ JS gửi lên
+            $payment_status = $data['payment_status'] ?? 'paid';
+            $payment_method = $data['payment_method'] ?? 'cash'; // Tiền mặt/Chuyển khoản
+            $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : null;
+            $amount_paid = $data['amount_paid'] ?? 0; // Tiền khách đưa
 
-            // 1. LƯU VÀO BẢNG CHÍNH (orders)
+            // 1. LƯU VÀO BẢNG CHÍNH (orders) - Thêm Thuế, Khách đưa, Phương thức
             $query_order = "INSERT INTO orders (
-                order_code, subtotal, total_product_discount, total_order_discount, 
-                original_shipping_fee, total_shipping_discount, grand_total, 
-                order_status, payment_status, sales_channel
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'completed', ?, 'web')";
+                order_code, customer_id, subtotal, total_product_discount, total_order_discount, 
+                original_shipping_fee, total_shipping_discount, tax_amount, grand_total, 
+                amount_paid, payment_method, order_status, payment_status, sales_channel
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', ?, 'pos')";
 
             $subtotal_p0 = array_sum(array_map(function ($item) {
                 return $item['price'] * $item['qty'];
@@ -164,12 +168,16 @@ class OrderController
             $stmt_order = $db->prepare($query_order);
             $stmt_order->execute([
                 $order_code,
+                $customer_id,
                 $subtotal_p0,
                 $summary['total_product_discount'] ?? 0,
                 $summary['total_order_discount'] ?? 0,
                 $summary['final_shipping_fee'] ?? 0,
                 $summary['total_shipping_discount'] ?? 0,
+                $summary['tax_amount'] ?? 0, // Lưu tiền thuế
                 $summary['grand_total'] ?? 0,
+                $amount_paid, // Lưu tiền khách đưa
+                $payment_method, // Hình thức thanh toán
                 $payment_status
             ]);
 
@@ -410,6 +418,43 @@ class OrderController
         } catch (Exception $e) {
             $db->rollBack();
             echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
+        }
+        exit;
+    }
+    // ========================================================
+    // 7. THÊM NHANH KHÁCH HÀNG TỪ MÀN HÌNH POS
+    // ========================================================
+    public function quick_add_customer()
+    {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $name = trim($data['name'] ?? '');
+        $phone = trim($data['phone'] ?? '');
+
+        if (empty($name) || empty($phone)) {
+            echo json_encode(['status' => 'error', 'msg' => 'Vui lòng nhập đủ Tên và Số điện thoại!']);
+            exit;
+        }
+
+        $db = (new Database())->getConnection();
+        try {
+            // Tách tên và họ (Vì bảng customers của bạn dùng first_name và last_name)
+            $parts = explode(' ', $name);
+            $first_name = array_pop($parts);
+            $last_name = implode(' ', $parts);
+
+            $stmt = $db->prepare("INSERT INTO customers (first_name, last_name, phone) VALUES (?, ?, ?)");
+            $stmt->execute([$first_name, $last_name, $phone]);
+
+            $new_id = $db->lastInsertId();
+
+            echo json_encode([
+                'status' => 'success',
+                'customer' => ['id' => $new_id, 'customer_name' => $name, 'phone' => $phone]
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'msg' => 'Lỗi DB: ' . $e->getMessage()]);
         }
         exit;
     }

@@ -65,6 +65,7 @@ class App
         'add_purchase_return'     => ['PurchaseReturnController', 'add'],
         'process_purchase_return' => ['PurchaseReturnController', 'process'],
         'add_direct_return'       => ['PurchaseReturnController', 'addDirect'],
+        'po_list' => ['PurchaseOrderController', 'list'],
 
         // Quản lý Chi nhánh (Kho lưu trữ)
         'branch_list'   => ['BranchController', 'list'],
@@ -116,6 +117,10 @@ class App
         'update_order_ship'  => ['OrderController', 'update_shipping'], // <--- THÊM DÒNG NÀY
         'collect_order_pay'  => ['OrderController', 'collect_payment'],
         'cancel_order'       => ['OrderController', 'cancel'],
+        'quick_add_customer' => ['OrderController', 'quick_add_customer'],
+
+        // --- Báo Cáo ---
+        'end_of_day_report' => ['ReportController', 'end_of_day'],
 
 
         // --- POS Bán hàng ---

@@ -13,7 +13,34 @@ class PurchaseOrderController
         $db = (new Database())->getConnection();
         $poModel = new PurchaseOrderModel($db);
 
+        // Lấy toàn bộ đơn hàng như cũ
         $orders = $poModel->getAllOrders();
+
+        // Lấy từ khóa tìm kiếm và trạng thái từ URL
+        $keyword = trim($_GET['keyword'] ?? '');
+        $status = $_GET['status'] ?? '';
+
+        // Xử lý Lọc Dữ Liệu bằng PHP
+        if ($keyword !== '' || $status !== '') {
+            $orders = array_filter($orders, function ($o) use ($keyword, $status) {
+                $matchKeyword = true;
+                $matchStatus = true;
+
+                if ($keyword !== '') {
+                    $kw = mb_strtolower($keyword, 'UTF-8');
+                    $code = 'pon' . $o['id']; // Mã đơn hàng ảo để dễ tìm
+                    $supplier = mb_strtolower($o['supplier_name'], 'UTF-8');
+
+                    $matchKeyword = (strpos($code, $kw) !== false) || (strpos($supplier, $kw) !== false);
+                }
+
+                if ($status !== '') {
+                    $matchStatus = ($o['status'] === $status);
+                }
+
+                return $matchKeyword && $matchStatus;
+            });
+        }
 
         require_once __DIR__ . '/../views/purchase_order/list.php';
     }
