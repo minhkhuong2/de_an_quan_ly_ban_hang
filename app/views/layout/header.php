@@ -42,7 +42,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             flex-direction: column;
             flex-shrink: 0;
             z-index: 100;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar .logo {
@@ -51,7 +51,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             font-weight: 800;
             color: #ffffff;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             letter-spacing: 1px;
             display: flex;
             align-items: center;
@@ -73,6 +73,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
         .sidebar .menu::-webkit-scrollbar {
             width: 6px;
         }
+
         .sidebar .menu::-webkit-scrollbar-thumb {
             background: #374151;
             border-radius: 10px;
@@ -156,7 +157,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             background: none !important;
             box-shadow: none !important;
         }
-        
+
         .sidebar .has-submenu .menu-link {
             display: flex;
             align-items: center;
@@ -301,7 +302,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-barcode"></i> Quản lý IMEI
             </a>
-            
+
             <div class="menu-item has-submenu">
                 <a href="javascript:void(0)" class="menu-link">
                     <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
@@ -312,9 +313,24 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                 </ul>
             </div>
 
-            <a href="index.php?action=settings" class="menu-item <?php echo ($current_action == 'settings') ? 'active' : ''; ?>" style="margin-top: 15px;">
-                <i class="fa-solid fa-gear"></i> Cài đặt
-            </a>
+            <div class="menu-item has-submenu" style="margin-top: 15px;">
+                <a href="javascript:void(0)" class="menu-link">
+                    <i class="fa-solid fa-gear"></i> Cấu hình hệ thống
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings' || $current_action == 'settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
