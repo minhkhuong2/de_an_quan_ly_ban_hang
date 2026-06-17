@@ -319,7 +319,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings' || $current_action == 'settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
                             <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
                         </a>
                     </li>
@@ -327,6 +327,18 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <li>
                         <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'style="color:#60a5fa;"' : ''; ?>>
                             <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
                         </a>
                     </li>
                 </ul>

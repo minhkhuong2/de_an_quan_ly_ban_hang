@@ -107,6 +107,17 @@ class App
         'pos_settings'      => ['SettingController', 'pos_settings'],
         'save_pos_settings' => ['SettingController', 'save_pos_settings'],
 
+        // Quản lý Nguồn đơn hàng tùy chỉnh
+        'order_sources'         => ['OrderSourceController', 'index'],
+        'store_order_source'    => ['OrderSourceController', 'store'],
+        'update_order_source'   => ['OrderSourceController', 'update'],
+        'toggle_source_status'  => ['OrderSourceController', 'toggle_status'],
+        'delete_order_source'   => ['OrderSourceController', 'delete'],
+
+        // Cấu hình quy trình xử lý đơn hàng
+        'order_settings'        => ['OrderSettingController', 'index'],
+        'save_order_settings'   => ['OrderSettingController', 'save'],
+
         // --- Quản lý Đơn hàng (Online) ---
         'order_list'       => ['OrderController', 'list'],
         'create_order'     => ['OrderController', 'create'],
@@ -114,10 +125,11 @@ class App
         'store_order'      => ['OrderController', 'store'],
         'view_order'       => ['OrderController', 'view'],
         'print_order'      => ['OrderController', 'print'],
-        'update_order_ship'  => ['OrderController', 'update_shipping'], // <--- THÊM DÒNG NÀY
+        'update_order_ship'  => ['OrderController', 'update_shipping'],
         'collect_order_pay'  => ['OrderController', 'collect_payment'],
         'cancel_order'       => ['OrderController', 'cancel'],
         'quick_add_customer' => ['OrderController', 'quick_add_customer'],
+        'store_online_order' => ['OrderController', 'store_online_order'],
 
         // Cấu hình Phương thức thanh toán
         'payment_methods'           => ['PaymentMethodController', 'index'],

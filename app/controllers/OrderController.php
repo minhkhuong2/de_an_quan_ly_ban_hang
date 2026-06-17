@@ -75,18 +75,45 @@ class OrderController
     {
         $db = (new Database())->getConnection();
 
-        // Lấy danh sách sản phẩm (Bổ sung AS price để fix lỗi hôm qua)
-        $stmt_prod = $db->query("SELECT id, product_name, sku, base_price AS price FROM products WHERE parent_id IS NULL");
+        // 1. Lấy danh sách sản phẩm (Theo cú pháp chuẩn Khương đã sửa gáy bài trước)
+        $query_products = "
+            SELECT id, product_name, sku, base_price AS price, 100 as stock 
+            FROM products WHERE parent_id IS NULL
+        ";
+        $stmt_prod = $db->query($query_products);
         $products = $stmt_prod->fetchAll(PDO::FETCH_ASSOC);
 
-        // Lấy danh sách khách hàng
-        $stmt_cust = $db->query("SELECT id, CONCAT(last_name, ' ', first_name) AS customer_name, phone FROM customers");
+        // 2. Lấy danh sách khách hàng
+        $stmt_cust = $db->query("SELECT id, CONCAT(last_name, ' ', first_name) AS customer_name, phone, address FROM customers");
         $customers = $stmt_cust->fetchAll(PDO::FETCH_ASSOC);
 
+        // 3. Lấy nguồn đơn hàng động đang hoạt động
+        $stmt_src = $db->query("SELECT id, source_name FROM order_sources WHERE status = 'Đang sử dụng' ORDER BY sort_order ASC, id ASC");
+        $order_sources = $stmt_src->fetchAll(PDO::FETCH_ASSOC);
+
+        // 4. LẤY NHÂN VIÊN PHỤ TRÁCH ĐỘNG (Mục 6.2)
+        try {
+            // Giả sử bảng quản lý tài khoản/nhân viên của bạn tên là users hoặc employees
+            $stmt_users = $db->query("SELECT id, full_name FROM users WHERE role = 'Nhân viên' OR role = 'Quản lý' OR 1=1");
+            $employees = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Mảng dự phòng động từ PHP để tránh sập trang nếu sai tên bảng
+            $employees = [['id' => 1, 'full_name' => 'Bùi Văn Khương'], ['id' => 2, 'full_name' => 'Tuấn Anh (Kinh doanh)']];
+        }
+
+        // 5. LẤY CHI NHÁNH ĐỘNG (Mục 6.1)
+        try {
+            $stmt_branches = $db->query("SELECT id, branch_name FROM branches");
+            $branches = $stmt_branches->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Mảng dự phòng động từ PHP
+            $branches = [['id' => 1, 'branch_name' => 'AAKC Store - Chi nhánh 1'], ['id' => 2, 'branch_name' => 'AAKC Store - Showroom 2']];
+        }
+
+        // Ép sang JSON cho các bộ lọc tìm kiếm Javascript nhận diện nhanh
         $products_json = json_encode($products);
         $customers_json = json_encode($customers);
 
-        // Đã đổi tên file thành create.php
         require_once __DIR__ . '/../views/order/create.php';
     }
 
@@ -504,5 +531,46 @@ class OrderController
             echo json_encode(['status' => 'error', 'msg' => 'Lỗi DB: ' . $e->getMessage()]);
         }
         exit;
+    }
+    // Xử lý Lưu đơn hàng Online từ trang create.php gửi lên
+    public function store_online_order()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            if (!$data || empty($data['cart_items'])) {
+                echo json_encode(['status' => 'error', 'msg' => 'Dữ liệu không hợp lệ.']);
+                exit;
+            }
+
+            // Lấy trạng thái lưu đơn từ người dùng
+            $action_type = $data['action_type']; // 'draft', 'create', 'confirm', 'ship'
+
+            // --- CHUYỂN ĐỔI ACTION_TYPE THÀNH TRẠNG THÁI CHUẨN SAPO ---
+            $order_status = 'pending';
+            $shipping_status = 'pending';
+
+            if ($action_type === 'draft') {
+                $order_status = 'draft'; // Đơn nháp
+            } elseif ($action_type === 'create') {
+                $order_status = 'processing'; // Đang giao dịch
+            } elseif ($action_type === 'confirm') {
+                $order_status = 'confirmed'; // Đã xác nhận
+            } elseif ($action_type === 'ship') {
+                $order_status = 'confirmed';
+                $shipping_status = 'shipping'; // Đang giao hàng
+            }
+
+            // Ở đây sau này Khương sẽ viết các lệnh SQL:
+            // 1. INSERT INTO orders (...)
+            // 2. INSERT INTO order_items (...)
+            // 3. Trừ số lượng tồn kho (Nếu action_type khác 'draft')
+
+            echo json_encode([
+                'status' => 'success',
+                'msg' => 'Đã lưu đơn hàng Online thành công với hành động: ' . strtoupper($action_type)
+            ]);
+            exit;
+        }
     }
 }

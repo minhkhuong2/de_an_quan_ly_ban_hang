@@ -183,13 +183,26 @@ require_once __DIR__ . '/../layout/header.php';
         <span style="font-size: 14px; font-weight: normal; color: #637381; margin-left: 10px;">
             <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?>
         </span>
+
+        <?php if (isset($order['is_archived']) && $order['is_archived'] == 1): ?>
+            <span style="background: #f4f6f8; color: #637381; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid #c4cdd5; margin-left: 10px;">🗃️ Đã lưu trữ</span>
+        <?php endif; ?>
     </div>
+
     <div style="display: flex; gap: 10px;">
-        <?php if ($order['order_status'] !== 'cancelled'): ?>
-            <button type="button" class="btn-outline" style="color: #d82c0d; border-color: #fca5a5;" onclick="processCancel(<?php echo $order['id']; ?>)">❌ Hủy đơn hàng</button>
+        <?php if ($order['order_status'] !== 'cancelled' && $order['shipping_status'] !== 'delivered'): ?>
+            <button class="btn-outline" style="color: #0088ff; border-color: #0088ff;" onclick="alert('Tính năng chuyển sang màn hình Sửa Đơn đang được cập nhật!')">✏️ Sửa đơn</button>
         <?php endif; ?>
 
-        <button class="btn-outline" onclick="window.open('index.php?action=print_order&id=<?php echo $order['id']; ?>', '_blank')">🖨️ In đơn hàng</button>
+        <?php if ($order['order_status'] !== 'cancelled'): ?>
+            <button type="button" class="btn-outline" style="color: #d82c0d; border-color: #fca5a5;" onclick="processCancel(<?php echo $order['id']; ?>)">❌ Hủy</button>
+        <?php endif; ?>
+
+        <button class="btn-outline" onclick="window.open('index.php?action=print_order&id=<?php echo $order['id']; ?>', '_blank')">🖨️ In</button>
+
+        <?php if ($order['order_status'] == 'completed' && (!isset($order['is_archived']) || $order['is_archived'] == 0)): ?>
+            <button class="btn-outline" style="background: #f4f6f8;" onclick="archiveOrder(<?php echo $order['id']; ?>)">🗃️ Lưu trữ</button>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -448,6 +461,25 @@ require_once __DIR__ . '/../layout/header.php';
         } catch (err) {
             alert('Trình duyệt của bạn chặn tính năng tự động sao chép ảnh.\n\n👉 Vui lòng Click chuột phải vào ảnh QR ở trên và chọn "Sao chép hình ảnh" (Copy image) nhé.');
         }
+    }
+    // Lệnh AJAX xử lý Lưu trữ đơn hàng thủ công
+    function archiveOrder(orderId) {
+        if (!confirm('Bạn có chắc chắn muốn cất gọn đơn hàng này vào Kho Lưu Trữ?')) return;
+
+        fetch('index.php?action=archive_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.msg);
+                window.location.reload();
+            });
     }
 </script>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
