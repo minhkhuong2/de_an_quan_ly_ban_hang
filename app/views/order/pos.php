@@ -203,7 +203,8 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                         <div class="payment-methods">
                             <button class="pay-method-btn active" onclick="setPaymentMethod('cash', this)">Tiền mặt</button>
                             <button class="pay-method-btn" onclick="setPaymentMethod('transfer', this)">Chuyển khoản</button>
-                            <button class="pay-method-btn" onclick="setPaymentMethod('qr', this)">Quét mã QR</button>
+                            <button class="pay-method-btn" onclick="setPaymentMethod('vietqr', this)">Quét VietQR</button>
+                            <button class="pay-method-btn" onclick="setPaymentMethod('zalopay', this)">ZaloPay</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <span style="font-weight: 600;">Khách thanh toán</span>
@@ -270,16 +271,29 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
     </div>
 
     <div class="modal-overlay" id="qr_display_modal" style="z-index: 10000;">
-        <div class="modal-content" style="width: 400px; text-align: center;">
-            <h3 style="color: #0088ff;">MÀN HÌNH KHÁCH HÀNG</h3>
-            <p style="color: #637381; font-size: 14px; margin-bottom: 20px;">Vui lòng quét mã QR để thanh toán</p>
-            <div style="background: #f4f6f8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <img id="vietqr_image" src="" alt="Mã QR" style="width: 100%; max-width: 250px; border-radius: 8px;">
+        <div class="modal-content" style="width: 450px; text-align: center; padding: 20px;">
+            <h3 style="color: #0088ff; margin-bottom: 5px;">MÀN HÌNH CHỜ THANH TOÁN</h3>
+            <p style="color: #637381; font-size: 14px; margin-bottom: 15px;">Mã QR có hiệu lực trong: <span id="qr_timer" style="color: #d82c0d; font-weight: bold; font-size: 16px;">05:00</span></p>
+
+            <div style="background: #f4f6f8; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: inline-block; border: 1px solid #dfe3e8;">
+                <img id="vietqr_image" src="" alt="Mã QR" style="width: 250px; height: 250px; border-radius: 8px;">
             </div>
+
             <div style="font-size: 15px;">Khách cần trả:</div>
-            <div id="qr_amount_text" style="font-size: 28px; font-weight: bold; color: #d82c0d; margin-bottom: 20px;">0 ₫</div>
-            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 16px;" onclick="completeQRPayment()">ĐÃ NHẬN TIỀN (Hoàn tất)</button>
-            <button class="btn-outline" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="document.getElementById('qr_display_modal').style.display='none'; document.getElementById('btn_checkout').disabled=false; document.getElementById('btn_checkout').innerText='THANH TOÁN (F9)';">Hủy quét mã</button>
+            <div id="qr_amount_text" style="font-size: 28px; font-weight: bold; color: #108043; margin-bottom: 15px;">0 ₫</div>
+
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;" onclick="printOnlyQR()"><i class="fa-solid fa-qrcode"></i> In mã QR</button>
+                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;"><i class="fa-solid fa-print"></i> In đơn hàng</button>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-bottom: 15px;" onclick="completeQRPayment()">✅ Khách đã thanh toán thành công?</button>
+
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid #dfe3e8; padding-top: 15px;">
+                <button class="btn-outline" style="color: #d82c0d; border-color: #fca5a5; padding: 6px 10px;" onclick="cancelQRPayment()">Hủy đơn hàng</button>
+                <button class="btn-outline" style="padding: 6px 10px;" onclick="editOrderQR()">Sửa đơn hàng</button>
+                <button class="btn-outline" style="color: #0088ff; border-color: #0088ff; padding: 6px 10px;" onclick="changePaymentMethod()">Đổi phương thức</button>
+            </div>
         </div>
     </div>
 
@@ -299,6 +313,8 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
     </div>
 
     <script>
+        const PAYMENT_METHODS = <?php echo isset($payment_methods_json) ? $payment_methods_json : '[]'; ?>;
+        let qrCountdownInterval;
         const PRODUCTS = <?php echo isset($products_json) ? $products_json : '[]'; ?>;
         const CUSTOMERS = <?php echo isset($customers_json) ? $customers_json : '[]'; ?>;
         const IS_TWO_STEP = <?php echo $is_two_step ? 'true' : 'false'; ?>;
@@ -489,6 +505,28 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         searchDropdown.style.cssText = 'position:absolute; width:100%; background:#fff; border:1px solid #dfe3e8; box-shadow:0 4px 8px rgba(0,0,0,0.1); max-height:300px; overflow-y:auto; display:none; z-index:999; top:40px; border-radius:4px;';
         searchInput.parentNode.appendChild(searchDropdown);
 
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                let keyword = this.value.trim().toLowerCase();
+                if (!keyword) return;
+
+                let results = PRODUCTS.filter(p => p.product_name.toLowerCase().includes(keyword) || (p.sku && p.sku.toLowerCase().includes(keyword)));
+                if (results.length === 1) {
+                    addToCart(results[0]);
+                    this.value = '';
+                    searchDropdown.style.display = 'none';
+                } else if (results.length > 1) {
+                    let exactMatch = results.find(p => p.sku && p.sku.toLowerCase() === keyword);
+                    if (exactMatch) {
+                        addToCart(exactMatch);
+                        this.value = '';
+                        searchDropdown.style.display = 'none';
+                    }
+                }
+            }
+        });
+
         searchInput.addEventListener('input', function() {
             let keyword = this.value.trim();
 
@@ -670,6 +708,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 renderTabsBar();
                 return;
             }
+
             fetch('index.php?action=calculate_api', {
                     method: 'POST',
                     headers: {
@@ -683,11 +722,21 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 })
                 .then(res => res.json()).then(res => {
                     if (res.status === 'success') {
+
+                        // --- THÊM ĐOẠN HIỂN THỊ CẢNH BÁO MÃ GIẢM GIÁ Ở ĐÂY ---
+                        if (res.msg && res.msg.includes("không tồn tại") || res.msg && res.msg.includes("tối thiểu")) {
+                            alert('⚠️ ' + res.msg);
+                            removePromoCode(); // Tự động xóa mã lỗi khỏi UI
+                            return;
+                        }
+                        // -----------------------------------------------------
+
                         ordersData[activeTabId].cart = res.data.cart_items;
                         let subtotalAfterDiscount = res.data.summary.grand_total;
                         let tax = Math.round(subtotalAfterDiscount * 0.1); // VAT 10%
                         res.data.summary.tax_amount = tax;
                         res.data.summary.grand_total = subtotalAfterDiscount + tax;
+
                         ordersData[activeTabId].summary = res.data.summary;
                         ordersData[activeTabId].amountGiven = res.data.summary.grand_total;
 
@@ -762,10 +811,69 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             });
         }
 
-        function setPaymentMethod(method, btn) {
+        function setPaymentMethod(method, btnElement) {
+            // 1. Cập nhật phương thức vào đơn hàng hiện tại
             ordersData[activeTabId].paymentMethod = method;
-            document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
+
+            // 2. Đổi màu nút bấm hiển thị trên giao diện
+            document.querySelectorAll('.pay-method-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+
+            // 3. NẾU LÀ VIETQR HOẶC ZALOPAY -> BUNG MODAL QR LẬP TỨC KHÔNG CẦN CHỜ BẤM F9
+            if (method === 'vietqr' || method === 'zalopay') {
+                let order = ordersData[activeTabId];
+
+                // Kiểm tra giỏ hàng trống
+                if (order.cart.length === 0) {
+                    alert('Giỏ hàng đang trống, vui lòng chọn sản phẩm trước!');
+                    // Trả về mặc định tiền mặt
+                    setPaymentMethod('cash', document.querySelector(".pay-method-btn[onclick*='cash']"));
+                    return;
+                }
+
+                let qrUrl = '';
+
+                if (method === 'vietqr') {
+                    // Lấy thông tin từ mảng PAYMENT_METHODS do PHP truyền xuống
+                    let selectedMethod = PAYMENT_METHODS.find(m => m.code === 'vietqr');
+
+                    // Trường hợp dự phòng nếu API fetch PAYMENT_METHODS từ DB bị chậm hoặc rỗng
+                    let bank = "MB";
+                    let acc = "0123456789"; // Số tài khoản dự phòng
+                    let name = "BUI VAN KHUONG";
+
+                    // Nếu có data cấu hình thật trong DB thì bốc ra dùng
+                    if (selectedMethod && selectedMethod.config_data) {
+                        let config = JSON.parse(selectedMethod.config_data);
+                        bank = config.bank_code || "MB";
+                        acc = config.account_no || acc;
+                        name = config.fullname || config.account_name || name;
+                    }
+
+                    let amount = order.summary.grand_total;
+                    let desc = encodeURIComponent('Thanh toan don ' + activeTabId);
+
+                    // Sinh link ảnh VietQR chuẩn
+                    qrUrl = `https://img.vietqr.io/image/${bank}-${acc}-compact.png?amount=${amount}&addInfo=${desc}&accountName=${encodeURIComponent(name)}`;
+                } else {
+                    // Nếu là ZaloPay
+                    qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ZALOPAY_ORDER_${activeTabId}_AMT_${order.summary.grand_total}`;
+                }
+
+                // Đổ dữ liệu vào Modal QR
+                document.getElementById('vietqr_image').src = qrUrl;
+                document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' ₫';
+
+                // Hiện Modal QR lên màn hình
+                if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
+                document.getElementById('qr_display_modal').style.display = 'flex';
+
+                // Chạy đồng hồ đếm ngược 5 phút (300 giây)
+                startQRTimer(5 * 60);
+            } else {
+                // Nếu chọn Tiền mặt hoặc Chuyển khoản thường thì tính lại tiền thừa
+                calculateChange();
+            }
         }
 
         // --- COUPON & THANH TOÁN ---
@@ -796,13 +904,41 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             let order = ordersData[activeTabId];
             let btn = document.getElementById('btn_checkout');
 
-            // Mở VietQR nếu chọn thanh toán QR
-            if (order.paymentMethod === 'qr' && document.getElementById('qr_display_modal').style.display !== 'flex') {
-                let qrUrl = `https://img.vietqr.io/image/MB-0988888888-print.png?amount=${order.summary.grand_total}&addInfo=${encodeURIComponent('Thanh toan don '+activeTabId)}&accountName=CUA HANG DIEN THOAI`;
+            // Lấy cấu hình ngân hàng từ Database
+            let selectedMethod = PAYMENT_METHODS.find(m => m.code === order.paymentMethod);
+
+            // NẾU CHỌN VIETQR HOẶC ZALOPAY THÌ BẬT MÀN HÌNH QR
+            if ((order.paymentMethod === 'vietqr' || order.paymentMethod === 'zalopay') && document.getElementById('qr_display_modal').style.display !== 'flex') {
+
+                if (!selectedMethod || !selectedMethod.config_data) {
+                    alert("Phương thức này chưa được Cấu hình số tài khoản!");
+                    return;
+                }
+
+                let config = JSON.parse(selectedMethod.config_data);
+                let qrUrl = '';
+
+                if (order.paymentMethod === 'vietqr') {
+                    // TỰ ĐỘNG LẤY TÀI KHOẢN MBBANK CỦA BẠN ĐỂ TẠO QR
+                    let bank = config.bank_code;
+                    let acc = config.account_no;
+                    let name = encodeURIComponent(config.fullname);
+                    let amount = order.summary.grand_total;
+                    let desc = encodeURIComponent('Thanh toan don ' + activeTabId);
+                    qrUrl = `https://img.vietqr.io/image/${bank}-${acc}-compact.png?amount=${amount}&addInfo=${desc}&accountName=${name}`;
+                } else {
+                    // ZaloPay (Giả lập QR Code ZaloPay)
+                    qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ZALOPAY_PAYMENT_ORDER_${activeTabId}`;
+                }
+
                 document.getElementById('vietqr_image').src = qrUrl;
                 document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' ₫';
+
                 if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
                 document.getElementById('qr_display_modal').style.display = 'flex';
+
+                // Khởi động đồng hồ đếm ngược 5 phút
+                startQRTimer(5 * 60);
                 return;
             }
 
@@ -915,6 +1051,48 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             triggerCalculation();
             updateNetworkStatus();
         });
+
+        function startQRTimer(duration) {
+            clearInterval(qrCountdownInterval);
+            let timerDisplay = document.getElementById('qr_timer');
+            let timer = duration;
+            qrCountdownInterval = setInterval(function() {
+                let minutes = parseInt(timer / 60, 10);
+                let seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                timerDisplay.textContent = minutes + ":" + seconds;
+                if (--timer < 0) {
+                    clearInterval(qrCountdownInterval);
+                    timerDisplay.textContent = "HẾT HẠN";
+                    alert("Mã QR đã hết hạn. Vui lòng lấy lại mã!");
+                }
+            }, 1000);
+        }
+
+        function cancelQRPayment() {
+            clearInterval(qrCountdownInterval);
+            document.getElementById('qr_display_modal').style.display = 'none';
+            closeOrderTab(activeTabId);
+        }
+
+        function editOrderQR() {
+            clearInterval(qrCountdownInterval);
+            document.getElementById('qr_display_modal').style.display = 'none';
+        }
+
+        function changePaymentMethod() {
+            clearInterval(qrCountdownInterval);
+            document.getElementById('qr_display_modal').style.display = 'none';
+            if (IS_TWO_STEP) document.getElementById('payment_modal').style.display = 'flex';
+        }
+
+        function printOnlyQR() {
+            let qrSrc = document.getElementById('vietqr_image').src;
+            let win = window.open('', '_blank', 'width=400,height=400');
+            win.document.write(`<div style="text-align:center;"><h3>Mã QR Thanh Toán</h3><img src="${qrSrc}" width="300"><p>Đơn hàng: ${activeTabId}</p></div><script>window.onload=function(){window.print();window.close();}<\/script>`);
+            win.document.close();
+        }
     </script>
 </body>
 

@@ -139,6 +139,41 @@ require_once __DIR__ . '/../layout/header.php';
         color: #0088ff;
         font-weight: 500;
     }
+
+    /* --- BỔ SUNG CSS CHO NÚT THAO TÁC CỦA BẠN --- */
+    .btn-outline {
+        background: #fff;
+        color: #212b36;
+        padding: 8px 15px;
+        border: 1px solid #c4cdd5;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.2s;
+    }
+
+    .btn-outline:hover {
+        background: #f4f6f8;
+    }
+
+    .btn-primary {
+        background: #0088ff;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .btn-primary:hover {
+        background: #0070d2;
+    }
 </style>
 
 <div class="v3-header">
@@ -150,7 +185,11 @@ require_once __DIR__ . '/../layout/header.php';
         </span>
     </div>
     <div style="display: flex; gap: 10px;">
-        <button class="btn-outline" style="padding: 8px 15px; border: 1px solid #c4cdd5; background: #fff; border-radius: 4px; cursor: pointer;" onclick="window.open('index.php?action=print_order&id=<?php echo $order['id']; ?>', '_blank')">🖨️ In đơn hàng</button>
+        <?php if ($order['order_status'] !== 'cancelled'): ?>
+            <button type="button" class="btn-outline" style="color: #d82c0d; border-color: #fca5a5;" onclick="processCancel(<?php echo $order['id']; ?>)">❌ Hủy đơn hàng</button>
+        <?php endif; ?>
+
+        <button class="btn-outline" onclick="window.open('index.php?action=print_order&id=<?php echo $order['id']; ?>', '_blank')">🖨️ In đơn hàng</button>
     </div>
 </div>
 
@@ -176,12 +215,16 @@ require_once __DIR__ . '/../layout/header.php';
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <?php if ($order['shipping_status'] !== 'delivered'): ?>
+                        <?php if ($order['shipping_status'] !== 'delivered' && $order['order_status'] !== 'cancelled'): ?>
                             <button type="button" class="btn-primary" id="btn_ship_action" style="width:auto; padding:8px 15px; background:#108043;" onclick="processShipping(<?php echo $order['id']; ?>)">🚀 Xác nhận xuất kho & Giao hàng</button>
                         <?php endif; ?>
 
-                        <?php if ($order['payment_status'] !== 'paid'): ?>
-                            <button type="button" class="btn-primary" id="btn_pay_action" style="width:auto; padding:8px 15px; background:#e67e22;" onclick="processPayment(<?php echo $order['id']; ?>)">💵 Xác nhận thu tiền khách nợ</button>
+                        <?php if ($order['payment_status'] !== 'paid' && $order['order_status'] !== 'cancelled'): ?>
+                            <button type="button" class="btn-primary" id="btn_pay_action" style="width:auto; padding:8px 15px; background:#e67e22;" onclick="processPayment(<?php echo $order['id']; ?>)">💵 Xác nhận thu tiền</button>
+
+                            <button type="button" class="btn-outline" style="width:auto; padding:8px 15px; border-color:#0088ff; color:#0088ff; background: #e5f0ff;" onclick="document.getElementById('online_qr_modal').style.display='flex'">
+                                <i class="fa-solid fa-qrcode"></i> Lấy mã QR gửi khách
+                            </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -275,8 +318,57 @@ require_once __DIR__ . '/../layout/header.php';
 
     </div>
 </div>
+
+<div class="modal-overlay" id="online_qr_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: #fff; width: 380px; padding: 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <h3 style="margin-bottom: 15px; color: #212b36;">Mã Thanh Toán VietQR Pro</h3>
+
+        <?php
+        // Logic PHP: Lấy config MBBank từ Database đổ ra đây
+        $mb_config = [];
+        if (isset($payment_methods)) {
+            foreach ($payment_methods as $pm) {
+                if ($pm['code'] == 'vietqr' && $pm['is_active']) {
+                    $mb_config = json_decode($pm['config_data'], true);
+                    break;
+                }
+            }
+        }
+        ?>
+
+        <?php if (empty($mb_config)): ?>
+            <div style="padding: 20px; background: #fff1f0; border: 1px solid #ffa39e; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #d82c0d; font-weight: bold; margin-bottom: 10px;">⚠️ Lỗi Cấu hình</p>
+                <p style="color: #cf1322; font-size: 13px;">Cửa hàng chưa cấu hình tài khoản MBBank! Vui lòng vào <b>Cấu hình > Phương thức thanh toán</b> để thiết lập.</p>
+            </div>
+        <?php else: ?>
+            <?php
+            $bank_code = $mb_config['bank_code'] ?? 'MB';
+            $acc_no = $mb_config['account_no'] ?? '';
+            $acc_name = urlencode($mb_config['fullname'] ?? '');
+            $amount = $order['grand_total'];
+            $desc = urlencode("Thanh toan don " . ($order['order_code'] ?? $order['id']));
+
+            // Nối chuỗi API của vietqr.io
+            $qr_url = "https://img.vietqr.io/image/{$bank_code}-{$acc_no}-compact.png?amount={$amount}&addInfo={$desc}&accountName={$acc_name}";
+            ?>
+            <img id="online_qr_img" src="<?php echo $qr_url; ?>" style="width: 250px; border-radius: 8px; border: 1px solid #dfe3e8; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+            <div style="font-size: 14px; color: #637381; margin-bottom: 5px;">Số tiền thanh toán:</div>
+            <h2 style="color: #0088ff; margin-bottom: 20px; font-size: 28px;"><?php echo number_format($order['grand_total'], 0, ',', '.'); ?> ₫</h2>
+
+            <button class="btn-primary" style="width: 100%; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="copyQRImage()">
+                <i class="fa-solid fa-copy"></i> Sao chép ảnh QR
+            </button>
+            <div style="font-size: 12px; color: #8c98a4; margin-bottom: 15px;">(Dán ảnh vào Zalo / Messenger để gửi cho khách)</div>
+        <?php endif; ?>
+
+        <button class="btn-outline" style="width: 100%; padding: 10px; display: flex; align-items: center; justify-content: center;" onclick="document.getElementById('online_qr_modal').style.display='none'">Đóng</button>
+    </div>
+</div>
+
 <script>
-    // Lệnh AJAX xử lý xuất kho giao hàng
+    // Lệnh AJAX xử lý xuất kho giao hàng (Giữ nguyên)
     function processShipping(orderId) {
         if (!confirm('Xác nhận xuất kho và chuyển trạng thái đơn hàng thành ĐÃ GIAO HÀNG? Hệ thống sẽ tự động trừ số lượng tồn kho sản phẩm!')) return;
 
@@ -299,7 +391,7 @@ require_once __DIR__ . '/../layout/header.php';
             });
     }
 
-    // Lệnh AJAX xác nhận thu tiền khách
+    // Lệnh AJAX xác nhận thu tiền khách (Giữ nguyên)
     function processPayment(orderId) {
         if (!confirm('Xác nhận đã thu đủ số tiền khách nợ cho đơn hàng này?')) return;
 
@@ -320,7 +412,8 @@ require_once __DIR__ . '/../layout/header.php';
                 window.location.reload();
             });
     }
-    // Lệnh AJAX xử lý Hủy đơn hàng
+
+    // Lệnh AJAX xử lý Hủy đơn hàng (Giữ nguyên)
     function processCancel(orderId) {
         if (!confirm('⚠️ BẠN CÓ CHẮC CHẮN MUỐN HỦY ĐƠN HÀNG NÀY KHÔNG?\n\nNếu đơn đã xuất kho, hệ thống sẽ tự động hoàn trả số lượng lại vào kho.')) return;
 
@@ -338,6 +431,23 @@ require_once __DIR__ . '/../layout/header.php';
                 alert(res.msg);
                 window.location.reload();
             });
+    }
+
+    // --- CODE MỚI THÊM: SCRIPT COPY MÃ QR ---
+    async function copyQRImage() {
+        try {
+            const img = document.getElementById('online_qr_img');
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    [blob.type]: blob
+                })
+            ]);
+            alert('✅ Đã sao chép ảnh mã QR thành công!\n\n👉 Bạn hãy sang Zalo, Messenger nhấn (Ctrl + V) để dán và gửi cho khách hàng nhé.');
+        } catch (err) {
+            alert('Trình duyệt của bạn chặn tính năng tự động sao chép ảnh.\n\n👉 Vui lòng Click chuột phải vào ảnh QR ở trên và chọn "Sao chép hình ảnh" (Copy image) nhé.');
+        }
     }
 </script>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

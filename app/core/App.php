@@ -120,9 +120,9 @@ class App
         'quick_add_customer' => ['OrderController', 'quick_add_customer'],
 
         // Cấu hình Phương thức thanh toán
-        'payment_methods'        => ['PaymentMethodController', 'index'],
-        'toggle_payment_method'  => ['PaymentMethodController', 'toggle'],
-        'save_payment_config'    => ['PaymentMethodController', 'save_config'],
+        'payment_methods'           => ['PaymentMethodController', 'index'],
+        'toggle_payment_method'     => ['PaymentMethodController', 'toggle'],
+        'save_payment_config'       => ['PaymentMethodController', 'save_config'],
         'disconnect_payment_method' => ['PaymentMethodController', 'disconnect'],
 
         // --- Báo Cáo ---

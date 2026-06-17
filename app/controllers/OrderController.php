@@ -55,8 +55,16 @@ class OrderController
         $stmt_cust = $db->query("SELECT id, CONCAT(last_name, ' ', first_name) AS customer_name, phone FROM customers");
         $customers = $stmt_cust->fetchAll(PDO::FETCH_ASSOC);
 
+        // --- ĐOẠN CODE BỔ SUNG LẤY PHƯƠNG THỨC THANH TOÁN ---
+        $stmt_pm = $db->query("SELECT * FROM payment_methods WHERE is_active = 1");
+        $payment_methods = $stmt_pm->fetchAll(PDO::FETCH_ASSOC);
+        $payment_methods_json = json_encode($payment_methods);
+        // -----------------------------------------------------
+
         $products_json = json_encode($products);
         $customers_json = json_encode($customers);
+
+
 
         // Gọi ra giao diện POS đặc biệt
         require_once __DIR__ . '/../views/order/pos.php';
@@ -85,44 +93,79 @@ class OrderController
     // 2. API TÍNH TIỀN GIỎ HÀNG THÔNG MINH NGẦM (AJAX)
     public function calculate_api()
     {
-        header('Content-Type: application/json');
-
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = json_decode(file_get_contents("php://input"), true);
         $cart_items = $data['cart_items'] ?? [];
-        $original_shipping_fee = (float)($data['shipping_fee'] ?? 0);
-        $promo_code = trim($data['promo_code'] ?? ''); // <-- NHẬN MÃ GIẢM GIÁ TỪ JS
+        $promo_code = $data['promo_code'] ?? '';
 
-        if (empty($cart_items)) {
-            echo json_encode(['status' => 'empty']);
-            exit;
+        $subtotal = 0;
+
+        // 1. SỬA LỖI `NaN`: Bổ sung tính toán Thành tiền cho TỪNG sản phẩm
+        foreach ($cart_items as &$item) {
+            $item['original_price'] = $item['price'];
+            $item['final_price'] = $item['price']; // Tạm thời chưa có giảm giá đè trên từng SP
+
+            // Ép kiểu về Float/Int để chắc chắn không bị lỗi chuỗi
+            $qty = (float)$item['qty'];
+            $price = (float)$item['final_price'];
+
+            $item['line_total'] = $price * $qty;
+            $subtotal += $item['line_total'];
         }
+        unset($item); // Cắt tham chiếu để an toàn bộ nhớ
 
-        $db = (new Database())->getConnection();
-        $promoModel = new PromotionModel($db);
+        $total_order_discount = 0;
+        $msg = "";
 
-        // 1. Lấy các Khuyến mại TỰ ĐỘNG (Không cần mã)
-        $active_promos = $promoModel->getAllPromotions('', 'Đang áp dụng', '', 'auto');
-
-        // 2. NẾU KHÁCH CÓ NHẬP MÃ: Tìm mã đó trong DB và nhét thêm vào danh sách Khuyến mại
+        // 2. LOGIC XỬ LÝ MÃ GIẢM GIÁ
         if (!empty($promo_code)) {
+            $db = (new Database())->getConnection();
+
+            // Đã gỡ điều kiện start_date và end_date để bạn dễ Test dữ liệu cũ
             $stmt = $db->prepare("SELECT * FROM promotions WHERE promo_code = ? AND status = 'Đang áp dụng'");
             $stmt->execute([$promo_code]);
-            $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
+            $promo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($coupon) {
-                // Nhét mã này vào mảng để thuật toán quét chung
-                $active_promos[] = $coupon;
+            if ($promo) {
+                // Kiểm tra điều kiện đơn hàng tối thiểu
+                if ($subtotal >= $promo['min_order_value']) {
+
+                    if ($promo['discount_type'] == 'percent') {
+                        $discount = $subtotal * ($promo['discount_value'] / 100);
+                        if (!empty($promo['max_discount_amount']) && $promo['max_discount_amount'] > 0 && $discount > $promo['max_discount_amount']) {
+                            $discount = $promo['max_discount_amount'];
+                        }
+                        $total_order_discount = $discount;
+                    } else {
+                        // Giảm thẳng tiền mặt (amount)
+                        $total_order_discount = $promo['discount_value'];
+                    }
+
+                    $msg = "Áp dụng mã giảm giá thành công!";
+                } else {
+                    $msg = "Đơn hàng chưa đạt giá trị tối thiểu " . number_format($promo['min_order_value']) . "đ";
+                    $total_order_discount = 0;
+                }
+            } else {
+                $msg = "Mã khuyến mãi không tồn tại hoặc đã bị khóa!";
+                $total_order_discount = 0;
             }
         }
 
-        $promoController = new PromotionController();
-        $best_promo_group = $promoController->getBestPromoGroup($active_promos, $cart_items, $original_shipping_fee);
-        $result = $promoController->calculateCartTotal($cart_items, $best_promo_group, $original_shipping_fee);
+        $grand_total_before_tax = $subtotal - $total_order_discount;
 
+        // 3. Trả dữ liệu mượt mà về cho Javascript
         echo json_encode([
             'status' => 'success',
-            'data' => $result,
-            'applied_promos' => $best_promo_group
+            'msg' => $msg,
+            'data' => [
+                'cart_items' => $cart_items,
+                'summary' => [
+                    'subtotal' => $subtotal,
+                    'total_product_discount' => 0,
+                    'total_order_discount' => $total_order_discount,
+                    'grand_total' => $grand_total_before_tax
+                ]
+            ]
         ]);
         exit;
     }
@@ -251,6 +294,10 @@ class OrderController
         $stmt_items = $db->prepare($query_items);
         $stmt_items->execute([$id]);
         $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+        // Lấy cấu hình payment_methods để tạo mã QR
+        $stmt_pm = $db->query("SELECT * FROM payment_methods WHERE is_active = 1");
+        $payment_methods = $stmt_pm->fetchAll(PDO::FETCH_ASSOC);
 
         // Gọi View hiển thị
         require_once __DIR__ . '/../views/order/detail.php';

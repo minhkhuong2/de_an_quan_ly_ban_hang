@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 16, 2026 lúc 05:05 PM
+-- Thời gian đã tạo: Th6 16, 2026 lúc 08:11 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -230,9 +230,10 @@ CREATE TABLE `orders` (
 INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `branch_id`, `user_id`, `subtotal`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `sales_channel`, `payment_status`, `shipping_status`, `order_status`, `shipping_method`, `shipping_address`, `cod_amount`, `note`, `tags`, `order_date`, `created_at`, `payment_method`) VALUES
 (7, 'SON67301C', NULL, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 250000.00, 0.00, 'web', 'pending', 'pending', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:54:30', '2026-06-14 16:54:30', 'cash'),
 (8, 'SONC1EF79', NULL, NULL, NULL, 500000.00, 90000.00, 0.00, 0.00, 0.00, 0.00, 410000.00, 0.00, 'web', 'pending', 'pending', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:55:40', '2026-06-14 16:55:40', 'cash'),
-(9, 'SON180AD7', NULL, NULL, NULL, 9500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 9500000.00, 0.00, 'web', 'pending', 'pending', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:56:17', '2026-06-14 16:56:17', 'cash'),
+(9, 'SON180AD7', NULL, NULL, NULL, 9500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 9500000.00, 9500000.00, 'web', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:56:17', '2026-06-14 16:56:17', 'cash'),
 (10, 'SONEB072D', NULL, NULL, NULL, 9500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 9500000.00, 0.00, 'web', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-15 00:12:30', '2026-06-14 17:12:30', 'cash'),
-(11, 'SONB34554', 2, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 250000.00, 0.00, 'pos', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-16 00:39:55', '2026-06-15 17:39:55', 'cash');
+(11, 'SONB34554', 2, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 250000.00, 0.00, 'pos', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-16 00:39:55', '2026-06-15 17:39:55', 'cash'),
+(12, 'SON3854B8', NULL, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 25000.00, 275000.00, 275000.00, 'pos', 'paid', 'pending', 'cancelled', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-17 00:10:11', '2026-06-16 17:10:11', 'qr');
 
 -- --------------------------------------------------------
 
@@ -278,7 +279,8 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `sku`
 (2, 8, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 2, 250000.00, 0.00, 0.00, 250000.00, 500000.00, 0, NULL),
 (3, 9, 8, 'Apple Watch Series 9', 'AW-S9-41', 1, 9500000.00, 0.00, 0.00, 9500000.00, 9500000.00, 0, NULL),
 (4, 10, 8, 'Apple Watch Series 9', 'AW-S9-41', 1, 9500000.00, 0.00, 0.00, 9500000.00, 9500000.00, 0, NULL),
-(5, 11, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL);
+(5, 11, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL),
+(6, 12, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -343,7 +345,7 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `parent_id`, `product_type`, `conversion_qty`, `product_name`, `brand`, `base_price`, `created_at`, `sku`, `barcode`, `unit`, `stock`, `available`, `trading`, `incoming`, `description`, `image`, `compare_price`, `cost_price`, `apply_tax`, `category`, `tags`, `dang_ve_kho`) VALUES
 (6, NULL, 'Thường', 1, 'iPhone 15 Pro Max 256GB', 'Apple', 29000000.00, '2026-05-25 17:27:33', 'IP15PM-256', NULL, 'Cái', 15, 15, 0, 0, NULL, NULL, 34990000, NULL, 0, 'Điện thoại di động', NULL, 0),
 (7, NULL, 'Thường', 1, 'Samsung Galaxy S24 Ultra', 'Samsung', 31990000.00, '2026-05-25 17:27:33', 'S24U-512', NULL, 'Cái', 10, 10, 0, 0, NULL, NULL, 0, NULL, 0, 'Điện thoại di động', NULL, 5),
-(8, NULL, 'Thường', 1, 'Apple Watch Series 9', 'Apple', 9500000.00, '2026-05-25 17:27:33', 'AW-S9-41', NULL, 'Chiếc', 7, 8, 0, 0, NULL, NULL, 10500000, NULL, 0, 'Đồng hồ thông minh', NULL, 0),
+(8, NULL, 'Thường', 1, 'Apple Watch Series 9', 'Apple', 9500000.00, '2026-05-25 17:27:33', 'AW-S9-41', NULL, 'Chiếc', 6, 8, 0, 0, NULL, NULL, 10500000, NULL, 0, 'Đồng hồ thông minh', NULL, 0),
 (9, NULL, 'Thường', 1, 'Cáp sạc nhanh 20W Type-C', 'Khác', 250000.00, '2026-05-25 17:27:33', 'CAP-20W-TC', NULL, 'Sợi', 49, 50, 0, 0, NULL, NULL, 0, NULL, 0, 'Phụ kiện chính hãng', NULL, 0),
 (10, NULL, 'Thường', 1, 'Tai nghe AirPods Pro 2', 'Apple', 5800000.00, '2026-05-25 17:27:33', 'AP-PRO2', '', 'Hộp', 11, 11, 0, 0, '', NULL, 6200000, 0, 0, 'Phụ kiện chính hãng', '', 1),
 (11, NULL, 'Thường', 1, 'Tai nghe AirPods Pro 2', 'Apple', 5800000.00, '2026-06-05 17:46:11', 'AP-PRO2', '', 'Hộp', 0, 0, 0, 0, '', '', 6200000, 0, 0, 'Phụ kiện chính hãng', '', 0),
@@ -455,7 +457,8 @@ CREATE TABLE `promotions` (
 INSERT INTO `promotions` (`id`, `promo_name`, `promo_code`, `promo_type`, `discount_type`, `discount_value`, `min_order_value`, `start_date`, `end_date`, `status`, `created_at`, `usage_limit`, `description`, `no_end_date`, `advanced_timing`, `branch_scope`, `specific_branches`, `customer_scope`, `customer_conditions`, `gift_settings`, `max_shipping_discount`, `used_count`, `max_discount_amount`, `min_product_qty`, `once_per_customer`, `sales_channels`, `allowed_combinations`, `apply_once_per_order`, `product_apply_settings`, `shipping_settings`) VALUES
 (4, 'Đơn hàng mới', 'KMBNJ0W1J8', 'discount_order', 'amount', 90000.00, 0.00, '2026-06-12 00:00:00', '2099-12-31 23:59:59', 'Đang áp dụng', '2026-06-12 22:31:00', NULL, '', 1, NULL, 'all', NULL, 'all', NULL, NULL, NULL, 0, NULL, 0, 0, '[\"pos\",\"web\"]', NULL, 0, NULL, NULL),
 (7, 'Test4 ', 'KMVK0G0DP7', 'discount_order', 'amount', 0.00, 0.00, '2026-06-12 00:00:00', '2026-07-12 23:59:59', 'Ngừng áp dụng', '2026-06-12 23:17:11', 12, '', 0, NULL, 'all', NULL, 'all', NULL, NULL, NULL, 0, NULL, 0, 0, '[\"web\"]', NULL, 0, NULL, NULL),
-(8, 'Test5', 'mienphi', 'discount_order', 'percent', 50.00, 0.00, '2026-06-12 00:00:00', '2026-06-13 23:59:59', 'Ngừng áp dụng', '2026-06-12 23:25:00', 23, '', 0, NULL, 'all', NULL, 'all', NULL, NULL, NULL, 0, NULL, 0, 1, '[\"pos\",\"web\"]', '[\"product\",\"order\",\"shipping\"]', 0, NULL, NULL);
+(8, 'Test5', 'mienphi', 'discount_order', 'percent', 50.00, 0.00, '2026-06-12 00:00:00', '2026-06-13 23:59:59', 'Ngừng áp dụng', '2026-06-12 23:25:00', 23, '', 0, NULL, 'all', NULL, 'all', NULL, NULL, NULL, 0, NULL, 0, 1, '[\"pos\",\"web\"]', '[\"product\",\"order\",\"shipping\"]', 0, NULL, NULL),
+(9, 'TEST5', 'GIAM20', 'discount_order', 'amount', 200000.00, 0.00, '2026-06-17 00:00:00', '2099-12-31 23:59:59', 'Đang áp dụng', '2026-06-17 00:57:29', NULL, '', 1, NULL, 'all', NULL, 'all', NULL, NULL, NULL, 0, NULL, 0, 0, '[\"pos\",\"web\"]', '[\"product\",\"order\",\"shipping\"]', 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -509,7 +512,7 @@ INSERT INTO `purchase_order_details` (`id`, `order_id`, `product_id`, `quantity`
 (2, 2, 6, 10, 0.00),
 (3, 3, 9, 5, 50000.00),
 (7, 6, 6, 1, 3000000.00),
-(9, 5, 7, 5, 25000.00);
+(10, 5, 7, 5, 25000.00);
 
 -- --------------------------------------------------------
 
@@ -913,7 +916,7 @@ ALTER TABLE `inventory_transfer_details`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
@@ -925,7 +928,7 @@ ALTER TABLE `order_details`
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `price_lists`
@@ -961,7 +964,7 @@ ALTER TABLE `product_items`
 -- AUTO_INCREMENT cho bảng `promotions`
 --
 ALTER TABLE `promotions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `purchase_orders`
@@ -973,7 +976,7 @@ ALTER TABLE `purchase_orders`
 -- AUTO_INCREMENT cho bảng `purchase_order_details`
 --
 ALTER TABLE `purchase_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `purchase_returns`

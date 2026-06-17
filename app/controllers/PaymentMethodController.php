@@ -12,10 +12,11 @@ class PaymentMethodController
         $stmt = $db->query("SELECT * FROM payment_methods ORDER BY type ASC, id ASC");
         $methods = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Chia làm 2 nhóm: Tích hợp và Thủ công
+        // 2 DÒNG NÀY RẤT QUAN TRỌNG ĐỂ TRUYỀN BIẾN RA VIEW:
         $integrated_methods = array_filter($methods, fn($m) => $m['type'] === 'integrated');
         $manual_methods = array_filter($methods, fn($m) => $m['type'] === 'manual');
 
+        // Bắt buộc require file view ở cuối hàm này
         require_once __DIR__ . '/../views/setting/payment_methods.php';
     }
 

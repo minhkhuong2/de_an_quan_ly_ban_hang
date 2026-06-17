@@ -1,4 +1,9 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php 
+/** 
+ * @var array $integrated_methods
+ * @var array $manual_methods 
+ */
+require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
     .v3-header {
