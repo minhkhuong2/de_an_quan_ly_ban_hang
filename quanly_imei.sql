@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 16, 2026 lúc 08:11 PM
+-- Thời gian đã tạo: Th6 18, 2026 lúc 07:37 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -114,6 +114,26 @@ CREATE TABLE `customers` (
 INSERT INTO `customers` (`id`, `customer_code`, `last_name`, `first_name`, `phone`, `email`, `accept_marketing`, `province`, `district`, `ward`, `address`, `tax_code`, `company_name`, `invoice_address`, `invoice_email`, `notes`, `tags`, `debt`, `created_at`) VALUES
 (1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 0.00, '2026-06-06 23:23:37'),
 (2, 'KH0002', ' Nguyễn Sơn', 'Trường', '0867473783', 'sontruong2005@gmail.com', 1, 'Ninh Bình', 'Hải Hậu', 'Hải Anh', 'Số 23', '', '', '', '', '', '', 0.00, '2026-06-14 22:37:42');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `customer_groups`
+--
+
+CREATE TABLE `customer_groups` (
+  `id` int(11) NOT NULL,
+  `group_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `customer_groups`
+--
+
+INSERT INTO `customer_groups` (`id`, `group_name`, `description`) VALUES
+(1, 'Khách hàng VIP', NULL),
+(2, 'Khách hàng Sỉ (Đại lý)', NULL);
 
 -- --------------------------------------------------------
 
@@ -285,26 +305,89 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `sku`
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `order_sources`
+--
+
+CREATE TABLE `order_sources` (
+  `id` int(11) NOT NULL,
+  `source_name` varchar(100) NOT NULL,
+  `category_name` varchar(100) NOT NULL,
+  `source_type` varchar(50) DEFAULT 'Mặc định',
+  `status` varchar(50) DEFAULT 'Đang sử dụng',
+  `logo_url` varchar(255) DEFAULT NULL,
+  `sort_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_sources`
+--
+
+INSERT INTO `order_sources` (`id`, `source_name`, `category_name`, `source_type`, `status`, `logo_url`, `sort_order`, `created_at`) VALUES
+(1, 'Website', 'Website', 'Mặc định', 'Đang sử dụng', NULL, 1, '2026-06-17 16:08:22'),
+(2, 'Admin', 'Nhân viên tự tạo (Nội bộ)', 'Mặc định', 'Đang sử dụng', NULL, 2, '2026-06-17 16:08:22'),
+(3, 'Hotline', 'Bán tại cửa hàng, Hotline', 'Mặc định', 'Đang sử dụng', NULL, 3, '2026-06-17 16:08:22'),
+(4, 'Facebook', 'Mạng xã hội, Livestream', 'Mặc định', 'Ngừng sử dụng', NULL, 4, '2026-06-17 16:08:22'),
+(5, 'Shopee', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', NULL, 5, '2026-06-17 16:08:22'),
+(6, 'Tiktok Shop', 'Sàn TMĐT', 'Mặc định', 'Ngừng sử dụng', NULL, 6, '2026-06-17 16:08:22');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `payment_methods`
+--
+
+CREATE TABLE `payment_methods` (
+  `id` int(11) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `type` enum('manual','integrated') DEFAULT 'manual',
+  `is_active` tinyint(1) DEFAULT 1,
+  `is_default` tinyint(1) DEFAULT 0,
+  `config_data` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `payment_methods`
+--
+
+INSERT INTO `payment_methods` (`id`, `code`, `name`, `type`, `is_active`, `is_default`, `config_data`, `created_at`) VALUES
+(1, 'cash', 'Tiền mặt', 'manual', 1, 1, NULL, '2026-06-16 15:48:28'),
+(2, 'transfer', 'Chuyển khoản thủ công', 'manual', 1, 0, NULL, '2026-06-16 15:48:28'),
+(3, 'vietqr', 'Thanh toán VietQR', 'integrated', 1, 0, '{\"fullname\":\"BUI VAN KHUONG\",\"id_card\":\"0203102394\",\"phone\":\"0397739126\",\"email\":\"buikhuong2005@gmail.com\",\"account_no\":\"0397739126\",\"bank_code\":\"MB\"}', '2026-06-16 15:48:28'),
+(4, 'zalopay', 'Ví ZaloPay', 'integrated', 0, 0, NULL, '2026-06-16 15:48:28'),
+(5, 'momo', 'Ví MoMo', 'integrated', 0, 0, NULL, '2026-06-16 15:48:28');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `price_lists`
 --
 
 CREATE TABLE `price_lists` (
   `id` int(11) NOT NULL,
-  `price_name` varchar(255) NOT NULL,
-  `adjust_type` varchar(50) DEFAULT NULL,
-  `adjust_value` int(11) DEFAULT 0,
-  `auto_add` tinyint(1) DEFAULT 0,
-  `branch` varchar(100) DEFAULT 'Cửa hàng chính',
-  `status` varchar(50) DEFAULT 'Lưu nháp',
+  `name` varchar(255) NOT NULL,
+  `target_type` varchar(50) NOT NULL,
+  `target_id` int(11) NOT NULL,
+  `adjustment_type` varchar(50) NOT NULL,
+  `adjustment_value` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `auto_add_new_product` tinyint(1) DEFAULT 0,
+  `status` varchar(20) DEFAULT 'draft',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 
 --
--- Đang đổ dữ liệu cho bảng `price_lists`
+-- Cấu trúc bảng cho bảng `price_list_items`
 --
 
-INSERT INTO `price_lists` (`id`, `price_name`, `adjust_type`, `adjust_value`, `auto_add`, `branch`, `status`, `created_at`) VALUES
-(1, 'Bảng giá khách VIP', 'Giảm giá', 5, 0, 'Cửa hàng chính', 'Đang áp dụng', '2026-05-13 16:04:04');
+CREATE TABLE `price_list_items` (
+  `price_list_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `custom_price` decimal(15,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -677,6 +760,29 @@ INSERT INTO `suppliers` (`id`, `supplier_code`, `supplier_name`, `phone`, `email
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `system_settings`
+--
+
+CREATE TABLE `system_settings` (
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `system_settings`
+--
+
+INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
+('advanced_wave_picking', '{\"scan_shelf\":0, \"scan_item_pick\":0, \"scan_item_pack\":0, \"strict_wave\":0}'),
+('allow_negative_sale_warning', '1'),
+('auto_archive_order', '0'),
+('auto_delete_transaction', '1'),
+('order_workflow', 'basic'),
+('reminder_email_hours', '1');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `users`
 --
 
@@ -719,6 +825,12 @@ ALTER TABLE `categories`
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `customer_code` (`customer_code`);
+
+--
+-- Chỉ mục cho bảng `customer_groups`
+--
+ALTER TABLE `customer_groups`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `inventory_checks`
@@ -765,10 +877,29 @@ ALTER TABLE `order_items`
   ADD KEY `order_id` (`order_id`);
 
 --
+-- Chỉ mục cho bảng `order_sources`
+--
+ALTER TABLE `order_sources`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `payment_methods`
+--
+ALTER TABLE `payment_methods`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
+
+--
 -- Chỉ mục cho bảng `price_lists`
 --
 ALTER TABLE `price_lists`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `price_list_items`
+--
+ALTER TABLE `price_list_items`
+  ADD PRIMARY KEY (`price_list_id`,`product_id`);
 
 --
 -- Chỉ mục cho bảng `products`
@@ -860,6 +991,12 @@ ALTER TABLE `suppliers`
   ADD UNIQUE KEY `supplier_code` (`supplier_code`);
 
 --
+-- Chỉ mục cho bảng `system_settings`
+--
+ALTER TABLE `system_settings`
+  ADD PRIMARY KEY (`setting_key`);
+
+--
 -- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
@@ -886,6 +1023,12 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `customer_groups`
+--
+ALTER TABLE `customer_groups`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -931,10 +1074,22 @@ ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT cho bảng `order_sources`
+--
+ALTER TABLE `order_sources`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT cho bảng `payment_methods`
+--
+ALTER TABLE `payment_methods`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT cho bảng `price_lists`
 --
 ALTER TABLE `price_lists`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `products`

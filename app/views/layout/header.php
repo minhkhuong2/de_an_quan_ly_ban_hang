@@ -265,8 +265,8 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=product_category" class="menu-item <?php echo ($current_action == 'product_category' || $current_action == 'add_category' || $current_action == 'edit_category') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-folder-tree"></i> Danh mục
             </a>
-            <a href="index.php?action=product_price" class="menu-item <?php echo ($current_action == 'product_price' || $current_action == 'add_price') ? 'active' : ''; ?>">
-                <i class="fa-solid fa-tags"></i> Bảng giá
+            <a href="index.php?action=product_price" <?php echo ($current_action == 'product_price' || $current_action == 'add_price_list' || $current_action == 'price_list_detail') ? 'style="color:#60a5fa;"' : ''; ?>>
+                <i class="fa-solid fa-tags" style="font-size: 10px; margin-right: 5px;"></i> Bảng giá
             </a>
 
             <div class="menu-heading">Quản lý Kho</div>

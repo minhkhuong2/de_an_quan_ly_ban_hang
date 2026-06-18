@@ -22,10 +22,19 @@ class App
         'add_category'     => ['ProductController', 'add_category'],
         'edit_category'    => ['ProductController', 'edit_category'],
         'delete_category'  => ['ProductController', 'delete_category'],
-        'product_price'    => ['ProductController', 'price'],
         'add_price'        => ['ProductController', 'add_price'],
         // ĐÂY CHÍNH LÀ DÒNG FIX LỖI 404 CỦA CHÚNG TA:
         'quick_update_stock' => ['ProductController', 'quick_update_stock'],
+
+        // Quản lý Bảng giá sản phẩm nâng cao
+        'product_price'             => ['PriceListController', 'index'],
+        'add_price_list'            => ['PriceListController', 'create'],
+        'store_price_list'          => ['PriceListController', 'store'],
+        'price_list_add_items'      => ['PriceListController', 'add_items'],
+        'store_price_list_items'    => ['PriceListController', 'store_items'],
+        'price_list_detail'         => ['PriceListController', 'edit'],
+        'api_update_price_item'     => ['PriceListController', 'update_item_price'],
+        'api_delete_price_item'     => ['PriceListController', 'delete_item'],
 
         // --- Đối tác ---
         'customer_list'   => ['CustomerController', 'list'],
