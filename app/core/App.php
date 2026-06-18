@@ -36,6 +36,15 @@ class App
         'api_update_price_item'     => ['PriceListController', 'update_item_price'],
         'api_delete_price_item'     => ['PriceListController', 'delete_item'],
 
+        // --- Sổ Quỹ & Kế toán Dòng tiền ---
+        'fund_transfers'        => ['FundTransferController', 'index'],
+        'create_fund_transfer'  => ['FundTransferController', 'create'],
+        'store_fund_transfer'   => ['FundTransferController', 'store'],
+        'fund_transfer_detail'  => ['FundTransferController', 'detail'],
+        'update_fund_transfer'  => ['FundTransferController', 'update'],
+        'api_delete_fund'       => ['FundTransferController', 'delete_single'],
+        'api_delete_bulk_fund'  => ['FundTransferController', 'delete_bulk'],
+
         // --- Đối tác ---
         'customer_list'   => ['CustomerController', 'list'],
         'add_customer'    => ['CustomerController', 'add'],

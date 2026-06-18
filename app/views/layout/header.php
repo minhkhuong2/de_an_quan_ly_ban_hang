@@ -296,9 +296,23 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=customer_list" class="menu-item <?php echo ($current_action == 'customer_list') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-users"></i> Khách hàng
             </a>
+
             <a href="index.php?action=promo_list" class="menu-item <?php echo in_array($current_action, ['promo_list', 'add_promo', 'view_promo', 'edit_promo', 'copy_promo', 'promo_settings']) ? 'active' : ''; ?>">
                 <i class="fa-solid fa-gift"></i> Quản lý Khuyến mại
             </a>
+            <div class="menu-item has-submenu" style="margin-top: 15px;">
+                <a href="javascript:void(0)" class="menu-link">
+                    <i class="fa-solid fa-wallet"></i> Sổ quỹ
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="index.php?action=fund_transfers" <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-money-bill-transfer" style="font-size: 10px; margin-right: 5px;"></i> Phiếu chuyển quỹ nội bộ
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
             <a href="index.php?action=list" class="menu-item <?php echo ($current_action == 'list' || $current_action == 'add' || $current_action == 'sell' || $current_action == 'warranty' || $current_action == 'returnItem' || $current_action == 'search') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-barcode"></i> Quản lý IMEI
             </a>
@@ -312,6 +326,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
                 </ul>
             </div>
+
 
             <div class="menu-item has-submenu" style="margin-top: 15px;">
                 <a href="javascript:void(0)" class="menu-link">
