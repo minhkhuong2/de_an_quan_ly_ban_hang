@@ -62,7 +62,7 @@ class App
         'add_purchase'     => ['PurchaseOrderController', 'add'],
 
         'inventory_check_list' => ['InventoryCheckController', 'list'],
-        'add_inventory_check'  => ['InventoryCheckController', 'add'], // <--- Phải có dấu phẩy ở đây
+        'add_inventory_check'  => ['InventoryCheckController', 'add'],
 
         'view_purchase'    => ['PurchaseOrderController', 'detail'],
         'cancel_purchase'  => ['PurchaseOrderController', 'cancel'],
