@@ -314,7 +314,7 @@ require_once __DIR__ . '/../layout/header.php';
             })
             .then(res => res.json())
             .then(res => {
-                alert(res.msg); // Hiển thị thông báo chuẩn Sapo
+                alert(res.msg); // Hiển thị thông báo
                 document.getElementById('export_debt_modal').style.display = 'none';
             });
     }

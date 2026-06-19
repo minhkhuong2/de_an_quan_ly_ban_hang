@@ -192,7 +192,7 @@ class CustomerController
             // 2. Xuất Tổng quan 1 KH
             // 3. Xuất Chi tiết 1 KH (Kéo data từ bảng customer_debt_history)
 
-            // Do XAMPP không cấu hình mail server thật, ta giả lập phản hồi thành công chuẩn Sapo
+            // Do XAMPP không cấu hình mail server thật, ta giả lập phản hồi thành công
             echo json_encode([
                 'status' => 'success',
                 'msg' => 'Xuất file công nợ thành công! Dữ liệu đang được hệ thống xử lý và sẽ gửi thông báo về email trên tài khoản của bạn.'

@@ -175,7 +175,7 @@
         }
     }
 
-    // Từ điển logic các trường (Khớp 100% mục 2 tài liệu Sapo)
+    // Từ điển logic các trường (Khớp 100% mục 2 tài liệu
     const ruleConfig = {
         'total_spend': {
             label: 'Tổng chi tiêu',

@@ -40,7 +40,7 @@ class DebtManagementController
         require_once __DIR__ . '/../views/debt/detail.php';
     }
 
-    // 3. XỬ LÝ ĐIỀU CHỈNH SỐ NỢ MỤC TIÊU (CORE LOGIC SAPO - MỤC 2 TÀI LIỆU)
+    // 3. XỬ LÝ ĐIỀU CHỈNH SỐ NỢ MỤC TIÊU - MỤC 2 TÀI LIỆU)
     public function adjust()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -65,7 +65,7 @@ class ReceiptController
                 $stmt_receipt = $this->db->prepare("INSERT INTO receipts (receipt_code, payment_method, bank_account_id, customer_id, amount, payment_strategy, description, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt_receipt->execute([$receipt_code, $payment_method, $bank_account_id, $customer_id, $amount, $payment_strategy, $description, $transaction_date]);
 
-                // BƯỚC 2: THUẬT TOÁN PHÂN BỔ TIỀN VÀO CÁC ĐƠN HÀNG (CORE LOGIC SAPO)
+                // BƯỚC 2: THUẬT TOÁN PHÂN BỔ TIỀN VÀO CÁC ĐƠN HÀNG
                 $order_direction = ($payment_strategy === 'newest_first') ? 'DESC' : 'ASC';
                 // Lấy các đơn chưa thanh toán hết của khách này
                 $stmt_orders = $this->db->prepare("SELECT * FROM orders WHERE customer_id = ? AND payment_status IN ('unpaid', 'partial') ORDER BY created_at $order_direction");

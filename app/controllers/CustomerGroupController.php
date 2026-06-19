@@ -133,7 +133,7 @@ class CustomerGroupController
             // Giả lập truy vấn lấy data khách hàng cần xuất
             // Trong thực tế sẽ viết SQL: SELECT * FROM customers WHERE id IN (...)
 
-            // Theo tài liệu Sapo: Gửi file qua email. 
+            // Theo tài liệu Gửi file qua email. 
             // Do môi trường XAMPP khó cấu hình gửi mail thật, ta trả về lệnh cho Frontend tải file ảo để demo nghiệp vụ.
 
             echo json_encode([
