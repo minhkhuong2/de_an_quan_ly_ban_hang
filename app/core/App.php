@@ -49,6 +49,12 @@ class App
         'create_expense' => ['ExpenseController', 'create'],
         'store_expense'  => ['ExpenseController', 'store'],
         'api_export_debt'      => ['CustomerController', 'export_debt'],
+        'expense_list'   => ['ExpenseController', 'index'],
+        'expense_detail' => ['ExpenseController', 'detail'],
+        'update_expense' => ['ExpenseController', 'update'],
+        'api_delete_expense' => ['ExpenseController', 'delete'],
+
+
 
         // --- Đối tác ---
         'customer_list'   => ['CustomerController', 'list'],

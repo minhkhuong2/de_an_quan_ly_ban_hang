@@ -314,10 +314,15 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </a>
 
             <div class="menu-item has-submenu">
-                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail', 'create_receipt', 'create_expense'])) ? 'active' : ''; ?>">
+                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail', 'create_receipt', 'create_expense', 'expense_list', 'expense_detail'])) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-wallet"></i> Sổ quỹ
                 </a>
                 <ul class="submenu">
+                    <li>
+                        <a href="index.php?action=expense_list" <?php echo (in_array($current_action, ['expense_list', 'expense_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-list" style="font-size: 10px; margin-right: 5px;"></i> Danh sách phiếu chi
+                        </a>
+                    </li>
                     <li>
                         <a href="index.php?action=create_receipt" <?php echo ($current_action == 'create_receipt') ? 'style="color:#60a5fa;"' : ''; ?>>
                             <i class="fa-solid fa-arrow-down" style="font-size: 10px; margin-right: 5px;"></i> Tạo Phiếu thu (Thu nợ)
