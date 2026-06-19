@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 18, 2026 lúc 07:37 PM
+-- Thời gian đã tạo: Th6 19, 2026 lúc 06:25 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `quanly_imei`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `bank_accounts`
+--
+
+CREATE TABLE `bank_accounts` (
+  `id` int(11) NOT NULL,
+  `account_name` varchar(255) NOT NULL,
+  `account_number` varchar(50) NOT NULL,
+  `bank_name` varchar(100) NOT NULL,
+  `status` varchar(20) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `bank_accounts`
+--
+
+INSERT INTO `bank_accounts` (`id`, `account_name`, `account_number`, `bank_name`, `status`) VALUES
+(1, 'CÔNG TY AAKC', '1903123456789', 'Techcombank', 'active'),
+(2, 'BUI VAN KHUONG', '0123456789', 'MB Bank', 'active');
 
 -- --------------------------------------------------------
 
@@ -112,8 +134,26 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `customer_code`, `last_name`, `first_name`, `phone`, `email`, `accept_marketing`, `province`, `district`, `ward`, `address`, `tax_code`, `company_name`, `invoice_address`, `invoice_email`, `notes`, `tags`, `debt`, `created_at`) VALUES
-(1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 0.00, '2026-06-06 23:23:37'),
+(1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 600000.00, '2026-06-06 23:23:37'),
 (2, 'KH0002', ' Nguyễn Sơn', 'Trường', '0867473783', 'sontruong2005@gmail.com', 1, 'Ninh Bình', 'Hải Hậu', 'Hải Anh', 'Số 23', '', '', '', '', '', '', 0.00, '2026-06-14 22:37:42');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `customer_debt_history`
+--
+
+CREATE TABLE `customer_debt_history` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `transaction_type` varchar(50) NOT NULL COMMENT 'order, return, receipt, payment, adjustment',
+  `reference_code` varchar(100) DEFAULT NULL COMMENT 'Mã đơn hoặc mã phiếu',
+  `debt_increase` decimal(15,2) DEFAULT 0.00 COMMENT 'Ghi Tăng công nợ (+)',
+  `debt_decrease` decimal(15,2) DEFAULT 0.00 COMMENT 'Ghi Giảm công nợ (-)',
+  `balance` decimal(15,2) NOT NULL COMMENT 'Dư nợ cuối cùng sau giao dịch',
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -124,16 +164,82 @@ INSERT INTO `customers` (`id`, `customer_code`, `last_name`, `first_name`, `phon
 CREATE TABLE `customer_groups` (
   `id` int(11) NOT NULL,
   `group_name` varchar(100) NOT NULL,
-  `description` text DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `group_type` enum('manual','auto') DEFAULT 'manual',
+  `condition_match` enum('all','any') DEFAULT 'all',
+  `conditions_json` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `customer_groups`
 --
 
-INSERT INTO `customer_groups` (`id`, `group_name`, `description`) VALUES
-(1, 'Khách hàng VIP', NULL),
-(2, 'Khách hàng Sỉ (Đại lý)', NULL);
+INSERT INTO `customer_groups` (`id`, `group_name`, `description`, `group_type`, `condition_match`, `conditions_json`, `created_at`) VALUES
+(1, 'Khách hàng VIP', NULL, 'manual', 'all', NULL, '2026-06-19 14:37:52'),
+(2, 'Khách hàng Sỉ (Đại lý)', NULL, 'manual', 'all', NULL, '2026-06-19 14:37:52');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `customer_group_members`
+--
+
+CREATE TABLE `customer_group_members` (
+  `group_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `expenses`
+--
+
+CREATE TABLE `expenses` (
+  `id` int(11) NOT NULL,
+  `expense_code` varchar(50) DEFAULT NULL,
+  `payment_method` enum('cash','bank') NOT NULL,
+  `bank_account_id` int(11) DEFAULT NULL,
+  `customer_id` int(11) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `is_debt_affected` tinyint(1) DEFAULT 0,
+  `description` text DEFAULT NULL,
+  `branch_id` int(11) DEFAULT NULL,
+  `transaction_date` datetime NOT NULL,
+  `reference_code` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `fund_transfers`
+--
+
+CREATE TABLE `fund_transfers` (
+  `id` int(11) NOT NULL,
+  `transfer_code` varchar(50) DEFAULT NULL,
+  `from_type` enum('cash','bank') NOT NULL,
+  `from_id` int(11) NOT NULL,
+  `to_type` enum('cash','bank') NOT NULL,
+  `to_id` int(11) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `description` text DEFAULT NULL,
+  `transaction_date` datetime NOT NULL,
+  `reference_code` varchar(100) DEFAULT NULL,
+  `status` enum('completed','cancelled') DEFAULT 'completed',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `fund_transfers`
+--
+
+INSERT INTO `fund_transfers` (`id`, `transfer_code`, `from_type`, `from_id`, `to_type`, `to_id`, `amount`, `description`, `transaction_date`, `reference_code`, `status`, `created_at`) VALUES
+(1, 'PCQ20260619001', 'cash', 1, 'bank', 1, 15000000.00, 'Nộp tiền mặt doanh thu bán lẻ trong ngày vào tài khoản Techcombank', '2026-06-19 08:30:00', 'UNC-TCB-001', 'completed', '2026-06-18 18:10:15'),
+(2, 'PCQ20260619002', 'bank', 1, 'cash', 1, 5000000.00, 'Rút tiền mặt từ thẻ Techcombank về làm quỹ tiêu vặt tại chi nhánh', '2026-06-18 14:15:00', 'RTM-002', 'completed', '2026-06-18 18:10:15'),
+(3, 'PCQ20260619003', 'bank', 1, 'bank', 2, 25000000.00, 'Chuyển khoản vốn lưu động từ Techcombank sang MB Bank', '2026-06-19 10:45:00', 'CK-MB-003', 'completed', '2026-06-18 18:10:15');
 
 -- --------------------------------------------------------
 
@@ -217,90 +323,22 @@ CREATE TABLE `inventory_transfer_details` (
 
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
-  `order_code` varchar(50) NOT NULL,
-  `customer_id` int(11) DEFAULT NULL,
-  `branch_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `subtotal` decimal(15,2) DEFAULT 0.00,
-  `total_product_discount` decimal(15,2) DEFAULT 0.00,
-  `total_order_discount` decimal(15,2) DEFAULT 0.00,
-  `original_shipping_fee` decimal(15,2) DEFAULT 0.00,
-  `total_shipping_discount` decimal(15,2) DEFAULT 0.00,
-  `tax_amount` decimal(15,2) DEFAULT 0.00,
-  `grand_total` decimal(15,2) DEFAULT 0.00,
-  `amount_paid` decimal(15,2) DEFAULT 0.00,
-  `sales_channel` enum('pos','web','facebook','shopee') DEFAULT 'pos',
-  `payment_status` enum('pending','partial','paid') DEFAULT 'pending',
-  `shipping_status` enum('pending','delivering','delivered','returned') DEFAULT 'pending',
-  `order_status` enum('draft','processing','completed','cancelled') DEFAULT 'draft',
-  `shipping_method` enum('partner','self','pickup','later') DEFAULT 'pickup',
-  `shipping_address` text DEFAULT NULL,
-  `cod_amount` decimal(15,2) DEFAULT 0.00,
-  `note` text DEFAULT NULL,
-  `tags` varchar(255) DEFAULT NULL,
-  `order_date` datetime DEFAULT current_timestamp(),
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `payment_method` varchar(50) DEFAULT 'cash'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `order_code` varchar(50) DEFAULT NULL,
+  `customer_id` int(11) NOT NULL,
+  `total_amount` decimal(15,2) NOT NULL,
+  `paid_amount` decimal(15,2) DEFAULT 0.00,
+  `payment_status` enum('unpaid','partial','paid') DEFAULT 'unpaid',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `branch_id`, `user_id`, `subtotal`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `sales_channel`, `payment_status`, `shipping_status`, `order_status`, `shipping_method`, `shipping_address`, `cod_amount`, `note`, `tags`, `order_date`, `created_at`, `payment_method`) VALUES
-(7, 'SON67301C', NULL, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 250000.00, 0.00, 'web', 'pending', 'pending', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:54:30', '2026-06-14 16:54:30', 'cash'),
-(8, 'SONC1EF79', NULL, NULL, NULL, 500000.00, 90000.00, 0.00, 0.00, 0.00, 0.00, 410000.00, 0.00, 'web', 'pending', 'pending', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:55:40', '2026-06-14 16:55:40', 'cash'),
-(9, 'SON180AD7', NULL, NULL, NULL, 9500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 9500000.00, 9500000.00, 'web', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-14 23:56:17', '2026-06-14 16:56:17', 'cash'),
-(10, 'SONEB072D', NULL, NULL, NULL, 9500000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 9500000.00, 0.00, 'web', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-15 00:12:30', '2026-06-14 17:12:30', 'cash'),
-(11, 'SONB34554', 2, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 250000.00, 0.00, 'pos', 'paid', 'delivered', 'completed', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-16 00:39:55', '2026-06-15 17:39:55', 'cash'),
-(12, 'SON3854B8', NULL, NULL, NULL, 250000.00, 0.00, 0.00, 0.00, 0.00, 25000.00, 275000.00, 275000.00, 'pos', 'paid', 'pending', 'cancelled', 'pickup', NULL, 0.00, NULL, NULL, '2026-06-17 00:10:11', '2026-06-16 17:10:11', 'qr');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `order_details`
---
-
-CREATE TABLE `order_details` (
-  `id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `imei_code` varchar(50) NOT NULL,
-  `price` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `order_items`
---
-
-CREATE TABLE `order_items` (
-  `id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `sku` varchar(100) DEFAULT NULL,
-  `qty` int(11) NOT NULL DEFAULT 1,
-  `original_price` decimal(15,2) NOT NULL,
-  `manual_discount` decimal(15,2) DEFAULT 0.00,
-  `promo_discount` decimal(15,2) DEFAULT 0.00,
-  `final_price` decimal(15,2) NOT NULL,
-  `line_total` decimal(15,2) NOT NULL,
-  `is_gift` tinyint(1) DEFAULT 0,
-  `note` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `order_items`
---
-
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `sku`, `qty`, `original_price`, `manual_discount`, `promo_discount`, `final_price`, `line_total`, `is_gift`, `note`) VALUES
-(1, 7, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL),
-(2, 8, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 2, 250000.00, 0.00, 0.00, 250000.00, 500000.00, 0, NULL),
-(3, 9, 8, 'Apple Watch Series 9', 'AW-S9-41', 1, 9500000.00, 0.00, 0.00, 9500000.00, 9500000.00, 0, NULL),
-(4, 10, 8, 'Apple Watch Series 9', 'AW-S9-41', 1, 9500000.00, 0.00, 0.00, 9500000.00, 9500000.00, 0, NULL),
-(5, 11, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL),
-(6, 12, 9, 'Cáp sạc nhanh 20W Type-C', 'CAP-20W-TC', 1, 250000.00, 0.00, 0.00, 250000.00, 250000.00, 0, NULL);
+INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `total_amount`, `paid_amount`, `payment_status`, `created_at`) VALUES
+(1, 'DH001', 1, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00'),
+(2, 'DH002', 1, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00'),
+(3, 'DH003', 1, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00');
 
 -- --------------------------------------------------------
 
@@ -328,7 +366,7 @@ INSERT INTO `order_sources` (`id`, `source_name`, `category_name`, `source_type`
 (2, 'Admin', 'Nhân viên tự tạo (Nội bộ)', 'Mặc định', 'Đang sử dụng', NULL, 2, '2026-06-17 16:08:22'),
 (3, 'Hotline', 'Bán tại cửa hàng, Hotline', 'Mặc định', 'Đang sử dụng', NULL, 3, '2026-06-17 16:08:22'),
 (4, 'Facebook', 'Mạng xã hội, Livestream', 'Mặc định', 'Ngừng sử dụng', NULL, 4, '2026-06-17 16:08:22'),
-(5, 'Shopee', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', NULL, 5, '2026-06-17 16:08:22'),
+(5, 'Shopee', 'Sàn TMĐT', 'Mặc định', 'Ngừng sử dụng', NULL, 5, '2026-06-17 16:08:22'),
 (6, 'Tiktok Shop', 'Sàn TMĐT', 'Mặc định', 'Ngừng sử dụng', NULL, 6, '2026-06-17 16:08:22');
 
 -- --------------------------------------------------------
@@ -377,6 +415,15 @@ CREATE TABLE `price_lists` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `price_lists`
+--
+
+INSERT INTO `price_lists` (`id`, `name`, `target_type`, `target_id`, `adjustment_type`, `adjustment_value`, `auto_add_new_product`, `status`, `created_at`) VALUES
+(1, 'Bảng giá VIP & Sỉ', 'customer_group', 2, 'decrease', 15.00, 1, 'active', '2026-06-18 17:39:31'),
+(2, 'Sale Tết Chi Nhánh Hà Nội', 'branch', 1, 'decrease', 10.00, 0, 'active', '2026-06-18 17:39:31'),
+(3, 'Giá Ưu Đãi Kênh Shopee', 'channel', 1, 'decrease', 5.00, 1, 'active', '2026-06-18 17:39:31');
+
 -- --------------------------------------------------------
 
 --
@@ -388,6 +435,18 @@ CREATE TABLE `price_list_items` (
   `product_id` int(11) NOT NULL,
   `custom_price` decimal(15,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `price_list_items`
+--
+
+INSERT INTO `price_list_items` (`price_list_id`, `product_id`, `custom_price`) VALUES
+(1, 1, 17000000.00),
+(1, 2, 12750000.00),
+(2, 1, 18000000.00),
+(2, 2, 13500000.00),
+(3, 1, 19000000.00),
+(3, 2, 14250000.00);
 
 -- --------------------------------------------------------
 
@@ -634,6 +693,27 @@ CREATE TABLE `purchase_return_details` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `receipts`
+--
+
+CREATE TABLE `receipts` (
+  `id` int(11) NOT NULL,
+  `receipt_code` varchar(50) DEFAULT NULL,
+  `payment_method` enum('cash','bank') NOT NULL,
+  `bank_account_id` int(11) DEFAULT NULL,
+  `customer_id` int(11) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `payment_strategy` varchar(20) DEFAULT 'oldest_first',
+  `description` text DEFAULT NULL,
+  `branch_id` int(11) DEFAULT NULL,
+  `transaction_date` datetime NOT NULL,
+  `reference_code` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `settings`
 --
 
@@ -808,6 +888,12 @@ INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `role`, `created
 --
 
 --
+-- Chỉ mục cho bảng `bank_accounts`
+--
+ALTER TABLE `bank_accounts`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `branches`
 --
 ALTER TABLE `branches`
@@ -827,10 +913,36 @@ ALTER TABLE `customers`
   ADD UNIQUE KEY `customer_code` (`customer_code`);
 
 --
+-- Chỉ mục cho bảng `customer_debt_history`
+--
+ALTER TABLE `customer_debt_history`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `customer_groups`
 --
 ALTER TABLE `customer_groups`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `customer_group_members`
+--
+ALTER TABLE `customer_group_members`
+  ADD PRIMARY KEY (`group_id`,`customer_id`);
+
+--
+-- Chỉ mục cho bảng `expenses`
+--
+ALTER TABLE `expenses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `expense_code` (`expense_code`);
+
+--
+-- Chỉ mục cho bảng `fund_transfers`
+--
+ALTER TABLE `fund_transfers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `transfer_code` (`transfer_code`);
 
 --
 -- Chỉ mục cho bảng `inventory_checks`
@@ -862,19 +974,6 @@ ALTER TABLE `inventory_transfer_details`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `order_code` (`order_code`);
-
---
--- Chỉ mục cho bảng `order_details`
---
-ALTER TABLE `order_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `order_items`
---
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
 
 --
 -- Chỉ mục cho bảng `order_sources`
@@ -963,6 +1062,13 @@ ALTER TABLE `purchase_return_details`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `receipts`
+--
+ALTER TABLE `receipts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `receipt_code` (`receipt_code`);
+
+--
 -- Chỉ mục cho bảng `settings`
 --
 ALTER TABLE `settings`
@@ -1008,6 +1114,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT cho bảng `bank_accounts`
+--
+ALTER TABLE `bank_accounts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT cho bảng `branches`
 --
 ALTER TABLE `branches`
@@ -1026,10 +1138,28 @@ ALTER TABLE `customers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT cho bảng `customer_debt_history`
+--
+ALTER TABLE `customer_debt_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `customer_groups`
 --
 ALTER TABLE `customer_groups`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `expenses`
+--
+ALTER TABLE `expenses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `fund_transfers`
+--
+ALTER TABLE `fund_transfers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory_checks`
@@ -1059,19 +1189,7 @@ ALTER TABLE `inventory_transfer_details`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT cho bảng `order_details`
---
-ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `order_items`
---
-ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `order_sources`
@@ -1089,7 +1207,7 @@ ALTER TABLE `payment_methods`
 -- AUTO_INCREMENT cho bảng `price_lists`
 --
 ALTER TABLE `price_lists`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
@@ -1146,6 +1264,12 @@ ALTER TABLE `purchase_return_details`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `receipts`
+--
+ALTER TABLE `receipts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `settings`
 --
 ALTER TABLE `settings`
@@ -1178,12 +1302,6 @@ ALTER TABLE `users`
 --
 -- Ràng buộc đối với các bảng kết xuất
 --
-
---
--- Ràng buộc cho bảng `order_items`
---
-ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
 
 --
 -- Ràng buộc cho bảng `product_combo_details`

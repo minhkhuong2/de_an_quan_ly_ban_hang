@@ -44,6 +44,11 @@ class App
         'update_fund_transfer'  => ['FundTransferController', 'update'],
         'api_delete_fund'       => ['FundTransferController', 'delete_single'],
         'api_delete_bulk_fund'  => ['FundTransferController', 'delete_bulk'],
+        'create_receipt' => ['ReceiptController', 'create'],
+        'store_receipt'  => ['ReceiptController', 'store'],
+        'create_expense' => ['ExpenseController', 'create'],
+        'store_expense'  => ['ExpenseController', 'store'],
+        'api_export_debt'      => ['CustomerController', 'export_debt'],
 
         // --- Đối tác ---
         'customer_list'   => ['CustomerController', 'list'],
@@ -54,6 +59,19 @@ class App
         'add_supplier'  => ['SupplierController', 'add'],
         'edit_supplier'   => ['SupplierController', 'edit'],
         'delete_supplier' => ['SupplierController', 'delete'],
+        'create_customer_group' => ['CustomerGroupController', 'create'],
+        'store_customer_group'  => ['CustomerGroupController', 'store'],
+        'api_export_customers'  => ['CustomerGroupController', 'export_customers'],
+        'customer_groups'       => ['CustomerGroupController', 'index'],
+        'customer_group_detail' => ['CustomerGroupController', 'detail'],
+        'add_group_members'     => ['CustomerGroupController', 'store_members'],
+        'customer_debt'        => ['CustomerController', 'debt_history'],
+        'adjust_customer_debt' => ['CustomerController', 'adjust_debt'],
+
+        // --- Ứng dụng Quản lý Công nợ ---
+        'debt_app_list'         => ['DebtManagementController', 'index'],
+        'debt_app_detail'       => ['DebtManagementController', 'detail'],
+        'debt_app_adjust'       => ['DebtManagementController', 'adjust'],
 
         // --- Quản lý Kho ---
         'inventory_list'   => ['InventoryController', 'list'],
