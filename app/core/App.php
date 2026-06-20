@@ -58,6 +58,13 @@ class App
         'update_receipt'        => ['ReceiptController', 'update'],
         'api_delete_receipt'    => ['ReceiptController', 'delete'],
 
+        // --- Quản lý Lý do Thu/Chi ---
+        'fund_reasons'       => ['FundReasonController', 'index'],
+        'store_fund_reason'  => ['FundReasonController', 'store'],
+        'delete_fund_reason' => ['FundReasonController', 'delete'],
+        'update_fund_reason' => ['FundReasonController', 'update'],
+        'print_cashbook'     => ['FundReasonController', 'print_cashbook'],
+
 
 
         // --- Đối tác ---

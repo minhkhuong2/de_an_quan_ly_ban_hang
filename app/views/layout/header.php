@@ -344,6 +344,21 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                             <i class="fa-solid fa-list-ol" style="font-size: 10px; margin-right: 5px;"></i> Danh sách phiếu thu
                         </a>
                     </li>
+                    <li>
+                        <a href="index.php?action=fund_reasons" <?php echo ($current_action == 'fund_reasons') ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-list-check" style="font-size: 10px; margin-right: 5px;"></i> Lý do thu chi
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=print_cashbook&type=cash" target="_blank">
+                            <i class="fa-solid fa-print" style="font-size: 10px; margin-right: 5px; color:#e67e22;"></i> 🖨️ In Sổ quỹ Tiền mặt
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=print_cashbook&type=bank" target="_blank">
+                            <i class="fa-solid fa-print" style="font-size: 10px; margin-right: 5px; color:#0088ff;"></i> 🖨️ In Sổ quỹ Tiền gửi
+                        </a>
+                    </li>
                 </ul>
             </div>
 
