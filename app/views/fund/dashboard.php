@@ -1,4 +1,16 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php
+/**
+ * @var float|int $opening_balance
+ * @var float|int $total_in
+ * @var float|int $total_out
+ * @var float|int $closing_balance
+ * @var string $fund_type
+ * @var string $start_date
+ * @var string $end_date
+ * @var array $transactions
+ */
+?>
 
 <style>
     .v3-header {
