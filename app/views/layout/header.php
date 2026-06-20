@@ -315,7 +315,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </a>
 
             <div class="menu-item has-submenu">
-                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail', 'create_receipt', 'create_expense', 'expense_list', 'expense_detail'])) ? 'active' : ''; ?>">
+                <a href="index.php?action=fund_dashboard" class="menu-link <?php echo (in_array($current_action, ['fund_dashboard', 'fund_transfers', 'create_fund_transfer', 'fund_transfer_detail', 'create_receipt', 'create_expense', 'expense_list', 'expense_detail', 'receipt_list', 'receipt_detail', 'fund_reasons'])) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-wallet"></i> Sổ quỹ
                 </a>
                 <ul class="submenu">

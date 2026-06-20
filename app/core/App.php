@@ -64,6 +64,9 @@ class App
         'delete_fund_reason' => ['FundReasonController', 'delete'],
         'update_fund_reason' => ['FundReasonController', 'update'],
         'print_cashbook'     => ['FundReasonController', 'print_cashbook'],
+        // --- Kế toán số quỹ ---
+        'fund_dashboard'        => ['FundController', 'dashboard'],
+        'export_cashbook'       => ['FundController', 'export'],
 
 
 
