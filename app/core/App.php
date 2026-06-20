@@ -53,6 +53,10 @@ class App
         'expense_detail' => ['ExpenseController', 'detail'],
         'update_expense' => ['ExpenseController', 'update'],
         'api_delete_expense' => ['ExpenseController', 'delete'],
+        'receipt_list'          => ['ReceiptController', 'index'],
+        'receipt_detail'        => ['ReceiptController', 'detail'],
+        'update_receipt'        => ['ReceiptController', 'update'],
+        'api_delete_receipt'    => ['ReceiptController', 'delete'],
 
 
 
@@ -93,7 +97,7 @@ class App
         'receive_purchase' => ['PurchaseOrderController', 'receiveForm'],
         'process_receive'  => ['PurchaseOrderController', 'processReceive'],
         'direct_receive'   => ['PurchaseOrderController', 'direct_receive'],
-        'receipt_list'     => ['PurchaseOrderController', 'receiptList'],
+        'po_receipt_list'  => ['PurchaseOrderController', 'receiptList'],
         'pay_purchase' => ['PurchaseOrderController', 'pay'],
         'edit_inventory_check'   => ['InventoryCheckController', 'edit'],
         'delete_inventory_check' => ['InventoryCheckController', 'delete'],

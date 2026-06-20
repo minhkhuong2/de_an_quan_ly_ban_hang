@@ -265,6 +265,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=product_category" class="menu-item <?php echo ($current_action == 'product_category' || $current_action == 'add_category' || $current_action == 'edit_category') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-folder-tree"></i> Danh mục
             </a>
+
             <a href="index.php?action=product_price" <?php echo ($current_action == 'product_price' || $current_action == 'add_price_list' || $current_action == 'price_list_detail') ? 'style="color:#60a5fa;"' : ''; ?>>
                 <i class="fa-solid fa-tags" style="font-size: 10px; margin-right: 5px;"></i> Bảng giá
             </a>
@@ -276,7 +277,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             <a href="index.php?action=purchase_list" class="menu-item <?php echo ($current_action == 'purchase_list' || $current_action == 'add_purchase' || $current_action == 'view_purchase') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-file-invoice-dollar"></i> Đặt hàng nhập
             </a>
-            <a href="index.php?action=receipt_list" class="menu-item <?php echo ($current_action == 'receipt_list' || $current_action == 'direct_receive' || $current_action == 'receive_purchase') ? 'active' : ''; ?>">
+            <a href="index.php?action=po_receipt_list" class="menu-item <?php echo ($current_action == 'po_receipt_list' || $current_action == 'direct_receive' || $current_action == 'receive_purchase') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-truck-ramp-box"></i> Nhập hàng
             </a>
             <a href="index.php?action=transfer_list" class="menu-item <?php echo ($current_action == 'transfer_list' || $current_action == 'add_transfer' || $current_action == 'view_transfer') ? 'active' : ''; ?>">
@@ -336,6 +337,11 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <li>
                         <a href="index.php?action=fund_transfers" <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
                             <i class="fa-solid fa-money-bill-transfer" style="font-size: 10px; margin-right: 5px;"></i> Phiếu chuyển quỹ nội bộ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=receipt_list" <?php echo (in_array($current_action, ['receipt_list', 'receipt_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                            <i class="fa-solid fa-list-ol" style="font-size: 10px; margin-right: 5px;"></i> Danh sách phiếu thu
                         </a>
                     </li>
                 </ul>

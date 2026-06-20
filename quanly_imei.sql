@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 19, 2026 lúc 06:25 PM
+-- Thời gian đã tạo: Th6 20, 2026 lúc 07:36 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -134,7 +134,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `customer_code`, `last_name`, `first_name`, `phone`, `email`, `accept_marketing`, `province`, `district`, `ward`, `address`, `tax_code`, `company_name`, `invoice_address`, `invoice_email`, `notes`, `tags`, `debt`, `created_at`) VALUES
-(1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 600000.00, '2026-06-06 23:23:37'),
+(1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 900000.00, '2026-06-06 23:23:37'),
 (2, 'KH0002', ' Nguyễn Sơn', 'Trường', '0867473783', 'sontruong2005@gmail.com', 1, 'Ninh Bình', 'Hải Hậu', 'Hải Anh', 'Số 23', '', '', '', '', '', '', 0.00, '2026-06-14 22:37:42');
 
 -- --------------------------------------------------------
@@ -154,6 +154,13 @@ CREATE TABLE `customer_debt_history` (
   `description` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `customer_debt_history`
+--
+
+INSERT INTO `customer_debt_history` (`id`, `customer_id`, `transaction_type`, `reference_code`, `debt_increase`, `debt_decrease`, `balance`, `description`, `created_at`) VALUES
+(1, 1, 'payment', 'PC20260620003', 300000.00, 0.00, 900000.00, 'Hạch toán tăng nợ từ phiếu chi thủ công PC20260620003', '2026-06-19 17:58:16');
 
 -- --------------------------------------------------------
 
@@ -200,16 +207,31 @@ CREATE TABLE `expenses` (
   `id` int(11) NOT NULL,
   `expense_code` varchar(50) DEFAULT NULL,
   `payment_method` enum('cash','bank') NOT NULL,
+  `recipient_group` enum('customer','supplier','employee','shipper','payment_partner','other') NOT NULL DEFAULT 'other',
+  `recipient_id` int(11) DEFAULT NULL,
+  `recipient_name` varchar(150) NOT NULL,
   `bank_account_id` int(11) DEFAULT NULL,
-  `customer_id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
   `amount` decimal(15,2) NOT NULL,
+  `expense_reason` varchar(100) NOT NULL,
+  `expense_category` varchar(100) DEFAULT NULL,
   `is_debt_affected` tinyint(1) DEFAULT 0,
+  `is_automatic` tinyint(1) DEFAULT 0,
   `description` text DEFAULT NULL,
   `branch_id` int(11) DEFAULT NULL,
   `transaction_date` datetime NOT NULL,
   `reference_code` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `expenses`
+--
+
+INSERT INTO `expenses` (`id`, `expense_code`, `payment_method`, `recipient_group`, `recipient_id`, `recipient_name`, `bank_account_id`, `customer_id`, `amount`, `expense_reason`, `expense_category`, `is_debt_affected`, `is_automatic`, `description`, `branch_id`, `transaction_date`, `reference_code`, `created_at`) VALUES
+(1, 'PC20260620001', 'cash', 'employee', 1, 'Nguyễn Văn Nhân Viên', NULL, NULL, 5000000.00, 'Chi trả tiền lương nhân viên', 'Chi phí nhân sự', 0, 0, 'Thanh toán lương tháng 5 cho nhân viên kho', 1, '2026-06-20 08:30:00', 'BL-05-2026', '2026-06-19 17:58:16'),
+(2, 'PC20260620002', 'bank', 'other', NULL, 'Công ty Điện lực Hải Phòng', 1, NULL, 1250000.00, 'Thanh toán hóa đơn điện nước', 'Chi phí tiện ích văn phòng', 0, 0, 'Đóng tiền điện tháng 5/2026', 1, '2026-06-20 09:15:00', 'HD-EVN-2026', '2026-06-19 17:58:16'),
+(3, 'PC20260620003', 'cash', 'customer', 1, 'Khách hàng VIP 01', NULL, NULL, 300000.00, 'Chi hỗ trợ / Khuyến mại', 'Chi phí Marketing', 1, 0, 'Chi hỗ trợ sự kiện cho khách hàng (có hạch toán tăng nợ)', 1, '2026-06-20 10:00:00', 'KM-003', '2026-06-19 17:58:16');
 
 -- --------------------------------------------------------
 
@@ -700,16 +722,29 @@ CREATE TABLE `receipts` (
   `id` int(11) NOT NULL,
   `receipt_code` varchar(50) DEFAULT NULL,
   `payment_method` enum('cash','bank') NOT NULL,
+  `payer_group` enum('customer','supplier','employee','shipper','payment_partner','other') NOT NULL DEFAULT 'other',
+  `payer_id` int(11) DEFAULT NULL,
+  `payer_name` varchar(150) NOT NULL,
   `bank_account_id` int(11) DEFAULT NULL,
-  `customer_id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
   `amount` decimal(15,2) NOT NULL,
+  `receipt_reason` varchar(100) NOT NULL,
   `payment_strategy` varchar(20) DEFAULT 'oldest_first',
+  `is_automatic` tinyint(1) DEFAULT 0,
   `description` text DEFAULT NULL,
   `branch_id` int(11) DEFAULT NULL,
   `transaction_date` datetime NOT NULL,
   `reference_code` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `receipts`
+--
+
+INSERT INTO `receipts` (`id`, `receipt_code`, `payment_method`, `payer_group`, `payer_id`, `payer_name`, `bank_account_id`, `customer_id`, `amount`, `receipt_reason`, `payment_strategy`, `is_automatic`, `description`, `branch_id`, `transaction_date`, `reference_code`, `created_at`) VALUES
+(1, 'PT20260620001', 'bank', 'other', NULL, 'Ngân hàng Techcombank', NULL, NULL, 150000.00, 'Thu lãi tiền gửi ngân hàng', 'oldest_first', 0, 'Lãi không kỳ hạn tháng 5', 1, '2026-06-20 14:00:00', NULL, '2026-06-20 17:09:14'),
+(2, 'PT20260620002', 'cash', 'employee', 1, 'Nguyễn Văn Nhân Viên', NULL, NULL, 500000.00, 'Nhân viên hoàn ứng', 'oldest_first', 0, 'Hoàn tiền thừa mua bưu phẩm', 1, '2026-06-20 15:30:00', NULL, '2026-06-20 17:09:14');
 
 -- --------------------------------------------------------
 
@@ -1141,7 +1176,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT cho bảng `customer_debt_history`
 --
 ALTER TABLE `customer_debt_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `customer_groups`
@@ -1153,7 +1188,7 @@ ALTER TABLE `customer_groups`
 -- AUTO_INCREMENT cho bảng `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `fund_transfers`
@@ -1267,7 +1302,7 @@ ALTER TABLE `purchase_return_details`
 -- AUTO_INCREMENT cho bảng `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `settings`

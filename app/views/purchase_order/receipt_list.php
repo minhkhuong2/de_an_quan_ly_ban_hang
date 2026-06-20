@@ -46,7 +46,7 @@
 <div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; min-height: 500px;">
 
     <form action="index.php" method="GET" class="sapo-filter-bar">
-        <input type="hidden" name="action" value="receipt_list">
+        <input type="hidden" name="action" value="po_receipt_list">
 
         <div style="position: relative; flex: 1; max-width: 400px;">
             <span style="position: absolute; left: 10px; top: 9px; color: #637381;">🔍</span>
@@ -57,7 +57,7 @@
         <button type="button" class="filter-btn">Bộ lọc khác ⚙️</button>
 
         <?php if (!empty($_GET['search'])): ?>
-            <a href="index.php?action=receipt_list" style="color: #ff4d4f; text-decoration: none; font-size: 14px; margin-left: 10px;">Xóa bộ lọc</a>
+            <a href="index.php?action=po_receipt_list" style="color: #ff4d4f; text-decoration: none; font-size: 14px; margin-left: 10px;">Xóa bộ lọc</a>
         <?php endif; ?>
     </form>
 
