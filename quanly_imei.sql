@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 23, 2026 lúc 07:44 PM
+-- Thời gian đã tạo: Th6 23, 2026 lúc 08:15 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -361,6 +361,27 @@ INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `total_amount`, `paid_a
 (1, 'DH001', 1, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00'),
 (2, 'DH002', 1, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00'),
 (3, 'DH003', 1, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `sku` varchar(100) DEFAULT NULL,
+  `qty` int(11) NOT NULL DEFAULT 1,
+  `original_price` decimal(15,2) DEFAULT 0.00,
+  `promo_discount` decimal(15,2) DEFAULT 0.00,
+  `manual_discount` decimal(15,2) DEFAULT 0.00,
+  `final_price` decimal(15,2) DEFAULT 0.00,
+  `line_total` decimal(15,2) DEFAULT 0.00,
+  `is_gift` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1045,6 +1066,12 @@ ALTER TABLE `orders`
   ADD UNIQUE KEY `order_code` (`order_code`);
 
 --
+-- Chỉ mục cho bảng `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `order_sources`
 --
 ALTER TABLE `order_sources`
@@ -1265,6 +1292,12 @@ ALTER TABLE `inventory_transfer_details`
 --
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `order_sources`

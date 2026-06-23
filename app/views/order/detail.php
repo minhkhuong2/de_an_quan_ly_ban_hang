@@ -190,17 +190,17 @@ require_once __DIR__ . '/../layout/header.php';
     </div>
 
     <div style="display: flex; gap: 10px;">
-        <?php if ($order['order_status'] !== 'cancelled' && $order['shipping_status'] !== 'delivered'): ?>
+        <?php if (($order['order_status'] ?? '') !== 'cancelled' && ($order['shipping_status'] ?? '') !== 'delivered'): ?>
             <button class="btn-outline" style="color: #0088ff; border-color: #0088ff;" onclick="alert('Tính năng chuyển sang màn hình Sửa Đơn đang được cập nhật!')">✏️ Sửa đơn</button>
         <?php endif; ?>
 
-        <?php if ($order['order_status'] !== 'cancelled'): ?>
+        <?php if (($order['order_status'] ?? '') !== 'cancelled'): ?>
             <button type="button" class="btn-outline" style="color: #d82c0d; border-color: #fca5a5;" onclick="processCancel(<?php echo $order['id']; ?>)">❌ Hủy</button>
         <?php endif; ?>
 
         <button class="btn-outline" onclick="window.open('index.php?action=print_order&id=<?php echo $order['id']; ?>', '_blank')">🖨️ In</button>
 
-        <?php if ($order['order_status'] == 'completed' && (!isset($order['is_archived']) || $order['is_archived'] == 0)): ?>
+        <?php if (($order['order_status'] ?? '') == 'completed' && (!isset($order['is_archived']) || $order['is_archived'] == 0)): ?>
             <button class="btn-outline" style="background: #f4f6f8;" onclick="archiveOrder(<?php echo $order['id']; ?>)">🗃️ Lưu trữ</button>
         <?php endif; ?>
     </div>
@@ -212,15 +212,15 @@ require_once __DIR__ . '/../layout/header.php';
             <div class="v3-card" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 15px;">
-                        <?php if ($order['order_status'] == 'cancelled'): ?>
+                        <?php if (($order['order_status'] ?? '') == 'cancelled'): ?>
                             <span class="badge" style="background:#ffe4e4; color:#d82c0d; border:1px solid #ffb8b8;">❌ Đã hủy</span>
-                        <?php elseif ($order['shipping_status'] == 'delivered'): ?>
+                        <?php elseif (($order['shipping_status'] ?? '') == 'delivered'): ?>
                             <span class="badge badge-paid">🚚 Đã giao hàng</span>
                         <?php else: ?>
                             <span class="badge badge-pending">⏳ Chưa giao hàng</span>
                         <?php endif; ?>
 
-                        <?php if ($order['payment_status'] == 'paid'): ?>
+                        <?php if (($order['payment_status'] ?? '') == 'paid'): ?>
                             <span class="badge badge-paid">💰 Đã thanh toán</span>
                         <?php else: ?>
                             <span class="badge badge-pending">🛑 Chưa thanh toán</span>
@@ -228,11 +228,11 @@ require_once __DIR__ . '/../layout/header.php';
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <?php if ($order['shipping_status'] !== 'delivered' && $order['order_status'] !== 'cancelled'): ?>
+                        <?php if (($order['shipping_status'] ?? '') !== 'delivered' && ($order['order_status'] ?? '') !== 'cancelled'): ?>
                             <button type="button" class="btn-primary" id="btn_ship_action" style="width:auto; padding:8px 15px; background:#108043;" onclick="processShipping(<?php echo $order['id']; ?>)">🚀 Xác nhận xuất kho & Giao hàng</button>
                         <?php endif; ?>
 
-                        <?php if ($order['payment_status'] !== 'paid' && $order['order_status'] !== 'cancelled'): ?>
+                        <?php if (($order['payment_status'] ?? '') !== 'paid' && ($order['order_status'] ?? '') !== 'cancelled'): ?>
                             <button type="button" class="btn-primary" id="btn_pay_action" style="width:auto; padding:8px 15px; background:#e67e22;" onclick="processPayment(<?php echo $order['id']; ?>)">💵 Xác nhận thu tiền</button>
 
                             <button type="button" class="btn-outline" style="width:auto; padding:8px 15px; border-color:#0088ff; color:#0088ff; background: #e5f0ff;" onclick="document.getElementById('online_qr_modal').style.display='flex'">
@@ -300,11 +300,11 @@ require_once __DIR__ . '/../layout/header.php';
 
             <div class="summary-line">
                 <span>Tổng tiền hàng</span>
-                <span><?php echo number_format($order['subtotal'], 0, '', '.'); ?> ₫</span>
+                <span><?php echo number_format($order['subtotal'] ?? 0, 0, '', '.'); ?> ₫</span>
             </div>
 
             <?php
-            $total_discount = $order['total_product_discount'] + $order['total_order_discount'];
+            $total_discount = ($order['total_product_discount'] ?? 0) + ($order['total_order_discount'] ?? 0);
             if ($total_discount > 0):
             ?>
                 <div class="summary-line" style="color: #108043;">
@@ -315,12 +315,12 @@ require_once __DIR__ . '/../layout/header.php';
 
             <div class="summary-line">
                 <span>Phí giao hàng</span>
-                <span><?php echo number_format($order['original_shipping_fee'] - $order['total_shipping_discount'], 0, '', '.'); ?> ₫</span>
+                <span><?php echo number_format(($order['original_shipping_fee'] ?? 0) - ($order['total_shipping_discount'] ?? 0), 0, '', '.'); ?> ₫</span>
             </div>
 
             <div class="summary-total">
                 <span>Khách phải trả</span>
-                <span><?php echo number_format($order['grand_total'], 0, '', '.'); ?> ₫</span>
+                <span><?php echo number_format($order['grand_total'] ?? 0, 0, '', '.'); ?> ₫</span>
             </div>
 
             <div class="summary-line" style="margin-top: 15px; border-top: 1px dashed #c4cdd5; padding-top: 15px;">
@@ -359,7 +359,7 @@ require_once __DIR__ . '/../layout/header.php';
             $bank_code = $mb_config['bank_code'] ?? 'MB';
             $acc_no = $mb_config['account_no'] ?? '';
             $acc_name = urlencode($mb_config['fullname'] ?? '');
-            $amount = $order['grand_total'];
+            $amount = $order['grand_total'] ?? 0;
             $desc = urlencode("Thanh toan don " . ($order['order_code'] ?? $order['id']));
 
             // Nối chuỗi API của vietqr.io
@@ -368,7 +368,7 @@ require_once __DIR__ . '/../layout/header.php';
             <img id="online_qr_img" src="<?php echo $qr_url; ?>" style="width: 250px; border-radius: 8px; border: 1px solid #dfe3e8; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
 
             <div style="font-size: 14px; color: #637381; margin-bottom: 5px;">Số tiền thanh toán:</div>
-            <h2 style="color: #0088ff; margin-bottom: 20px; font-size: 28px;"><?php echo number_format($order['grand_total'], 0, ',', '.'); ?> ₫</h2>
+            <h2 style="color: #0088ff; margin-bottom: 20px; font-size: 28px;"><?php echo number_format($order['grand_total'] ?? 0, 0, ',', '.'); ?> ₫</h2>
 
             <button class="btn-primary" style="width: 100%; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="copyQRImage()">
                 <i class="fa-solid fa-copy"></i> Sao chép ảnh QR

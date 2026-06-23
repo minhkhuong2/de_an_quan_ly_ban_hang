@@ -161,19 +161,25 @@
                 </tr>
             <?php else: ?>
                 <?php foreach ($orders as $o): ?>
-                    <tr onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
+                    <tr onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'" style="cursor: pointer;">
 
-                        <td><a href="#" class="order-code"><?php echo htmlspecialchars($o['order_code']); ?></a></td>
+                        <td>
+                            <a href="index.php?action=view_order&id=<?php echo $o['id']; ?>" class="order-code" style="color: #0088ff; font-weight: bold; text-decoration: none;">
+                                <?php echo htmlspecialchars($o['order_code']); ?>
+                            </a>
+                        </td>
 
                         <td style="color: #637381;"><?php echo date('d/m/Y H:i', strtotime($o['created_at'])); ?></td>
 
-                        <td><?php echo !empty($o['customer_name']) ? htmlspecialchars($o['customer_name']) : '<span style="color:#8c98a4;">Khách lẻ</span>'; ?></td>
+                        <td>
+                            <b><?php echo !empty($o['customer_name']) ? htmlspecialchars($o['customer_name']) : '<span style="color:#8c98a4; font-weight:normal;">Khách lẻ</span>'; ?></b>
+                        </td>
 
                         <td>
                             <?php
-                            if ($o['payment_status'] == 'paid') {
+                            if (($o['payment_status'] ?? '') == 'paid') {
                                 echo '<span class="badge badge-paid">Đã thanh toán</span>';
-                            } elseif ($o['payment_status'] == 'partial') {
+                            } elseif (($o['payment_status'] ?? '') == 'partial') {
                                 echo '<span class="badge badge-partial">Thanh toán một phần</span>';
                             } else {
                                 echo '<span class="badge badge-pending">Chưa thanh toán</span>';
@@ -183,7 +189,7 @@
 
                         <td>
                             <?php
-                            if ($o['order_status'] == 'completed') {
+                            if (($o['order_status'] ?? '') == 'completed') {
                                 echo '<span class="badge badge-completed">Đã hoàn thành</span>';
                             } else {
                                 echo '<span class="badge badge-pending">Đang xử lý</span>';
@@ -191,8 +197,8 @@
                             ?>
                         </td>
 
-                        <td style="text-align: right; font-weight: 600;">
-                            <?php echo number_format($o['grand_total'], 0, '', '.'); ?> ₫
+                        <td style="text-align: right; font-weight: 600; color: #d82c0d;">
+                            <?php echo number_format($o['grand_total'] ?? 0, 0, '', '.'); ?> ₫
                         </td>
                     </tr>
                 <?php endforeach; ?>
