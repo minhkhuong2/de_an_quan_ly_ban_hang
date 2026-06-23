@@ -25,7 +25,7 @@ class OrderSourceController
         $active_sources = array_filter($all_sources, fn($s) => $s['status'] === 'Đang sử dụng');
         $inactive_sources = array_filter($all_sources, fn($s) => $s['status'] === 'Ngừng sử dụng');
 
-        require_once __DIR__ . '/../views/setting/order_sources.php';
+        require_once __DIR__ . '/../views/settings/order_sources.php';
     }
 
     // Tạo mới nguồn đơn hàng tùy chỉnh (Mục 4)

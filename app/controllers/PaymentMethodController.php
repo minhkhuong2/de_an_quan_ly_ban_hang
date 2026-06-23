@@ -17,7 +17,7 @@ class PaymentMethodController
         $manual_methods = array_filter($methods, fn($m) => $m['type'] === 'manual');
 
         // Bắt buộc require file view ở cuối hàm này
-        require_once __DIR__ . '/../views/setting/payment_methods.php';
+        require_once __DIR__ . '/../views/settings/payment_methods.php';
     }
 
     // Xử lý bật/tắt (Active/Deactive)

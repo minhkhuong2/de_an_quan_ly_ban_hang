@@ -68,8 +68,6 @@ class App
         'fund_dashboard'        => ['FundController', 'dashboard'],
         'export_cashbook'       => ['FundController', 'export'],
 
-
-
         // --- Đối tác ---
         'customer_list'   => ['CustomerController', 'list'],
         'add_customer'    => ['CustomerController', 'add'],
@@ -162,6 +160,10 @@ class App
         'settings'          => ['SettingController', 'pos_settings'],
         'pos_settings'      => ['SettingController', 'pos_settings'],
         'save_pos_settings' => ['SettingController', 'save_pos_settings'],
+        // --- Cấu hình hệ thống ---
+        'settings_hub'        => ['SettingController', 'index'],
+        'store_settings'      => ['SettingController', 'store_info'],
+        'update_store_info'   => ['SettingController', 'update_store_info'],
 
         // Quản lý Nguồn đơn hàng tùy chỉnh
         'order_sources'         => ['OrderSourceController', 'index'],

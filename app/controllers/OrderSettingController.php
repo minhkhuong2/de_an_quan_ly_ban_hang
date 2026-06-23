@@ -29,7 +29,7 @@ class OrderSettingController
         // Giải mã JSON phần cấu hình wave picking nâng cao
         $advanced = isset($settings['advanced_wave_picking']) ? json_decode($settings['advanced_wave_picking'], true) : [];
 
-        require_once __DIR__ . '/../views/setting/order_settings.php';
+        require_once __DIR__ . '/../views/settings/order_settings.php';
     }
 
     // Lưu cấu hình xuống Database

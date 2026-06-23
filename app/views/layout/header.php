@@ -372,34 +372,39 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                 </ul>
             </div>
 
-            <div class="menu-item has-submenu" style="margin-top: 15px;">
-                <a href="javascript:void(0)" class="menu-link">
-                    <i class="fa-solid fa-gear"></i> Cấu hình hệ thống
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
-                            <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'style="color:#60a5fa;"' : ''; ?>>
-                            <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'style="color:#60a5fa;"' : ''; ?>>
-                            <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
-                            <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <div class="menu-heading" style="margin-top: 15px;">Hệ thống</div>
+            <a href="index.php?action=settings_hub" class="menu-item <?php echo (in_array($current_action, ['settings_hub', 'store_settings', 'pos_settings', 'payment_methods', 'order_sources', 'order_settings'])) ? 'active' : ''; ?>">
+                <i class="fa-solid fa-gear"></i> Cấu hình hệ thống
+            </a>
+            <ul class="submenu">
+                <li>
+                    <a href="index.php?action=store_settings" <?php echo ($current_action == 'store_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <i class="fa-solid fa-store" style="font-size: 10px; margin-right: 5px;"></i> Thiết lập cửa hàng
+                    </a>
+                </li>
+                <li>
+                    <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
+                    </a>
+                </li>
+                <li>
+                    <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
+                    </a>
+                </li>
+                <li>
+                    <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
+                    </a>
+                </li>
+                <li>
+                    <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
+                    </a>
+                </li>
+            </ul>
         </div>
+    </div>
     </div>
 
     <div class="main-container">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 20, 2026 lúc 07:36 PM
+-- Thời gian đã tạo: Th6 23, 2026 lúc 07:44 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -898,6 +898,40 @@ INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `transaction_reasons`
+--
+
+CREATE TABLE `transaction_reasons` (
+  `id` int(11) NOT NULL,
+  `type` enum('receipt','expense') NOT NULL,
+  `reason_name` varchar(150) NOT NULL,
+  `is_system` tinyint(1) DEFAULT 0 COMMENT '1: Mặc định không được xóa, 0: Tự tạo',
+  `apply_to` varchar(50) DEFAULT 'all' COMMENT 'customer, supplier, employee, payment_partner, shipper, all',
+  `is_reported` tinyint(1) DEFAULT 1 COMMENT '1: Ghi nhận báo cáo KQKD, 0: Không',
+  `expense_category` varchar(100) DEFAULT NULL COMMENT 'Nhóm chi phí TT88',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `transaction_reasons`
+--
+
+INSERT INTO `transaction_reasons` (`id`, `type`, `reason_name`, `is_system`, `apply_to`, `is_reported`, `expense_category`, `created_at`) VALUES
+(1, 'receipt', 'Thu tiền bán hàng', 1, 'customer', 1, NULL, '2026-06-20 19:27:52'),
+(2, 'receipt', 'Thu tiền hoàn trả từ Nhà cung cấp', 1, 'supplier', 1, NULL, '2026-06-20 19:27:52'),
+(3, 'receipt', 'Thu tiền đối tác thanh toán', 1, 'payment_partner', 1, NULL, '2026-06-20 19:27:52'),
+(4, 'receipt', 'Thu tiền đối tác vận chuyển', 1, 'shipper', 1, NULL, '2026-06-20 19:27:52'),
+(5, 'receipt', 'Thu khác', 1, 'all', 1, NULL, '2026-06-20 19:27:52'),
+(6, 'expense', 'Trả tiền nhập hàng', 1, 'supplier', 1, 'Giá vốn hàng bán', '2026-06-20 19:27:52'),
+(7, 'expense', 'Trả tiền NCC (không theo hóa đơn)', 1, 'supplier', 1, 'Giá vốn hàng bán', '2026-06-20 19:27:52'),
+(8, 'expense', 'Chi hoàn tiền khách trả hàng', 1, 'customer', 1, 'Chi phí bán hàng', '2026-06-20 19:27:52'),
+(9, 'expense', 'Trả nợ đối tác thanh toán', 1, 'payment_partner', 1, 'Chi phí bán hàng', '2026-06-20 19:27:52'),
+(10, 'expense', 'Trả nợ đối tác vận chuyển', 1, 'shipper', 1, 'Chi phí bán hàng', '2026-06-20 19:27:52'),
+(11, 'expense', 'Chi khác', 1, 'all', 1, 'Chi phí khác', '2026-06-20 19:27:52');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `users`
 --
 
@@ -1138,6 +1172,12 @@ ALTER TABLE `system_settings`
   ADD PRIMARY KEY (`setting_key`);
 
 --
+-- Chỉ mục cho bảng `transaction_reasons`
+--
+ALTER TABLE `transaction_reasons`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
@@ -1327,6 +1367,12 @@ ALTER TABLE `staffs`
 --
 ALTER TABLE `suppliers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `transaction_reasons`
+--
+ALTER TABLE `transaction_reasons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `users`

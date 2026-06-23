@@ -4,59 +4,50 @@ require_once __DIR__ . '/../../config/database.php';
 
 class SettingController
 {
-    // Hiển thị giao diện Cấu hình POS
-    public function pos_settings()
+    // 0. TRANG TỔNG QUAN CẤU HÌNH (SETTINGS HUB)
+    public function index()
+    {
+        require_once __DIR__ . '/../views/settings/hub.php';
+    }
+
+    // 1. GIAO DIỆN TỔNG QUAN THIẾT LẬP
+    public function store_info()
     {
         $db = (new Database())->getConnection();
 
-        // Lấy toàn bộ cấu hình từ DB
-        $stmt = $db->query("SELECT setting_key, setting_value FROM settings");
-        $settings_db = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // Trả về mảng ['key' => 'value']
+        // ĐÃ SỬA THÀNH BẢNG settings CỦA KHƯƠNG
+        $stmt = $db->query("SELECT * FROM settings WHERE id = 1");
+        $store = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        require_once __DIR__ . '/../views/setting/pos.php';
+        // Đề phòng trường hợp chưa có dòng dữ liệu nào
+        if (!$store) {
+            $db->query("INSERT INTO settings (id, store_name, phone) VALUES (1, 'Cửa hàng mặc định', '0999999999')");
+            $stmt = $db->query("SELECT * FROM settings WHERE id = 1");
+            $store = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        require_once __DIR__ . '/../views/settings/store_info.php';
     }
 
-    // Lưu cấu hình khi bấm nút Cập nhật
-    public function save_pos_settings()
+    // 2. XỬ LÝ LƯU THÔNG TIN
+    public function update_store_info()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $store_name = trim($_POST['store_name']);
+            $phone      = trim($_POST['phone']);
+            $email      = trim($_POST['email']);
+            $address    = trim($_POST['address']);
+            $tax_code   = trim($_POST['tax_code']);
+
             $db = (new Database())->getConnection();
 
-            // Danh sách các checkbox/toggle (Nếu không check thì POST sẽ không gửi lên, nên cần gán mặc định là 0)
-            $toggles = [
-                'pos_allow_negative_stock',
-                'pos_suggest_amount',
-                'pos_allow_price_edit',
-                'pos_auto_promotions',
-                'pos_use_promo_code',
-                'pos_shift_management',
-                'pos_cash_register',
-                'pos_barcode_scale',
-                'pos_preprint_invoice',
-                'pos_force_full_payment',
-                'pos_sapo_qr',
-                'pos_auto_print',
-                'pos_offline_mode'
-            ];
+            // ĐÃ SỬA THÀNH BẢNG settings CỦA KHƯƠNG
+            $stmt = $db->prepare("UPDATE settings SET store_name = ?, phone = ?, email = ?, address = ?, tax_code = ? WHERE id = 1");
+            $stmt->execute([$store_name, $phone, $email, $address, $tax_code]);
 
-            // Cập nhật các Toggle
-            foreach ($toggles as $key) {
-                $value = isset($_POST[$key]) ? '1' : '0';
-                $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
-                $stmt->execute([$key, $value, $value]);
-            }
-
-            // Cập nhật các Text/Select (Khổ in, số bản in, kiểu thanh toán)
-            $texts = ['pos_payment_steps', 'pos_print_copies', 'pos_print_size'];
-            foreach ($texts as $key) {
-                if (isset($_POST[$key])) {
-                    $value = $_POST[$key];
-                    $stmt = $db->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
-                    $stmt->execute([$key, $value, $value]);
-                }
-            }
-
-            echo "<script>alert('Lưu cấu hình POS thành công!'); window.location.href='index.php?action=pos_settings';</script>";
+            // Cập nhật xong load lại trang kèm thông báo
+            header("Location: index.php?action=store_settings&success=1");
+            exit;
         }
     }
 }
