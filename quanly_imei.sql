@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 23, 2026 lúc 08:15 PM
+-- Thời gian đã tạo: Th6 24, 2026 lúc 08:42 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -51,23 +51,32 @@ INSERT INTO `bank_accounts` (`id`, `account_name`, `account_number`, `bank_name`
 
 CREATE TABLE `branches` (
   `id` int(11) NOT NULL,
+  `branch_code` varchar(50) NOT NULL,
   `branch_name` varchar(255) NOT NULL,
   `phone` varchar(20) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `status` enum('Hoạt động','Ngừng hoạt động') DEFAULT 'Hoạt động',
-  `created_at` datetime DEFAULT current_timestamp(),
-  `is_default` tinyint(1) DEFAULT 0 COMMENT 'Chi nhánh mặc định',
-  `is_pickup` tinyint(1) DEFAULT 1 COMMENT 'Địa chỉ lấy hàng',
-  `is_inventory` tinyint(1) DEFAULT 1 COMMENT 'Có quản lý kho'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `email` varchar(100) DEFAULT NULL,
+  `country` varchar(100) DEFAULT 'Vietnam',
+  `province` varchar(100) NOT NULL,
+  `district` varchar(100) DEFAULT NULL COMMENT 'Trống nếu dùng địa chỉ 2 cấp',
+  `ward` varchar(100) NOT NULL,
+  `address_detail` text NOT NULL,
+  `is_new_address_format` tinyint(1) DEFAULT 0 COMMENT '0: 3 cấp, 1: 2 cấp',
+  `has_inventory` tinyint(1) DEFAULT 1 COMMENT '1: Có quản lý kho, 0: Không',
+  `is_default` tinyint(1) DEFAULT 0,
+  `is_pickup_location` tinyint(1) DEFAULT 0,
+  `routing_priority` int(11) DEFAULT 0,
+  `status` enum('active','inactive','expired') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `branches`
 --
 
-INSERT INTO `branches` (`id`, `branch_name`, `phone`, `email`, `address`, `status`, `created_at`, `is_default`, `is_pickup`, `is_inventory`) VALUES
-(1, 'Cửa hàng chính (Hà Nội)', '0987654321', NULL, 'Số 1, Đại Cồ Việt, Hà Nội', 'Hoạt động', '2026-06-07 21:46:39', 1, 1, 1);
+INSERT INTO `branches` (`id`, `branch_code`, `branch_name`, `phone`, `email`, `country`, `province`, `district`, `ward`, `address_detail`, `is_new_address_format`, `has_inventory`, `is_default`, `is_pickup_location`, `routing_priority`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'CN001', 'Chi nhánh Trung tâm (VNPost)', '0988111222', NULL, 'Vietnam', 'Hà Nội', 'Cầu Giấy', 'Dịch Vọng', 'Tầng 6 Tòa nhà Ladeco', 0, 1, 1, 1, 0, 'active', '2026-06-24 16:38:20', '2026-06-24 16:38:20'),
+(2, 'CN002', 'Chi nhánh Grab Express', '0988333444', NULL, 'Vietnam', 'Hà Nội', NULL, 'Dịch Vọng', 'Tầng 1 Tòa nhà Ladeco', 1, 0, 0, 0, 0, 'inactive', '2026-06-24 16:38:20', '2026-06-24 16:38:20');
 
 -- --------------------------------------------------------
 
@@ -347,20 +356,32 @@ CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `order_code` varchar(50) DEFAULT NULL,
   `customer_id` int(11) NOT NULL,
+  `subtotal` decimal(15,2) DEFAULT 0.00,
   `total_amount` decimal(15,2) NOT NULL,
   `paid_amount` decimal(15,2) DEFAULT 0.00,
   `payment_status` enum('unpaid','partial','paid') DEFAULT 'unpaid',
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+  `total_product_discount` decimal(15,2) DEFAULT 0.00,
+  `total_order_discount` decimal(15,2) DEFAULT 0.00,
+  `original_shipping_fee` decimal(15,2) DEFAULT 0.00,
+  `total_shipping_discount` decimal(15,2) DEFAULT 0.00,
+  `tax_amount` decimal(15,2) DEFAULT 0.00,
+  `grand_total` decimal(15,2) DEFAULT 0.00,
+  `amount_paid` decimal(15,2) DEFAULT 0.00,
+  `payment_method` varchar(50) DEFAULT 'cash',
+  `order_status` varchar(50) DEFAULT 'pending',
+  `shipping_status` varchar(50) DEFAULT 'pending',
+  `sales_channel` varchar(50) DEFAULT 'pos'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `total_amount`, `paid_amount`, `payment_status`, `created_at`) VALUES
-(1, 'DH001', 1, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00'),
-(2, 'DH002', 1, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00'),
-(3, 'DH003', 1, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00');
+INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`) VALUES
+(1, 'DH001', 1, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos'),
+(2, 'DH002', 1, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos'),
+(3, 'DH003', 1, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos');
 
 -- --------------------------------------------------------
 
@@ -775,43 +796,48 @@ INSERT INTO `receipts` (`id`, `receipt_code`, `payment_method`, `payer_group`, `
 
 CREATE TABLE `settings` (
   `id` int(11) NOT NULL,
-  `setting_key` varchar(100) NOT NULL,
-  `setting_value` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `logo` varchar(255) DEFAULT NULL,
+  `store_name` varchar(255) DEFAULT NULL,
+  `business_name` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `admin_email` varchar(100) DEFAULT NULL,
+  `notify_email` varchar(100) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `country` varchar(100) DEFAULT 'Vietnam',
+  `province` varchar(100) DEFAULT NULL,
+  `tax_code` varchar(50) DEFAULT NULL,
+  `inventory_mode` enum('simple','full') DEFAULT 'full',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `settings`
 --
 
-INSERT INTO `settings` (`id`, `setting_key`, `setting_value`, `created_at`, `updated_at`) VALUES
-(1, 'store_name', 'Cửa hàng Điện thoại Bởi Nhóm 16', '2026-06-07 17:41:02', '2026-06-07 17:41:02'),
-(2, 'store_phone', '0842384775', '2026-06-07 17:41:02', '2026-06-07 17:41:02'),
-(3, 'store_email', 'nhom16@gmail.com', '2026-06-07 17:41:02', '2026-06-07 17:41:02'),
-(4, 'store_address', 'Thượng Tín, Hà Nội', '2026-06-07 17:41:02', '2026-06-09 01:31:30'),
-(5, 'store_logo', '', '2026-06-07 17:41:02', '2026-06-07 17:41:02'),
-(7, 'business_name', '', '2026-06-09 01:31:30', '2026-06-09 01:31:30'),
-(10, 'store_country', 'Vietnam', '2026-06-09 01:31:30', '2026-06-09 01:31:30'),
-(11, 'store_province', 'Hà Nội', '2026-06-09 01:31:30', '2026-06-09 01:31:30'),
-(12, 'admin_email', 'admin@gmail.com', '2026-06-09 01:31:30', '2026-06-09 01:31:30'),
-(13, 'notification_email', 'admin@gmail.com', '2026-06-09 01:31:30', '2026-06-09 01:32:39'),
-(22, 'pos_payment_steps', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(23, 'pos_allow_negative_stock', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(24, 'pos_suggest_amount', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(25, 'pos_allow_price_edit', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(26, 'pos_auto_promotions', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(27, 'pos_use_promo_code', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(28, 'pos_shift_management', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(29, 'pos_cash_register', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(30, 'pos_barcode_scale', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(31, 'pos_preprint_invoice', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(32, 'pos_force_full_payment', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(33, 'pos_sapo_qr', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(34, 'pos_print_copies', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(35, 'pos_auto_print', '1', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(36, 'pos_print_size', '80mm', '2026-06-15 00:23:48', '2026-06-15 00:23:48'),
-(37, 'pos_offline_mode', '0', '2026-06-15 00:23:48', '2026-06-15 00:23:48');
+INSERT INTO `settings` (`id`, `logo`, `store_name`, `business_name`, `phone`, `email`, `admin_email`, `notify_email`, `address`, `country`, `province`, `tax_code`, `inventory_mode`, `updated_at`) VALUES
+(1, 'uploads/logo_store_1782318653.png', 'AAKC Store Điện Thoại', 'Hộ kinh doanh AAKC', '0987654321', 'contact@aakc.vn', '', '', 'Chi nhánh trung tâm vận hành hệ thống', 'Vietnam', 'Hà Nội', '0123456789', 'full', '2026-06-24 16:30:53');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `shipments`
+--
+
+CREATE TABLE `shipments` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `branch_id` int(11) NOT NULL,
+  `tracking_code` varchar(100) NOT NULL COMMENT 'Mã vận đơn của Hãng',
+  `partner_code` varchar(50) NOT NULL COMMENT 'ghn, vtp, ghtk, self',
+  `status` varchar(50) DEFAULT 'pending' COMMENT 'pending, picking, delivering, delivered, returning, returned, cancelled',
+  `cod_amount` decimal(15,2) DEFAULT 0.00,
+  `shipping_fee` decimal(15,2) DEFAULT 0.00,
+  `recon_status` enum('unreconciled','reconciled') DEFAULT 'unreconciled',
+  `recon_id` int(11) DEFAULT NULL COMMENT 'ID của biên bản đối soát',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -840,6 +866,72 @@ INSERT INTO `shipping_partners` (`id`, `partner_name`, `partner_code`, `base_fee
 (2, 'J&T Express', 'JNT', 25000.00, 1, 3, 'Đang kết nối', NULL, '2026-06-07 15:34:57'),
 (3, 'Ninja Van', 'NINJA', 28000.00, 1, 3, 'Đang kết nối', NULL, '2026-06-07 15:34:57'),
 (4, 'SPX Express', 'SPX', 20000.00, 1, 3, 'Đang kết nối', NULL, '2026-06-07 15:34:57');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `shipping_rates`
+--
+
+CREATE TABLE `shipping_rates` (
+  `id` int(11) NOT NULL,
+  `branch_id` int(11) NOT NULL,
+  `zone_name` varchar(255) NOT NULL,
+  `provinces` text DEFAULT NULL COMMENT 'Các tỉnh áp dụng',
+  `rate_type` enum('custom','partner') DEFAULT 'custom',
+  `rate_name` varchar(255) NOT NULL,
+  `base_fee` decimal(15,2) DEFAULT 0.00,
+  `partner_code` varchar(50) DEFAULT NULL COMMENT 'ghn, vtp, ghtk',
+  `handling_fee_type` enum('percent','amount') DEFAULT 'amount',
+  `handling_fee_value` decimal(15,2) DEFAULT 0.00,
+  `estimated_time` varchar(100) DEFAULT NULL,
+  `min_order_value` decimal(15,2) DEFAULT NULL,
+  `max_order_value` decimal(15,2) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `shipping_reconciliations`
+--
+
+CREATE TABLE `shipping_reconciliations` (
+  `id` int(11) NOT NULL,
+  `recon_code` varchar(50) NOT NULL,
+  `partner_code` varchar(50) NOT NULL,
+  `branch_id` int(11) NOT NULL,
+  `total_cod` decimal(15,2) DEFAULT 0.00,
+  `total_fee` decimal(15,2) DEFAULT 0.00,
+  `total_received` decimal(15,2) DEFAULT 0.00 COMMENT 'Thực nhận = COD - Fee',
+  `note` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `shipping_settings`
+--
+
+CREATE TABLE `shipping_settings` (
+  `id` int(11) NOT NULL,
+  `weight_mode` enum('product','custom') DEFAULT 'product',
+  `default_weight` int(11) DEFAULT 500 COMMENT 'Khối lượng Gram',
+  `length` int(11) DEFAULT 10,
+  `width` int(11) DEFAULT 10,
+  `height` int(11) DEFAULT 10,
+  `delivery_requirement` enum('no_check','check_no_try','check_and_try') DEFAULT 'check_no_try',
+  `auto_sync_return` tinyint(1) DEFAULT 1,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `shipping_settings`
+--
+
+INSERT INTO `shipping_settings` (`id`, `weight_mode`, `default_weight`, `length`, `width`, `height`, `delivery_requirement`, `auto_sync_return`, `updated_at`) VALUES
+(1, 'product', 500, 10, 10, 10, 'check_no_try', 1, '2026-06-24 18:03:51');
 
 -- --------------------------------------------------------
 
@@ -919,6 +1011,32 @@ INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `tax_settings`
+--
+
+CREATE TABLE `tax_settings` (
+  `id` int(11) NOT NULL,
+  `is_tax_enabled` tinyint(1) DEFAULT 0 COMMENT 'Quản lý thông tin thuế',
+  `default_tax_sales` tinyint(1) DEFAULT 1 COMMENT 'Mặc định tính thuế bán hàng',
+  `default_tax_purchases` tinyint(1) DEFAULT 0 COMMENT 'Mặc định tính thuế nhập hàng',
+  `price_includes_tax` tinyint(1) DEFAULT 1 COMMENT 'Giá đã bao gồm thuế',
+  `tax_on_shipping` tinyint(1) DEFAULT 0 COMMENT 'Ghi nhận thuế lên phí vận chuyển',
+  `general_purchase_tax_rate` decimal(5,2) DEFAULT 0.00 COMMENT 'Thuế nhập hàng (%)',
+  `general_sales_tax_rate` decimal(5,2) DEFAULT 0.00 COMMENT 'Thuế bán hàng (%)',
+  `shipping_tax_rate` decimal(5,2) DEFAULT 0.00 COMMENT 'Thuế vận chuyển (%)',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tax_settings`
+--
+
+INSERT INTO `tax_settings` (`id`, `is_tax_enabled`, `default_tax_sales`, `default_tax_purchases`, `price_includes_tax`, `tax_on_shipping`, `general_purchase_tax_rate`, `general_sales_tax_rate`, `shipping_tax_rate`, `updated_at`) VALUES
+(1, 1, 1, 0, 1, 0, 0.00, 1.50, 0.00, '2026-06-24 17:42:10');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `transaction_reasons`
 --
 
@@ -987,7 +1105,8 @@ ALTER TABLE `bank_accounts`
 -- Chỉ mục cho bảng `branches`
 --
 ALTER TABLE `branches`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `branch_code` (`branch_code`);
 
 --
 -- Chỉ mục cho bảng `categories`
@@ -1168,8 +1287,14 @@ ALTER TABLE `receipts`
 -- Chỉ mục cho bảng `settings`
 --
 ALTER TABLE `settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `shipments`
+--
+ALTER TABLE `shipments`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `setting_key` (`setting_key`);
+  ADD UNIQUE KEY `tracking_code` (`tracking_code`);
 
 --
 -- Chỉ mục cho bảng `shipping_partners`
@@ -1177,6 +1302,25 @@ ALTER TABLE `settings`
 ALTER TABLE `shipping_partners`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `partner_code` (`partner_code`);
+
+--
+-- Chỉ mục cho bảng `shipping_rates`
+--
+ALTER TABLE `shipping_rates`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `shipping_reconciliations`
+--
+ALTER TABLE `shipping_reconciliations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `recon_code` (`recon_code`);
+
+--
+-- Chỉ mục cho bảng `shipping_settings`
+--
+ALTER TABLE `shipping_settings`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `staffs`
@@ -1197,6 +1341,12 @@ ALTER TABLE `suppliers`
 --
 ALTER TABLE `system_settings`
   ADD PRIMARY KEY (`setting_key`);
+
+--
+-- Chỉ mục cho bảng `tax_settings`
+--
+ALTER TABLE `tax_settings`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `transaction_reasons`
@@ -1225,7 +1375,7 @@ ALTER TABLE `bank_accounts`
 -- AUTO_INCREMENT cho bảng `branches`
 --
 ALTER TABLE `branches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -1381,13 +1531,37 @@ ALTER TABLE `receipts`
 -- AUTO_INCREMENT cho bảng `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `shipments`
+--
+ALTER TABLE `shipments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `shipping_partners`
 --
 ALTER TABLE `shipping_partners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT cho bảng `shipping_rates`
+--
+ALTER TABLE `shipping_rates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `shipping_reconciliations`
+--
+ALTER TABLE `shipping_reconciliations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `shipping_settings`
+--
+ALTER TABLE `shipping_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `staffs`
@@ -1399,6 +1573,12 @@ ALTER TABLE `staffs`
 -- AUTO_INCREMENT cho bảng `suppliers`
 --
 ALTER TABLE `suppliers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `tax_settings`
+--
+ALTER TABLE `tax_settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --

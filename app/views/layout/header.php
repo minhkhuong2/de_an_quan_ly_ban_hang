@@ -371,6 +371,10 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
                 </ul>
             </div>
+            <div class="menu-heading" style="margin-top: 15px;">Vận Chuyển</div>
+            <a href="index.php?action=shipment_list" class="menu-item <?php echo ($current_action == 'shipment_list') ? 'active' : ''; ?>">
+                <i class="fa-solid fa-truck"></i> Quản lý Vận đơn
+            </a>
 
             <div class="menu-heading" style="margin-top: 15px;">Hệ thống</div>
             <a href="index.php?action=settings_hub" class="menu-item <?php echo (in_array($current_action, ['settings_hub', 'store_settings', 'pos_settings', 'payment_methods', 'order_sources', 'order_settings'])) ? 'active' : ''; ?>">

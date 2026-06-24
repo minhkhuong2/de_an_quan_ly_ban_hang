@@ -198,6 +198,11 @@ class App
         'quick_add_customer' => ['OrderController', 'quick_add_customer'],
         'store_online_order' => ['OrderController', 'store_online_order'],
 
+        // --- Quản lý Vận Đơn ---
+        'shipment_list'         => ['ShipmentController', 'index'],
+        'update_shipment_status' => ['ShipmentController', 'update_status_bulk'],
+        'reconcile_shipments'   => ['ShipmentController', 'reconcile_bulk'],
+
         // Cấu hình Phương thức thanh toán
         'payment_methods'           => ['PaymentMethodController', 'index'],
         'toggle_payment_method'     => ['PaymentMethodController', 'toggle'],
