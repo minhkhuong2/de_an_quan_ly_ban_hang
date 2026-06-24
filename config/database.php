@@ -9,6 +9,9 @@ class Database
     private $password = "";     // Mặc định thường để trống
     public $conn;
 
+    /**
+     * @return PDO|null
+     */
     public function getConnection()
     {
         $this->conn = null;

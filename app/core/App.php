@@ -122,10 +122,11 @@ class App
         'po_list' => ['PurchaseOrderController', 'list'],
 
         // Quản lý Chi nhánh (Kho lưu trữ)
-        'branch_list'   => ['BranchController', 'list'],
-        'add_branch'    => ['BranchController', 'add'],
-        'edit_branch'   => ['BranchController', 'edit'],
-        'delete_branch' => ['BranchController', 'delete'],
+        'branch_list'           => ['BranchController', 'index'],
+        'store_branch'          => ['BranchController', 'store'],
+        'toggle_branch_status'  => ['BranchController', 'toggle_status'],
+        'transfer_branch_data'  => ['BranchController', 'transfer_and_delete'],
+        'update_branch_priority' => ['BranchController', 'update_priority'],
 
         // --- Quản lý IMEI (Cũ) ---
         'list'             => ['ImeiController', 'list'],
@@ -164,6 +165,14 @@ class App
         'settings_hub'        => ['SettingController', 'index'],
         'store_settings'      => ['SettingController', 'store_info'],
         'update_store_info'   => ['SettingController', 'update_store_info'],
+        // --- Cấu hình Thuế ---
+        'tax_settings'        => ['TaxSettingController', 'index'],
+        'update_tax_settings' => ['TaxSettingController', 'update'],
+        // --- Cấu hình Đối tác vận chuyển ---
+        'shipping_settings'     => ['ShippingController', 'index'],
+        'update_shipping_pkg'   => ['ShippingController', 'update_package'],
+        'add_shipping_rate'     => ['ShippingController', 'add_rate'],
+        'delete_shipping_rate'  => ['ShippingController', 'delete_rate'],
 
         // Quản lý Nguồn đơn hàng tùy chỉnh
         'order_sources'         => ['OrderSourceController', 'index'],

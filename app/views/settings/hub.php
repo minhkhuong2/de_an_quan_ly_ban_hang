@@ -123,7 +123,7 @@
             </div>
         </a>
 
-        <a href="javascript:void(0)" class="setting-card" onclick="alert('Tính năng Quản lý chi nhánh đang được thiết lập!')">
+        <a href="index.php?action=branch_list" class="setting-card">
             <div class="setting-icon"><i class="fa-solid fa-code-branch"></i></div>
             <div class="setting-info">
                 <h4>Quản lý chi nhánh</h4>
@@ -139,7 +139,7 @@
             </div>
         </a>
 
-        <a href="javascript:void(0)" class="setting-card" onclick="alert('Tính năng cấu hình Thuế giá trị gia tăng đang được thiết lập!')">
+        <a href="index.php?action=tax_settings" class="setting-card">
             <div class="setting-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
             <div class="setting-info">
                 <h4>Cấu hình Thuế (VAT)</h4>
@@ -147,7 +147,7 @@
             </div>
         </a>
 
-        <a href="javascript:void(0)" class="setting-card" onclick="alert('Tính năng cấu hình Đối tác vận chuyển đang được thiết lập!')">
+        <a href="index.php?action=shipping_settings" class="setting-card">
             <div class="setting-icon"><i class="fa-solid fa-truck-fast"></i></div>
             <div class="setting-info">
                 <h4>Đối tác vận chuyển</h4>
