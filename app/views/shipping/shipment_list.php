@@ -1,4 +1,13 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php
+/**
+ * @var string $keyword
+ * @var string $status_filter
+ * @var string $recon_filter
+ * @var array $branches
+ * @var array $shipments
+ */
+?>
 
 <style>
     .v3-header {

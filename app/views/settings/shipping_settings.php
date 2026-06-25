@@ -1,4 +1,11 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php
+/**
+ * @var array $setting
+ * @var array $rates
+ * @var array $branches
+ */
+?>
 
 <style>
     .v3-header {

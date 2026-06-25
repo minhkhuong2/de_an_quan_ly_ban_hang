@@ -22,6 +22,19 @@ class OrderController
         $stmt->execute();
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Khởi tạo các biến mặc định mà view list.php mong đợi để tránh lỗi Undefined variable
+        $active_tab_id = $_GET['tab'] ?? 'all';
+        $saved_filters = []; // Mảng chứa các bộ lọc đã lưu (nếu có)
+        $search_type = $_GET['search_type'] ?? 'order_code';
+        $keyword = $_GET['keyword'] ?? '';
+        $status = $_GET['status'] ?? 'all';
+        $payment_status = $_GET['payment_status'] ?? 'all';
+        $branch_id = $_GET['branch_id'] ?? 'all';
+
+        // Lấy danh sách chi nhánh (để hiển thị trong dropdown bộ lọc)
+        $stmt_branches = $db->query("SELECT * FROM branches");
+        $branches = $stmt_branches ? $stmt_branches->fetchAll(PDO::FETCH_ASSOC) : [];
+
         // Gọi View hiển thị
         require_once __DIR__ . '/../views/order/list.php';
     }
@@ -571,6 +584,325 @@ class OrderController
                 'msg' => 'Đã lưu đơn hàng Online thành công với hành động: ' . strtoupper($action_type)
             ]);
             exit;
+        }
+    }
+    // 1. DANH SÁCH ĐƠN HÀNG (TÍCH HỢP TÌM KIẾM ĐA LUỒNG & BỘ LỌC)
+    public function index()
+    {
+        $db = (new Database())->getConnection();
+
+        // Nhận tham số tìm kiếm & Lọc
+        $keyword = trim($_GET['keyword'] ?? '');
+        $search_type = $_GET['search_type'] ?? 'all'; // all, order_code, phone
+        $status = $_GET['status'] ?? 'all';
+        $payment_status = $_GET['payment_status'] ?? 'all';
+        $branch_id = $_GET['branch_id'] ?? 'all';
+
+        // Nếu click vào một Tab Lưu bộ lọc, parse JSON ra để ghi đè GET
+        $active_tab_id = $_GET['tab_id'] ?? '';
+        if ($active_tab_id && $active_tab_id !== 'all') {
+            $stmt_tab = $db->prepare("SELECT filter_data FROM saved_filters WHERE id = ?");
+            $stmt_tab->execute([$active_tab_id]);
+            $tab_data = $stmt_tab->fetchColumn();
+            if ($tab_data) {
+                $parsed = json_decode($tab_data, true);
+                if (isset($parsed['status'])) $status = $parsed['status'];
+                if (isset($parsed['payment_status'])) $payment_status = $parsed['payment_status'];
+                if (isset($parsed['branch_id'])) $branch_id = $parsed['branch_id'];
+            }
+        }
+
+        // Xây dựng câu truy vấn động
+        $query = "SELECT o.*, b.branch_name FROM orders o LEFT JOIN branches b ON o.branch_id = b.id WHERE 1=1";
+        $params = [];
+
+        // 1. Xử lý Tìm kiếm (Từ khóa ngăn cách bởi dấu phẩy)
+        if ($keyword !== '') {
+            $keywords = explode(',', $keyword);
+            $keyword_conditions = [];
+            foreach ($keywords as $kw) {
+                $kw = trim($kw);
+                if ($kw === '') continue;
+
+                if ($search_type === 'order_code') {
+                    $keyword_conditions[] = "o.order_code LIKE '%$kw%'";
+                } elseif ($search_type === 'phone') {
+                    $kw_phone = preg_replace('/[^0-9]/', '', $kw); // Lọc ký tự thừa
+                    $keyword_conditions[] = "o.phone LIKE '%$kw_phone%'";
+                } else {
+                    // Chế độ ALL: Ưu tiên quét qua nhiều trường
+                    $kw_clean = htmlspecialchars($kw);
+                    $keyword_conditions[] = "(o.order_code LIKE '%$kw_clean%' OR o.phone LIKE '%$kw_clean%' OR o.customer_name LIKE '%$kw_clean%')";
+                }
+            }
+            if (!empty($keyword_conditions)) {
+                $query .= " AND (" . implode(' OR ', $keyword_conditions) . ")";
+            }
+        }
+
+        // 2. Xử lý Bộ lọc Dropdown
+        if ($status !== 'all') {
+            $query .= " AND o.order_status = ?";
+            $params[] = $status;
+        }
+        if ($payment_status !== 'all') {
+            $query .= " AND o.payment_status = ?";
+            $params[] = $payment_status;
+        }
+        if ($branch_id !== 'all') {
+            $query .= " AND o.branch_id = ?";
+            $params[] = $branch_id;
+        }
+
+        $query .= " ORDER BY o.created_at DESC";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Lấy danh sách Bộ lọc đã lưu & Chi nhánh để đổ ra giao diện
+        $saved_filters = $db->query("SELECT * FROM saved_filters WHERE module_name = 'orders'")->fetchAll(PDO::FETCH_ASSOC);
+        $branches = $db->query("SELECT id, branch_name FROM branches WHERE status = 'active'")->fetchAll(PDO::FETCH_ASSOC);
+
+        require_once __DIR__ . '/../views/order/list.php';
+    }
+
+    // 2. LƯU BỘ LỌC (TẠO TAB MỚI)
+    public function save_filter()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $filter_name = trim($_POST['filter_name']);
+            // Gom các tham số lọc hiện tại thành chuỗi JSON
+            $filter_data = json_encode([
+                'status' => $_POST['status'] ?? 'all',
+                'payment_status' => $_POST['payment_status'] ?? 'all',
+                'branch_id' => $_POST['branch_id'] ?? 'all'
+            ]);
+
+            $db = (new Database())->getConnection();
+            $stmt = $db->prepare("INSERT INTO saved_filters (module_name, filter_name, filter_data) VALUES ('orders', ?, ?)");
+            $stmt->execute([$filter_name, $filter_data]);
+
+            header("Location: index.php?action=order_list&tab_id=" . $db->lastInsertId());
+            exit;
+        }
+    }
+    // 3. GIAO HÀNG HÀNG LOẠT (Tạo Vận đơn Bulk)
+    public function bulk_ship()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $ids = explode(',', $_POST['bulk_order_ids']);
+            $partner_code = $_POST['bulk_partner_code'] ?? 'ghn';
+            $branch_id = intval($_POST['bulk_branch_id'] ?? 0);
+
+            $db = (new Database())->getConnection();
+            $success_count = 0;
+
+            try {
+                $db->beginTransaction();
+
+                foreach ($ids as $id) {
+                    $order_id = intval($id);
+                    if ($order_id <= 0) continue;
+
+                    // Kiểm tra đơn hàng có tồn tại và chưa giao không
+                    $stmt_check = $db->prepare("SELECT order_code, shipping_status, grand_total, amount_paid FROM orders WHERE id = ?");
+                    $stmt_check->execute([$order_id]);
+                    $order = $stmt_check->fetch(PDO::FETCH_ASSOC);
+
+                    if ($order && $order['shipping_status'] !== 'delivered') {
+                        // Tính tiền COD = Tổng bill - Đã thanh toán
+                        $cod_amount = max(0, floatval($order['grand_total']) - floatval($order['amount_paid']));
+                        $tracking_code = strtoupper($partner_code) . date('ymd') . rand(1000, 9999);
+
+                        // 1. Tạo Vận đơn sang bảng shipments
+                        $stmt_ship = $db->prepare("INSERT INTO shipments (order_id, branch_id, tracking_code, partner_code, status, cod_amount) VALUES (?, ?, ?, ?, 'pending', ?)");
+                        $stmt_ship->execute([$order_id, $branch_id, $tracking_code, $partner_code, $cod_amount]);
+
+                        // 2. Cập nhật trạng thái đơn hàng thành Delivering
+                        $stmt_update = $db->prepare("UPDATE orders SET shipping_status = 'delivering', order_status = 'processing' WHERE id = ?");
+                        $stmt_update->execute([$order_id]);
+
+                        $success_count++;
+                    }
+                }
+
+                $db->commit();
+                header("Location: index.php?action=order_list&success_bulk=1&count=" . $success_count);
+            } catch (Exception $e) {
+                $db->rollBack();
+                die("Lỗi xử lý giao hàng: " . $e->getMessage());
+            }
+            exit;
+        }
+    }
+    // 4. THAO TÁC HÀNG LOẠT (Lưu trữ, Đóng gói, Gán nhân viên, Tags)
+    public function bulk_actions()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action_type = $_POST['bulk_action_type']; // archive, unarchive, packing, assign_staff, add_tags
+            $ids = explode(',', $_POST['bulk_action_ids']);
+
+            $db = (new Database())->getConnection();
+            $success_count = 0;
+
+            try {
+                $db->beginTransaction();
+
+                foreach ($ids as $id) {
+                    $order_id = intval($id);
+                    if ($order_id <= 0) continue;
+
+                    switch ($action_type) {
+                        case 'archive':
+                            $stmt = $db->prepare("UPDATE orders SET is_archived = 1 WHERE id = ? AND order_status IN ('completed', 'cancelled')");
+                            if ($stmt->execute([$order_id]) && $stmt->rowCount() > 0) $success_count++;
+                            break;
+
+                        case 'unarchive':
+                            $stmt = $db->prepare("UPDATE orders SET is_archived = 0 WHERE id = ?");
+                            if ($stmt->execute([$order_id])) $success_count++;
+                            break;
+
+                        case 'packing':
+                            $stmt = $db->prepare("UPDATE orders SET packing_status = 'packing', order_status = 'processing' WHERE id = ? AND order_status = 'pending'");
+                            if ($stmt->execute([$order_id]) && $stmt->rowCount() > 0) $success_count++;
+                            break;
+
+                        case 'assign_staff':
+                            $staff_id = intval($_POST['assign_staff_id']);
+                            $stmt = $db->prepare("UPDATE orders SET assigned_staff_id = ? WHERE id = ?");
+                            if ($stmt->execute([$staff_id, $order_id])) $success_count++;
+                            break;
+
+                        case 'add_tags':
+                            $new_tags = trim($_POST['order_tags']);
+                            if (!empty($new_tags)) {
+                                // Lấy tag cũ ra nối thêm tag mới
+                                $stmt_get = $db->prepare("SELECT tags FROM orders WHERE id = ?");
+                                $stmt_get->execute([$order_id]);
+                                $old_tags = $stmt_get->fetchColumn();
+
+                                $combined_tags = empty($old_tags) ? $new_tags : $old_tags . ',' . $new_tags;
+                                // Xóa khoảng trắng và loại bỏ tag trùng lặp
+                                $tags_array = array_unique(array_map('trim', explode(',', $combined_tags)));
+                                $final_tags = implode(', ', $tags_array);
+
+                                $stmt = $db->prepare("UPDATE orders SET tags = ? WHERE id = ?");
+                                if ($stmt->execute([$final_tags, $order_id])) $success_count++;
+                            }
+                            break;
+                        case 'confirm_orders':
+                            $stmt = $db->prepare("UPDATE orders SET order_status = 'processing' WHERE id = ? AND order_status = 'pending'");
+                            if ($stmt->execute([$order_id]) && $stmt->rowCount() > 0) $success_count++;
+                            break;
+
+                        // TÍNH NĂNG MỚI: Phát hành Hóa đơn điện tử (VAT)
+                        case 'issue_e_invoices':
+                            $symbol = trim($_POST['invoice_symbol'] ?? '1C26TAA'); // Lấy ký hiệu từ Modal
+
+                            // Kiểm tra xem đơn này đã xuất HĐ chưa
+                            $check = $db->prepare("SELECT has_e_invoice FROM orders WHERE id = ?");
+                            $check->execute([$order_id]);
+                            if ($check->fetchColumn() == 0) {
+                                // Sinh dữ liệu giả lập (Mock Data)
+                                $inv_no = '000' . rand(1000, 9999);
+                                $cqt_code = strtoupper(uniqid('CQT-')); // Ví dụ: CQT-64E2A8...
+
+                                $stmt_inv = $db->prepare("INSERT INTO e_invoices (order_id, invoice_number, invoice_symbol, cqt_code) VALUES (?, ?, ?, ?)");
+                                if ($stmt_inv->execute([$order_id, $inv_no, $symbol, $cqt_code])) {
+                                    // Đánh dấu đơn hàng là đã xuất HĐ
+                                    $db->prepare("UPDATE orders SET has_e_invoice = 1 WHERE id = ?")->execute([$order_id]);
+                                    $success_count++;
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                $db->commit();
+                header("Location: index.php?action=order_list&success_bulk_action=1&action_name=$action_type&count=$success_count");
+            } catch (Exception $e) {
+                $db->rollBack();
+                die("Lỗi thao tác hàng loạt: " . $e->getMessage());
+            }
+            exit;
+        }
+    }
+    // 5. XUẤT FILE EXCEL / CSV ĐƠN HÀNG
+    public function export_orders()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $export_scope = $_POST['export_scope'] ?? 'all';
+            $export_type = $_POST['export_type'] ?? 'summary';
+            $export_ids = $_POST['export_ids'] ?? '';
+
+            $db = (new Database())->getConnection();
+            $query = "";
+
+            if ($export_type === 'detailed') {
+                // File chi tiết: JOIN với order_items để lấy từng sản phẩm
+                $query = "SELECT o.order_code, o.created_at, o.customer_name, o.phone, b.branch_name, 
+                                 oi.product_name, oi.sku, oi.qty, oi.final_price, oi.line_total, 
+                                 o.grand_total, o.payment_status, o.order_status
+                          FROM orders o 
+                          LEFT JOIN order_items oi ON o.order_id = oi.order_id
+                          LEFT JOIN branches b ON o.branch_id = b.id WHERE 1=1";
+            } else {
+                // File tổng quan: Chỉ lấy thông tin đơn mẹ
+                $query = "SELECT o.order_code, o.created_at, o.customer_name, o.phone, b.branch_name, 
+                                 o.subtotal, o.grand_total, o.amount_paid, 
+                                 o.payment_status, o.order_status
+                          FROM orders o 
+                          LEFT JOIN branches b ON o.branch_id = b.id WHERE 1=1";
+            }
+
+            // Xử lý phạm vi xuất
+            if ($export_scope === 'selected' && !empty($export_ids)) {
+                // Chống SQL Injection cho mệnh đề IN
+                $ids_array = array_map('intval', explode(',', $export_ids));
+                $ids_str = implode(',', $ids_array);
+                $query .= " AND o.id IN ($ids_str)";
+            }
+
+            $query .= " ORDER BY o.created_at DESC";
+            $stmt = $db->query($query);
+
+            // THIẾT LẬP HEADER ĐỂ TẢI FILE DƯỚI DẠNG CSV
+            $filename = "Export_DonHang_" . date('Ymd_His') . ".csv";
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=' . $filename);
+
+            $output = fopen('php://output', 'w');
+
+            // Ghi BOM để Excel nhận diện được Tiếng Việt có dấu (UTF-8)
+            fputs($output, "\xEF\xBB\xBF");
+
+            // Xây dựng Dòng Tiêu đề (Header)
+            if ($export_type === 'detailed') {
+                fputcsv($output, ['Mã đơn hàng', 'Ngày tạo', 'Khách hàng', 'Điện thoại', 'Chi nhánh', 'Tên sản phẩm', 'Mã SKU', 'Số lượng', 'Đơn giá', 'Thành tiền SP', 'Tổng bill', 'Thanh toán', 'Trạng thái']);
+            } else {
+                fputcsv($output, ['Mã đơn hàng', 'Ngày tạo', 'Khách hàng', 'Điện thoại', 'Chi nhánh', 'Tổng tiền hàng', 'Khách phải trả', 'Đã thanh toán', 'Trạng thái TT', 'Trạng thái Đơn']);
+            }
+
+            // Ghi dữ liệu từng dòng
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                // Mẹo cực đỉnh: Bọc ="098..." để Excel không xóa mất số 0 ở đầu Số điện thoại và Mã đơn
+                $row['order_code'] = '="' . $row['order_code'] . '"';
+                $row['phone'] = '="' . ($row['phone'] ?? '') . '"';
+
+                // Dịch thuật trạng thái
+                $row['payment_status'] = ($row['payment_status'] == 'paid') ? 'Đã thanh toán' : 'Chưa thanh toán';
+                if ($row['order_status'] == 'completed') $row['order_status'] = 'Hoàn thành';
+                elseif ($row['order_status'] == 'cancelled') $row['order_status'] = 'Đã hủy';
+                elseif ($row['order_status'] == 'processing') $row['order_status'] = 'Đang xử lý';
+                else $row['order_status'] = 'Chờ xử lý';
+
+                fputcsv($output, $row);
+            }
+
+            fclose($output);
+            exit; // Ngừng thực thi để không in ra mã HTML dư thừa
         }
     }
 }

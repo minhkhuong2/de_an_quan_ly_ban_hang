@@ -197,6 +197,10 @@ class App
         'cancel_order'       => ['OrderController', 'cancel'],
         'quick_add_customer' => ['OrderController', 'quick_add_customer'],
         'store_online_order' => ['OrderController', 'store_online_order'],
+        'save_order_filter'     => ['OrderController', 'save_filter'],
+        'bulk_ship_orders'      => ['OrderController', 'bulk_ship'],
+        'bulk_order_actions'    => ['OrderController', 'bulk_actions'],
+        'export_orders'         => ['OrderController', 'export_orders'],
 
         // --- Quản lý Vận Đơn ---
         'shipment_list'         => ['ShipmentController', 'index'],

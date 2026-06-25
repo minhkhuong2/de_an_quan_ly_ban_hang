@@ -1,4 +1,10 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php
+/**
+ * @var array $branches
+ * @var array $active_branches
+ */
+?>
 
 <style>
     /* Các CSS cũ giữ nguyên */
