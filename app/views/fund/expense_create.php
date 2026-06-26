@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /** @var array $customers */
 /** @var array $suppliers */
@@ -104,26 +104,26 @@ require_once __DIR__ . '/../layout/header.php';
 </style>
 
 <div class="v3-header">
-    <div class="v3-title">ðŸ“ Táº¡o phiáº¿u chi quá»¹ thá»§ cÃ´ng</div>
-    <button type="button" class="btn-danger" onclick="document.getElementById('frm_expense_manual').submit()">ðŸ“¤ LÆ°u & HoÃ n táº¥t chi tiá»n</button>
+    <div class="v3-title">📝 Tạo phiếu chi quỹ thủ công</div>
+    <button type="button" class="btn-danger" onclick="document.getElementById('frm_expense_manual').submit()">📤 Lưu & Hoàn tất chi tiền</button>
 </div>
 
 <form id="frm_expense_manual" action="index.php?action=store_expense" method="POST">
     <div class="grid-2">
         <div class="v3-card">
-            <div class="card-header">1. ThÃ´ng tin háº¡ch toÃ¡n dÃ²ng tiá»n ra</div>
+            <div class="card-header">1. Thông tin hạch toán dòng tiền ra</div>
             <div class="card-body">
 
                 <div class="form-group">
-                    <label>Loáº¡i quá»¹ chi tiá»n <span>*</span></label>
+                    <label>Loại quỹ chi tiền <span>*</span></label>
                     <div class="radio-group">
-                        <label style="cursor:pointer;"><input type="radio" name="payment_method" value="cash" checked onchange="toggleFundType()"> ðŸ’µ Tiá»n máº·t (Quá»¹ chi nhÃ¡nh)</label>
-                        <label style="cursor:pointer;"><input type="radio" name="payment_method" value="bank" onchange="toggleFundType()"> ðŸ¦ TÃ i khoáº£n ngÃ¢n hÃ ng</label>
+                        <label style="cursor:pointer;"><input type="radio" name="payment_method" value="cash" checked onchange="toggleFundType()"> 💵 Tiền mặt (Quỹ chi nhánh)</label>
+                        <label style="cursor:pointer;"><input type="radio" name="payment_method" value="bank" onchange="toggleFundType()"> 🏦 Tài khoản ngân hàng</label>
                     </div>
                 </div>
 
                 <div id="bank_select_block" class="form-group" style="display:none;">
-                    <label>Sá»• tÃ i khoáº£n ngÃ¢n hÃ ng chi tiá»n <span>*</span></label>
+                    <label>Sổ tài khoản ngân hàng chi tiền <span>*</span></label>
                     <select name="bank_account_id" class="form-control">
                         <?php foreach ($bank_accounts as $ba): ?>
                             <option value="<?php echo $ba['id']; ?>"><?php echo htmlspecialchars($ba['bank_name'] . ' (' . $ba['account_number'] . ')'); ?></option>
@@ -132,55 +132,55 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
 
                 <div class="form-group">
-                    <label>NhÃ³m Ä‘á»‘i tÆ°á»£ng nháº­n tiá»n <span>*</span></label>
+                    <label>Nhóm đối tượng nhận tiền <span>*</span></label>
                     <select name="recipient_group" id="recipient_group" class="form-control" onchange="onRecipientGroupChange()">
-                        <option value="customer">KhÃ¡ch hÃ ng</option>
-                        <option value="supplier">NhÃ  cung cáº¥p</option>
-                        <option value="employee">NhÃ¢n viÃªn há»‡ thá»‘ng</option>
-                        <option value="other">Äá»‘i tÆ°á»£ng khÃ¡c (Chi ngoÃ i váº­n hÃ nh)</option>
+                        <option value="customer">Khách hàng</option>
+                        <option value="supplier">Nhà cung cấp</option>
+                        <option value="employee">Nhân viên hệ thống</option>
+                        <option value="other">Đối tượng khác (Chi ngoài vận hành)</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="target_select_block">
-                    <label>Chá»n Ä‘á»‘i tÆ°á»£ng nháº­n tÆ°Æ¡ng á»©ng <span>*</span></label>
+                    <label>Chọn đối tượng nhận tương ứng <span>*</span></label>
                     <select name="recipient_id" id="recipient_id" class="form-control" onchange="syncRecipientName()"></select>
                 </div>
 
                 <div class="form-group">
-                    <label>TÃªn ngÆ°á»i nháº­n tiá»n thá»±c táº¿ <span>*</span></label>
-                    <input type="text" name="recipient_name" id="recipient_name" class="form-control" required placeholder="Nháº­p há» tÃªn ngÆ°á»i nháº­n...">
+                    <label>Tên người nhận tiền thực tế <span>*</span></label>
+                    <input type="text" name="recipient_name" id="recipient_name" class="form-control" required placeholder="Nhập họ tên người nhận...">
                 </div>
 
                 <div class="form-group">
-                    <label>GiÃ¡ trá»‹ chi tiá»n (VNÄ) <span>*</span></label>
-                    <input type="number" name="amount" class="form-control" style="font-size:18px; font-weight:bold; color:#d82c0d;" required min="1" placeholder="Nháº­p sá»‘ tiá»n...">
+                    <label>Giá trị chi tiền (VNĐ) <span>*</span></label>
+                    <input type="number" name="amount" class="form-control" style="font-size:18px; font-weight:bold; color:#d82c0d;" required min="1" placeholder="Nhập số tiền...">
                 </div>
 
             </div>
         </div>
 
         <div class="v3-card">
-            <div class="card-header">2. LÃ½ do chi & Chá»©ng tá»« Ä‘i kÃ¨m</div>
+            <div class="card-header">2. Lý do chi & Chứng từ đi kèm</div>
             <div class="card-body">
 
                 <div class="form-group">
-                    <label>LÃ½ do xuáº¥t quá»¹ chi <span>*</span></label>
+                    <label>Lý do xuất quỹ chi <span>*</span></label>
                     <select name="expense_reason" id="expense_reason" class="form-control" onchange="onReasonChange()">
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>NhÃ³m chi phÃ­ háº¡ch toÃ¡n bÃ¡o cÃ¡o</label>
+                    <label>Nhóm chi phí hạch toán báo cáo</label>
                     <input type="text" name="expense_category" id="expense_category" class="form-control" readonly style="background:#f4f6f8; font-weight:600; color:#e67e22;">
                 </div>
 
                 <div class="form-group">
-                    <label>Diá»…n giáº£i ná»™i dung chi chi tiáº¿t <span>*</span></label>
-                    <textarea name="description" class="form-control" rows="2" required placeholder="VÃ­ dá»¥: Chi tráº£ tiá»n lÆ°Æ¡ng thÃ¡ng 6, chi tiá»n Ä‘iá»‡n nÆ°á»›c..."></textarea>
+                    <label>Diễn giải nội dung chi chi tiết <span>*</span></label>
+                    <textarea name="description" class="form-control" rows="2" required placeholder="Ví dụ: Chi trả tiền lương tháng 6, chi tiền điện nước..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Chi nhÃ¡nh xuáº¥t quá»¹ <span>*</span></label>
+                    <label>Chi nhánh xuất quỹ <span>*</span></label>
                     <select name="branch_id" class="form-control">
                         <?php foreach ($branches as $br): ?>
                             <option value="<?php echo $br['id']; ?>"><?php echo htmlspecialchars($br['branch_name']); ?></option>
@@ -189,26 +189,26 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
 
                 <div class="form-group">
-                    <label>NgÃ y chi tiá»n thá»±c táº¿ <span>*</span></label>
+                    <label>Ngày chi tiền thực tế <span>*</span></label>
                     <input type="datetime-local" name="transaction_date" id="transaction_date" class="form-control" required>
                 </div>
 
                 <div class="grid-2" style="gap:10px;">
                     <div class="form-group">
-                        <label>MÃ£ phiáº¿u chi</label>
-                        <input type="text" name="expense_code" class="form-control" placeholder="Há»‡ thá»‘ng tá»± sinh">
+                        <label>Mã phiếu chi</label>
+                        <input type="text" name="expense_code" class="form-control" placeholder="Hệ thống tự sinh">
                     </div>
                     <div class="form-group">
-                        <label>MÃ£ tham chiáº¿u (náº¿u cÃ³)</label>
-                        <input type="text" name="reference_code" class="form-control" placeholder="MÃ£ UNC, hÃ³a Ä‘Æ¡n...">
+                        <label>Mã tham chiếu (nếu có)</label>
+                        <input type="text" name="reference_code" class="form-control" placeholder="Mã UNC, hóa đơn...">
                     </div>
                 </div>
 
                 <div id="debt_impact_block" class="debt-box">
                     <input type="checkbox" name="is_debt_affected" id="is_debt_affected" value="1" style="width:18px; height:18px; cursor:pointer;">
                     <div>
-                        <label for="is_debt_affected" style="font-weight:bold; color:#8a6100; cursor:pointer;">Cáº­p nháº­t háº¡ch toÃ¡n vÃ o cÃ´ng ná»£ Ä‘á»‘i tÆ°á»£ng</label>
-                        <p style="margin:4px 0 0 0; font-size:12px; color:#8a6100;">TÃ­ch chá»n náº¿u muá»‘n sá»‘ tiá»n chi nÃ y tÃ­nh tÄƒng ná»£ pháº£i thu cá»§a khÃ¡ch hÃ ng.</p>
+                        <label for="is_debt_affected" style="font-weight:bold; color:#8a6100; cursor:pointer;">Cập nhật hạch toán vào công nợ đối tượng</label>
+                        <p style="margin:4px 0 0 0; font-size:12px; color:#8a6100;">Tích chọn nếu muốn số tiền chi này tính tăng nợ phải thu của khách hàng.</p>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@ require_once __DIR__ . '/../layout/header.php';
 </form>
 
 <script>
-    // Data náº¡p Ä‘á»™ng tá»« PHP sang JS Ä‘á»ƒ váº½ giao diá»‡n tháº§n tá»‘c
+    // Data nạp động từ PHP sang JS để vẽ giao diện thần tốc
     const dataSources = {
         customer: <?php echo json_encode(array_map(function ($c) {
                         return ['id' => $c['id'], 'name' => $c['last_name'] . ' ' . $c['first_name']];
@@ -232,56 +232,56 @@ require_once __DIR__ . '/../layout/header.php';
         other: []
     };
 
-    // Quy táº¯c LÃ½ do chi & NhÃ³m chi phÃ­ khá»›p 100% tÃ i liá»‡u Há»‡ thá»‘ng
+    // Quy tắc Lý do chi & Nhóm chi phí khớp 100% tài liệu Sapo
     const reasonConfig = {
         customer: [{
-                reason: 'HoÃ n tiá»n tráº£ hÃ ng',
-                cat: 'Chi phÃ­ hoÃ n hÃ ng'
+                reason: 'Hoàn tiền trả hàng',
+                cat: 'Chi phí hoàn hàng'
             },
             {
-                reason: 'Chi há»— trá»£ / Khuyáº¿n máº¡i',
-                cat: 'Chi phÃ­ Marketing'
+                reason: 'Chi hỗ trợ / Khuyến mại',
+                cat: 'Chi phí Marketing'
             }
         ],
         supplier: [{
-                reason: 'Thanh toÃ¡n tiá»n hÃ ng nháº­p',
-                cat: 'GiÃ¡ vá»‘n hÃ ng bÃ¡n'
+                reason: 'Thanh toán tiền hàng nhập',
+                cat: 'Giá vốn hàng bán'
             },
             {
-                reason: 'Chi pháº¡t há»£p Ä‘á»“ng NCC',
-                cat: 'Chi phÃ­ phÃ¡t sinh'
+                reason: 'Chi phạt hợp đồng NCC',
+                cat: 'Chi phí phát sinh'
             }
         ],
         employee: [{
-                reason: 'Chi tráº£ tiá»n lÆ°Æ¡ng nhÃ¢n viÃªn',
-                cat: 'Chi phÃ­ nhÃ¢n sá»±'
+                reason: 'Chi trả tiền lương nhân viên',
+                cat: 'Chi phí nhân sự'
             },
             {
-                reason: 'Chi tiá»n táº¡m á»©ng nhÃ¢n viÃªn',
-                cat: 'Chi phÃ­ váº­n hÃ nh'
+                reason: 'Chi tiền tạm ứng nhân viên',
+                cat: 'Chi phí vận hành'
             }
         ],
         other: [{
-                reason: 'Thanh toÃ¡n hÃ³a Ä‘Æ¡n Ä‘iá»‡n nÆ°á»›c',
-                cat: 'Chi phÃ­ tiá»‡n Ã­ch vÄƒn phÃ²ng'
+                reason: 'Thanh toán hóa đơn điện nước',
+                cat: 'Chi phí tiện ích văn phòng'
             },
             {
-                reason: 'Chi tráº£ lÃ£i vay ngÃ¢n hÃ ng',
-                cat: 'Chi phÃ­ tÃ i chÃ­nh'
+                reason: 'Chi trả lãi vay ngân hàng',
+                cat: 'Chi phí tài chính'
             },
             {
-                reason: 'Chi phÃ­ khÃ¡c',
-                cat: 'Chi phÃ­ ngoÃ i váº­n hÃ nh'
+                reason: 'Chi phí khác',
+                cat: 'Chi phí ngoài vận hành'
             }
         ]
     };
 
-    // Tá»± Ä‘á»™ng Ä‘iá»n ngÃ y giá» hiá»‡n táº¡i vÃ o form
+    // Tự động điền ngày giờ hiện tại vào form
     window.onload = function() {
         let now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('transaction_date').value = now.toISOString().slice(0, 16);
-        onRecipientGroupChange(); // Cháº¡y khá»Ÿi táº¡o dropdown láº§n Ä‘áº§u
+        onRecipientGroupChange(); // Chạy khởi tạo dropdown lần đầu
     };
 
     function toggleFundType() {
@@ -289,20 +289,20 @@ require_once __DIR__ . '/../layout/header.php';
         document.getElementById('bank_select_block').style.display = isBank ? 'block' : 'none';
     }
 
-    // Sá»± kiá»‡n thay Ä‘á»•i nhÃ³m Ä‘á»‘i tÆ°á»£ng nháº­n -> Äá»•i list TÃªn + list LÃ½ do chi
+    // Sự kiện thay đổi nhóm đối tượng nhận -> Đổi list Tên + list Lý do chi
     function onRecipientGroupChange() {
         let group = document.getElementById('recipient_group').value;
         let idSelect = document.getElementById('recipient_id');
         let block = document.getElementById('target_select_block');
         let debtBlock = document.getElementById('debt_impact_block');
 
-        // 1. Thay Ä‘á»•i danh sÃ¡ch ngÆ°á»i nháº­n
+        // 1. Thay đổi danh sách người nhận
         if (group === 'other') {
             block.style.display = 'none';
             idSelect.innerHTML = '';
             document.getElementById('recipient_name').value = '';
             document.getElementById('recipient_name').readOnly = false;
-            debtBlock.style.display = 'none'; // Chá»‰ khÃ¡ch hÃ ng má»›i hiá»‡n áº£nh hÆ°á»Ÿng cÃ´ng ná»£
+            debtBlock.style.display = 'none'; // Chỉ khách hàng mới hiện ảnh hưởng công nợ
         } else {
             block.style.display = 'block';
             let list = dataSources[group];
@@ -310,11 +310,11 @@ require_once __DIR__ . '/../layout/header.php';
             document.getElementById('recipient_name').readOnly = true;
             syncRecipientName();
 
-            // Hiá»‡n checkbox cÃ´ng ná»£ náº¿u Ä‘á»‘i tÆ°á»£ng lÃ  khÃ¡ch hÃ ng
+            // Hiện checkbox công nợ nếu đối tượng là khách hàng
             debtBlock.style.display = (group === 'customer') ? 'flex' : 'none';
         }
 
-        // 2. Thay Ä‘á»•i danh sÃ¡ch LÃ½ do chi
+        // 2. Thay đổi danh sách Lý do chi
         let reasonSelect = document.getElementById('expense_reason');
         let reasons = reasonConfig[group];
         reasonSelect.innerHTML = reasons.map(r => `<option value="${r.reason}">${r.reason}</option>`).join('');
@@ -339,4 +339,3 @@ require_once __DIR__ . '/../layout/header.php';
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
-    <title>ÄÄƒng nháº­p há»‡ thá»‘ng - AKC Store</title>
+    <title>Đăng nhập hệ thống - AAKC STORE</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -99,29 +99,28 @@
 <body>
 
     <div class="login-card">
-        <div class="logo-title">ðŸ›’ AKC Store</div>
-        <div class="sub-title">ÄÄƒng nháº­p Ä‘á»ƒ quáº£n lÃ½ cá»­a hÃ ng cá»§a báº¡n</div>
+        <div class="logo-title">🛒 AAKC STORE</div>
+        <div class="sub-title">Đăng nhập để quản lý cửa hàng của bạn</div>
 
         <?php if (!empty($error)) echo "<div class='error-msg'>$error</div>"; ?>
 
         <form action="index.php?action=login" method="POST">
             <div class="form-group">
-                <label>TÃ i khoáº£n Ä‘Äƒng nháº­p</label>
-                <input type="text" name="username" class="form-control" placeholder="Nháº­p tÃ i khoáº£n (VD: admin)" required autofocus>
+                <label>Tài khoản đăng nhập</label>
+                <input type="text" name="username" class="form-control" placeholder="Nhập tài khoản (VD: admin)" required autofocus>
             </div>
             <div class="form-group">
-                <label>Máº­t kháº©u</label>
-                <input type="password" name="password" class="form-control" placeholder="Nháº­p máº­t kháº©u" required>
+                <label>Mật khẩu</label>
+                <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
             </div>
-            <button type="submit" class="btn-submit">ÄÄ‚NG NHáº¬P</button>
+            <button type="submit" class="btn-submit">ĐĂNG NHẬP</button>
         </form>
 
         <div style="text-align: center; margin-top: 20px; font-size: 14px;">
-            ChÆ°a cÃ³ tÃ i khoáº£n nhÃ¢n viÃªn? <a href="index.php?action=register" style="color:#0088ff; text-decoration:none;">ÄÄƒng kÃ½ ngay</a>
+            Chưa có tài khoản nhân viên? <a href="index.php?action=register" style="color:#0088ff; text-decoration:none;">Đăng ký ngay</a>
         </div>
     </div>
 
 </body>
 
 </html>
-

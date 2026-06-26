@@ -1,9 +1,9 @@
-﻿<!-- ÄÆ°á»ng dáº«n: app/views/purchase_order/add.php -->
+<!-- Đường dẫn: app/views/purchase_order/add.php -->
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .Há»‡ thá»‘ng-card {
+    .sapo-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -11,24 +11,24 @@
         margin-bottom: 20px;
     }
 
-    .Há»‡ thá»‘ng-card-title {
+    .sapo-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
         color: #212b36;
     }
 
-    .Há»‡ thá»‘ng-grid {
+    .sapo-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .Há»‡ thá»‘ng-col-left {
+    .sapo-col-left {
         flex: 0 0 68%;
     }
 
-    .Há»‡ thá»‘ng-col-right {
+    .sapo-col-right {
         flex: 0 0 calc(32% - 20px);
     }
 
@@ -94,24 +94,24 @@
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2><a href="index.php?action=inventory_list" style="text-decoration:none; color:#637381;">â†</a> Táº¡o Ä‘Æ¡n Ä‘áº·t hÃ ng nháº­p</h2>
+    <h2><a href="index.php?action=inventory_list" style="text-decoration:none; color:#637381;">←</a> Tạo đơn đặt hàng nhập</h2>
 </div>
 
 <form action="index.php?action=add_purchase" method="POST">
-    <div class="Há»‡ thá»‘ng-grid">
-        <!-- Cá»˜T TRÃI -->
-        <div class="Há»‡ thá»‘ng-col-left">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">NhÃ  cung cáº¥p</div>
-                <input type="text" name="supplier_name" class="form-control" placeholder="TÃ¬m nhÃ  cung cáº¥p hoáº·c thÃªm má»›i...">
+    <div class="sapo-grid">
+        <!-- CỘT TRÁI -->
+        <div class="sapo-col-left">
+            <div class="sapo-card">
+                <div class="sapo-card-title">Nhà cung cấp</div>
+                <input type="text" name="supplier_name" class="form-control" placeholder="Tìm nhà cung cấp hoặc thêm mới...">
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin sáº£n pháº©m</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thông tin sản phẩm</div>
                 <div style="position: relative;">
-                    <span style="position: absolute; left: 10px; top: 10px; color: #637381;">ðŸ”</span>
+                    <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
                     <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
-                        <option value="">TÃ¬m kiáº¿m sáº£n pháº©m theo tÃªn, SKU, Barcode...</option>
+                        <option value="">Tìm kiếm sản phẩm theo tên, SKU, Barcode...</option>
                         <?php foreach ($allProducts as $p): ?>
                             <option value="<?php echo $p['id']; ?>" data-sku="<?php echo htmlspecialchars($p['sku'] ?? ''); ?>" data-price="<?php echo htmlspecialchars($p['cost_price'] ?? 0); ?>">
                                 <?php echo htmlspecialchars($p['product_name']); ?> - SKU: <?php echo htmlspecialchars($p['sku'] ?? '---'); ?>
@@ -123,60 +123,60 @@
                 <table class="po-table" id="product-table">
                     <thead>
                         <tr>
-                            <th>MÃ£ SKU</th>
-                            <th>TÃªn sáº£n pháº©m</th>
-                            <th style="width: 100px;">ÄÆ¡n vá»‹</th>
-                            <th style="width: 100px;">Sá»‘ lÆ°á»£ng</th>
-                            <th style="width: 150px;">ÄÆ¡n giÃ¡</th>
-                            <th style="width: 150px;">ThÃ nh tiá»n</th>
+                            <th>Mã SKU</th>
+                            <th>Tên sản phẩm</th>
+                            <th style="width: 100px;">Đơn vị</th>
+                            <th style="width: 100px;">Số lượng</th>
+                            <th style="width: 150px;">Đơn giá</th>
+                            <th style="width: 150px;">Thành tiền</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody id="po-body">
-                        <!-- Sáº£n pháº©m Ä‘Æ°á»£c chá»n sáº½ tá»± Ä‘á»™ng chÃ¨n vÃ o Ä‘Ã¢y -->
+                        <!-- Sản phẩm được chọn sẽ tự động chèn vào đây -->
                     </tbody>
                 </table>
                 <div style="text-align: right; margin-top: 20px; font-size: 16px; color: #212b36;">
-                    <strong>Tá»•ng tiá»n: <span id="total-amount" style="color: #0088ff; font-size: 18px;">0</span> â‚«</strong>
+                    <strong>Tổng tiền: <span id="total-amount" style="color: #0088ff; font-size: 18px;">0</span> ₫</strong>
                 </div>
             </div>
         </div>
 
-        <!-- Cá»˜T PHáº¢I -->
-        <div class="Há»‡ thá»‘ng-col-right">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin Ä‘Æ¡n nháº­p</div>
+        <!-- CỘT PHẢI -->
+        <div class="sapo-col-right">
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thông tin đơn nhập</div>
                 <div class="form-group">
-                    <label>Chi nhÃ¡nh nháº­p</label>
+                    <label>Chi nhánh nhập</label>
                     <select name="branch" class="form-control">
-                        <option>Cá»­a hÃ ng chÃ­nh</option>
+                        <option>Cửa hàng chính</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>NhÃ¢n viÃªn phá»¥ trÃ¡ch</label>
+                    <label>Nhân viên phụ trách</label>
                     <input type="text" name="employee" class="form-control" value="Admin">
                 </div>
                 <div class="form-group">
-                    <label>NgÃ y nháº­p dá»± kiáº¿n</label>
+                    <label>Ngày nhập dự kiến</label>
                     <input type="date" name="expected_date" class="form-control" value="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="form-group">
-                    <label>MÃ£ Ä‘Æ¡n nháº­p</label>
-                    <input type="text" name="reference" class="form-control" placeholder="Äá»ƒ trá»‘ng há»‡ thá»‘ng tá»± táº¡o">
+                    <label>Mã đơn nhập</label>
+                    <input type="text" name="reference" class="form-control" placeholder="Để trống hệ thống tự tạo">
                 </div>
             </div>
         </div>
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #dfe3e8; padding-top: 20px;">
-        <button type="button" class="btn" style="border-color: #c4cdd5;" onclick="window.location.href='index.php?action=inventory_list'">Há»§y</button>
-        <button type="submit" name="btn_draft" class="btn btn-save">Táº¡o Ä‘Æ¡n nhÃ¡p</button>
-        <button type="submit" name="btn_approve" class="btn btn-approve">Táº¡o & duyá»‡t Ä‘Æ¡n</button>
+        <button type="button" class="btn" style="border-color: #c4cdd5;" onclick="window.location.href='index.php?action=inventory_list'">Hủy</button>
+        <button type="submit" name="btn_draft" class="btn btn-save">Tạo đơn nháp</button>
+        <button type="submit" name="btn_approve" class="btn btn-approve">Tạo & duyệt đơn</button>
     </div>
 </form>
 
 <script>
-    // Xá»­ lÃ½ Javascript thÃªm dÃ²ng vÃ  tÃ­nh tá»•ng tiá»n tá»± Ä‘á»™ng
+    // Xử lý Javascript thêm dòng và tính tổng tiền tự động
     function addProductRow() {
         const select = document.getElementById('product-select');
         const selectedOption = select.options[select.selectedIndex];
@@ -188,7 +188,7 @@
         const sku = selectedOption.getAttribute('data-sku');
         const price = selectedOption.getAttribute('data-price') || 0;
 
-        // Náº¿u Ä‘Ã£ cÃ³ trong báº£ng thÃ¬ chá»‰ cá»™ng dá»“n sá»‘ lÆ°á»£ng
+        // Nếu đã có trong bảng thì chỉ cộng dồn số lượng
         if (document.getElementById('row-' + id)) {
             let qtyInput = document.getElementById('qty-' + id);
             qtyInput.value = parseInt(qtyInput.value) + 1;
@@ -204,7 +204,7 @@
             <td style="color: #0088ff;">${sku}</td>
             <td style="font-weight: 500;">${name}</td>
             <td>
-                <select class="form-control" style="padding: 6px;"><option>CÃ¡i</option></select>
+                <select class="form-control" style="padding: 6px;"><option>Cái</option></select>
             </td>
             <td>
                 <input type="number" name="quantity[]" id="qty-${id}" value="1" min="1" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;">
@@ -214,7 +214,7 @@
                 <input type="number" name="price[]" id="price-${id}" value="${price}" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;">
             </td>
             <td id="total-${id}" style="font-weight: 500;">${new Intl.NumberFormat('vi-VN').format(price)}</td>
-            <td><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold;">Ã—</a></td>
+            <td><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold;">×</a></td>
         `;
         tbody.appendChild(tr);
 
@@ -248,4 +248,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

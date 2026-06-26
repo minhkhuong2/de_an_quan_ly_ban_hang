@@ -1,4 +1,4 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
     .v3-header {
@@ -164,7 +164,7 @@
         font-weight: 600;
     }
 
-    /* Lá»›p phá»§ lÃ m má» khi táº¯t quáº£n lÃ½ thuáº¿ */
+    /* Lớp phủ làm mờ khi tắt quản lý thuế */
     #tax_settings_wrapper {
         transition: 0.3s;
     }
@@ -176,16 +176,16 @@
 </style>
 
 <div class="v3-header">
-    <div class="v3-title"><a href="index.php?action=settings_hub" style="text-decoration:none; color:#637381; margin-right:10px;">â†</a> Cáº¥u hÃ¬nh Thuáº¿ (VAT)</div>
+    <div class="v3-title"><a href="index.php?action=settings_hub" style="text-decoration:none; color:#637381; margin-right:10px;">←</a> Cấu hình Thuế (VAT)</div>
     <div style="display: flex; gap: 10px;">
-        <button type="button" class="btn-outline" style="color: #108043; border-color: #8ce09f; background: #eafff0;" onclick="applyPreset('hkd')">ðŸŽ¯ Cáº¥u hÃ¬nh Há»™ Kinh Doanh</button>
-        <button type="button" class="btn-outline" style="color: #0056b3; border-color: #b3d4ff; background: #e5f0ff;" onclick="applyPreset('dn')">ðŸ¢ Cáº¥u hÃ¬nh Doanh Nghiá»‡p</button>
-        <button type="button" class="btn-primary" onclick="document.getElementById('frm_tax').submit()">ðŸ’¾ LÆ°u cáº¥u hÃ¬nh</button>
+        <button type="button" class="btn-outline" style="color: #108043; border-color: #8ce09f; background: #eafff0;" onclick="applyPreset('hkd')">🎯 Cấu hình Hộ Kinh Doanh</button>
+        <button type="button" class="btn-outline" style="color: #0056b3; border-color: #b3d4ff; background: #e5f0ff;" onclick="applyPreset('dn')">🏢 Cấu hình Doanh Nghiệp</button>
+        <button type="button" class="btn-primary" onclick="document.getElementById('frm_tax').submit()">💾 Lưu cấu hình</button>
     </div>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">âœ… Cáº­p nháº­t cáº¥u hÃ¬nh thuáº¿ thÃ nh cÃ´ng!</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Cập nhật cấu hình thuế thành công!</div>
 <?php endif; ?>
 
 <form id="frm_tax" action="index.php?action=update_tax_settings" method="POST">
@@ -198,8 +198,8 @@
                     <span class="slider"></span>
                 </label>
                 <div>
-                    <div class="toggle-title" style="font-size: 16px;">Quáº£n lÃ½ thÃ´ng tin Thuáº¿ cho cá»­a hÃ ng</div>
-                    <p class="toggle-desc">Khi báº­t, há»‡ thá»‘ng sáº½ kÃ­ch hoáº¡t tÃ­nh nÄƒng thuáº¿. CÃ¡c Ä‘Æ¡n hÃ ng, Ä‘Æ¡n nháº­p hÃ ng sáº½ tá»± Ä‘á»™ng háº¡ch toÃ¡n thuáº¿ suáº¥t dá»±a theo cáº¥u hÃ¬nh bÃªn dÆ°á»›i.</p>
+                    <div class="toggle-title" style="font-size: 16px;">Quản lý thông tin Thuế cho cửa hàng</div>
+                    <p class="toggle-desc">Khi bật, hệ thống sẽ kích hoạt tính năng thuế. Các đơn hàng, đơn nhập hàng sẽ tự động hạch toán thuế suất dựa theo cấu hình bên dưới.</p>
                 </div>
             </div>
         </div>
@@ -208,32 +208,32 @@
     <div id="tax_settings_wrapper" class="<?php echo ($tax['is_tax_enabled'] ?? 0) == 0 ? 'disabled-overlay' : ''; ?>">
 
         <div class="v3-card">
-            <div class="card-header">1. Cáº¥u hÃ¬nh chung</div>
+            <div class="card-header">1. Cấu hình chung</div>
             <div class="card-body" style="padding-top: 0;">
 
                 <div class="toggle-row">
                     <label class="switch"><input type="checkbox" name="default_tax_sales" id="default_tax_sales" value="1" <?php echo ($tax['default_tax_sales'] ?? 0) == 1 ? 'checked' : ''; ?>><span class="slider"></span></label>
                     <div>
-                        <div class="toggle-title">Máº·c Ä‘á»‹nh tÃ­nh thuáº¿ khi bÃ¡n hÃ ng</div>
-                        <p class="toggle-desc">CÃ¡c giao dá»‹ch bÃ¡n hÃ ng má»›i (ÄÆ¡n hÃ ng Web, POS) sáº½ tá»± Ä‘á»™ng Ä‘Æ°á»£c Ã¡p dá»¥ng má»©c thuáº¿ bÃ¡n hÃ ng.</p>
+                        <div class="toggle-title">Mặc định tính thuế khi bán hàng</div>
+                        <p class="toggle-desc">Các giao dịch bán hàng mới (Đơn hàng Web, POS) sẽ tự động được áp dụng mức thuế bán hàng.</p>
                     </div>
                 </div>
 
                 <div class="toggle-row">
                     <label class="switch"><input type="checkbox" name="default_tax_purchases" id="default_tax_purchases" value="1" <?php echo ($tax['default_tax_purchases'] ?? 0) == 1 ? 'checked' : ''; ?>><span class="slider"></span></label>
                     <div>
-                        <div class="toggle-title">Máº·c Ä‘á»‹nh tÃ­nh thuáº¿ khi nháº­p hÃ ng</div>
-                        <p class="toggle-desc">CÃ¡c giao dá»‹ch Äáº·t hÃ ng nháº­p, Nháº­p hÃ ng sáº½ Ä‘Æ°á»£c Ã¡p dá»¥ng thuáº¿. Há»¯u Ã­ch cho doanh nghiá»‡p cáº§n quáº£n lÃ½ VAT Ä‘áº§u vÃ o.</p>
+                        <div class="toggle-title">Mặc định tính thuế khi nhập hàng</div>
+                        <p class="toggle-desc">Các giao dịch Đặt hàng nhập, Nhập hàng sẽ được áp dụng thuế. Hữu ích cho doanh nghiệp cần quản lý VAT đầu vào.</p>
                     </div>
                 </div>
 
                 <div class="toggle-row">
                     <label class="switch"><input type="checkbox" name="price_includes_tax" id="price_includes_tax" value="1" <?php echo ($tax['price_includes_tax'] ?? 0) == 1 ? 'checked' : ''; ?>><span class="slider"></span></label>
                     <div>
-                        <div class="toggle-title">GiÃ¡ Ä‘Ã£ bao gá»“m thuáº¿</div>
+                        <div class="toggle-title">Giá đã bao gồm thuế</div>
                         <p class="toggle-desc">
-                            <b style="color:#0088ff;">Báº­t:</b> GiÃ¡ sáº£n pháº©m lÃ  giÃ¡ cuá»‘i cÃ¹ng Ä‘Ã£ cÃ³ thuáº¿ (Há»‡ thá»‘ng tá»± bÃ³c tÃ¡ch thuáº¿).<br>
-                            <b style="color:#d82c0d;">Táº¯t:</b> GiÃ¡ sáº£n pháº©m lÃ  giÃ¡ chÆ°a thuáº¿ (Há»‡ thá»‘ng sáº½ cá»™ng thÃªm tiá»n thuáº¿ vÃ o tá»•ng bill).
+                            <b style="color:#0088ff;">Bật:</b> Giá sản phẩm là giá cuối cùng đã có thuế (Hệ thống tự bóc tách thuế).<br>
+                            <b style="color:#d82c0d;">Tắt:</b> Giá sản phẩm là giá chưa thuế (Hệ thống sẽ cộng thêm tiền thuế vào tổng bill).
                         </p>
                     </div>
                 </div>
@@ -241,8 +241,8 @@
                 <div class="toggle-row">
                     <label class="switch"><input type="checkbox" name="tax_on_shipping" id="tax_on_shipping" value="1" <?php echo ($tax['tax_on_shipping'] ?? 0) == 1 ? 'checked' : ''; ?>><span class="slider"></span></label>
                     <div>
-                        <div class="toggle-title">Ghi nháº­n thuáº¿ lÃªn phÃ­ váº­n chuyá»ƒn</div>
-                        <p class="toggle-desc">PhÃ­ giao hÃ ng thu cá»§a khÃ¡ch cÅ©ng sáº½ bá»‹ Ã¡p má»©c thuáº¿ váº­n chuyá»ƒn tÆ°Æ¡ng á»©ng.</p>
+                        <div class="toggle-title">Ghi nhận thuế lên phí vận chuyển</div>
+                        <p class="toggle-desc">Phí giao hàng thu của khách cũng sẽ bị áp mức thuế vận chuyển tương ứng.</p>
                     </div>
                 </div>
 
@@ -250,30 +250,30 @@
         </div>
 
         <div class="v3-card">
-            <div class="card-header">2. Má»©c Thuáº¿ suáº¥t chung (%)</div>
+            <div class="card-header">2. Mức Thuế suất chung (%)</div>
             <div class="card-body">
-                <p style="font-size: 13px; color: #637381; margin-bottom: 20px;">Há»‡ thá»‘ng há»— trá»£ nháº­p sá»‘ tháº­p phÃ¢n tá»‘i Ä‘a 2 chá»¯ sá»‘ (vÃ­ dá»¥: 1.5, 8.00, 10.00) Ä‘á»ƒ tÃ­nh toÃ¡n chuáº©n xÃ¡c tá»«ng Ä‘á»“ng láº».</p>
+                <p style="font-size: 13px; color: #637381; margin-bottom: 20px;">Hệ thống hỗ trợ nhập số thập phân tối đa 2 chữ số (ví dụ: 1.5, 8.00, 10.00) để tính toán chuẩn xác từng đồng lẻ.</p>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
                     <div>
                         <div class="form-group">
-                            <label class="toggle-title">Thuáº¿ nháº­p hÃ ng chung <span>*</span></label>
+                            <label class="toggle-title">Thuế nhập hàng chung <span>*</span></label>
                             <div class="input-group">
                                 <input type="number" step="0.01" name="general_purchase_tax_rate" id="general_purchase_tax_rate" class="form-control" value="<?php echo number_format($tax['general_purchase_tax_rate'] ?? 0, 2, '.', ''); ?>" required>
                                 <div class="input-group-text">%</div>
                             </div>
-                            <p class="toggle-desc" style="margin-top: 5px;">Ãp dá»¥ng cho cÃ¡c Ä‘Æ¡n nháº­p kho tá»« NhÃ  cung cáº¥p.</p>
+                            <p class="toggle-desc" style="margin-top: 5px;">Áp dụng cho các đơn nhập kho từ Nhà cung cấp.</p>
                         </div>
                     </div>
 
                     <div>
                         <div class="form-group">
-                            <label class="toggle-title">Thuáº¿ bÃ¡n hÃ ng chung <span>*</span></label>
+                            <label class="toggle-title">Thuế bán hàng chung <span>*</span></label>
                             <div class="input-group">
                                 <input type="number" step="0.01" name="general_sales_tax_rate" id="general_sales_tax_rate" class="form-control" value="<?php echo number_format($tax['general_sales_tax_rate'] ?? 0, 2, '.', ''); ?>" required>
                                 <div class="input-group-text">%</div>
                             </div>
-                            <p class="toggle-desc" style="margin-top: 5px;">Ãp dá»¥ng cho Ä‘Æ¡n xuáº¥t bÃ¡n ra cho KhÃ¡ch hÃ ng.</p>
+                            <p class="toggle-desc" style="margin-top: 5px;">Áp dụng cho đơn xuất bán ra cho Khách hàng.</p>
                         </div>
                     </div>
                 </div>
@@ -281,7 +281,7 @@
                 <hr style="border: 0; border-top: 1px dashed #dfe3e8; margin: 20px 0;">
 
                 <div class="form-group" style="width: 50%;">
-                    <label class="toggle-title">Thuáº¿ váº­n chuyá»ƒn</label>
+                    <label class="toggle-title">Thuế vận chuyển</label>
                     <div class="input-group">
                         <input type="number" step="0.01" name="shipping_tax_rate" id="shipping_tax_rate" class="form-control" value="<?php echo number_format($tax['shipping_tax_rate'] ?? 0, 2, '.', ''); ?>">
                         <div class="input-group-text">%</div>
@@ -294,7 +294,7 @@
 </form>
 
 <script>
-    // Logic má»/sÃ¡ng khá»‘i cÃ i Ä‘áº·t khi báº­t táº¯t Quáº£n lÃ½ thuáº¿
+    // Logic mờ/sáng khối cài đặt khi bật tắt Quản lý thuế
     function toggleMasterTax() {
         let isEnabled = document.getElementById('is_tax_enabled').checked;
         let wrapper = document.getElementById('tax_settings_wrapper');
@@ -305,14 +305,14 @@
         }
     }
 
-    // NÃºt tháº§n thÃ¡nh: Tá»± Ä‘á»™ng Ä‘iá»n cáº¥u hÃ¬nh chuáº©n Há»‡ thá»‘ng
+    // Nút thần thánh: Tự động điền cấu hình chuẩn Sapo
     function applyPreset(type) {
-        // Äáº£m báº£o Ä‘Ã£ báº­t Quáº£n lÃ½ thuáº¿
+        // Đảm bảo đã bật Quản lý thuế
         document.getElementById('is_tax_enabled').checked = true;
         toggleMasterTax();
 
         if (type === 'hkd') {
-            if (!confirm('Ãp dá»¥ng Cáº¥u hÃ¬nh Há»˜ KINH DOANH?\n\n- Thuáº¿ nháº­p: 0%\n- Thuáº¿ bÃ¡n: 1.5%\n- GiÃ¡ Ä‘Ã£ bao gá»“m thuáº¿: Báº­t')) return;
+            if (!confirm('Áp dụng Cấu hình HỘ KINH DOANH?\n\n- Thuế nhập: 0%\n- Thuế bán: 1.5%\n- Giá đã bao gồm thuế: Bật')) return;
 
             document.getElementById('default_tax_sales').checked = true;
             document.getElementById('default_tax_purchases').checked = false;
@@ -322,7 +322,7 @@
             document.getElementById('general_sales_tax_rate').value = '1.50';
 
         } else if (type === 'dn') {
-            if (!confirm('Ãp dá»¥ng Cáº¥u hÃ¬nh DOANH NGHIá»†P (Kháº¥u trá»« VAT)?\n\n- Thuáº¿ nháº­p: 10%\n- Thuáº¿ bÃ¡n: 10%\n- GiÃ¡ Ä‘Ã£ bao gá»“m thuáº¿: Táº¯t (Cá»™ng thÃªm VAT vÃ o bill)')) return;
+            if (!confirm('Áp dụng Cấu hình DOANH NGHIỆP (Khấu trừ VAT)?\n\n- Thuế nhập: 10%\n- Thuế bán: 10%\n- Giá đã bao gồm thuế: Tắt (Cộng thêm VAT vào bill)')) return;
 
             document.getElementById('default_tax_sales').checked = true;
             document.getElementById('default_tax_purchases').checked = true;
@@ -335,4 +335,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

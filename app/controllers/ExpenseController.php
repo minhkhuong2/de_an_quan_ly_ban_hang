@@ -1,35 +1,35 @@
-﻿<?php
-// ÄÆ°á»ng dáº«n: app/controllers/ExpenseController.php
+<?php
+// Đường dẫn: app/controllers/ExpenseController.php
 require_once __DIR__ . '/../../config/database.php';
 
 class ExpenseController
 {
-    // 1. GIAO DIá»†N Táº O PHIáº¾U CHI THá»¦ CÃ”NG MULTI-OBJECT
+    // 1. GIAO DIỆN TẠO PHIẾU CHI THỦ CÔNG MULTI-OBJECT
     public function create()
     {
         $db = (new Database())->getConnection();
 
-        // KÃ©o dá»¯ liá»‡u phá»¥c vá»¥ cÃ¡c Dropdown Ä‘á»‘i tÆ°á»£ng nháº­n
+        // Kéo dữ liệu phục vụ các Dropdown đối tượng nhận
         $customers = $db->query("SELECT id, last_name, first_name, phone FROM customers")->fetchAll(PDO::FETCH_ASSOC);
 
-        // ThÃªm khá»‘i try-catch Ä‘á» phÃ²ng KhÆ°Æ¡ng chÆ°a lÃ m báº£ng NhÃ  cung cáº¥p hoáº·c NhÃ¢n viÃªn
+        // Thêm khối try-catch đề phòng Khương chưa làm bảng Nhà cung cấp hoặc Nhân viên
         try {
             $suppliers = $db->query("SELECT id, supplier_name FROM suppliers")->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            $suppliers = [['id' => 1, 'supplier_name' => 'NhÃ  cung cáº¥p Apple VN']];
+            $suppliers = [['id' => 1, 'supplier_name' => 'Nhà cung cấp Apple VN']];
         }
 
         try {
             $employees = $db->query("SELECT id, full_name FROM users")->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            $employees = [['id' => 1, 'full_name' => 'Nguyá»…n VÄƒn NhÃ¢n ViÃªn']];
+            $employees = [['id' => 1, 'full_name' => 'Nguyễn Văn Nhân Viên']];
         }
 
-        // KÃ©o danh sÃ¡ch chi nhÃ¡nh vÃ  tÃ i khoáº£n ngÃ¢n hÃ ng nháº­n tiá»n
+        // Kéo danh sách chi nhánh và tài khoản ngân hàng nhận tiền
         try {
             $branches = $db->query("SELECT id, branch_name FROM branches")->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            $branches = [['id' => 1, 'branch_name' => 'Chi nhÃ¡nh Trung tÃ¢m']];
+            $branches = [['id' => 1, 'branch_name' => 'Chi nhánh Trung tâm']];
         }
 
         try {
@@ -41,7 +41,7 @@ class ExpenseController
         require_once __DIR__ . '/../views/fund/expense_create.php';
     }
 
-    // 2. THUáº¬T TOÃN LÆ¯U PHIáº¾U CHI VÃ€ Tá»° Äá»˜NG PHÃ‚N LUá»’NG Háº CH TOÃN
+    // 2. THUẬT TOÁN LƯU PHIẾU CHI VÀ TỰ ĐỘNG PHÂN LUỒNG HẠCH TOÁN
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -54,13 +54,13 @@ class ExpenseController
 
             $amount = floatval($_POST['amount']);
             $expense_reason = $_POST['expense_reason'];
-            $expense_category = !empty($_POST['expense_category']) ? $_POST['expense_category'] : 'Chi phÃ­ váº­n hÃ nh';
+            $expense_category = !empty($_POST['expense_category']) ? $_POST['expense_category'] : 'Chi phí vận hành';
             $description = trim($_POST['description']);
 
             $branch_id = intval($_POST['branch_id']);
             $transaction_date = $_POST['transaction_date'];
 
-            // Xá»­ lÃ½ CÆ¡ cháº¿ Tá»± sinh mÃ£ phiáº¿u chi chuáº©n Há»‡ thá»‘ng (Náº¿u Ä‘á»ƒ trá»‘ng)
+            // Xử lý Cơ chế Tự sinh mã phiếu chi chuẩn Sapo (Nếu để trống)
             $expense_code = trim($_POST['expense_code']);
             if (empty($expense_code)) {
                 $expense_code = 'PC' . date('YmdHis') . rand(10, 99);
@@ -74,7 +74,7 @@ class ExpenseController
             try {
                 $db->beginTransaction();
 
-                // BÆ°á»›c 1: LÆ°u phiáº¿u chi thá»§ cÃ´ng vÃ o báº£ng expenses
+                // Bước 1: Lưu phiếu chi thủ công vào bảng expenses
                 $stmt = $db->prepare("
                     INSERT INTO expenses 
                     (expense_code, payment_method, recipient_group, recipient_id, recipient_name, amount, expense_reason, expense_category, is_debt_affected, is_automatic, description, branch_id, transaction_date, reference_code) 
@@ -96,9 +96,9 @@ class ExpenseController
                     $reference_code
                 ]);
 
-                // BÆ°á»›c 2: Kiá»ƒm tra nghiá»‡p vá»¥ tÃ­ch chá»n cáº­p nháº­t cÃ´ng ná»£ (Chá»‰ Ã¡p dá»¥ng khi chi cho KhÃ¡ch hÃ ng hoáº·c NhÃ  cung cáº¥p)
+                // Bước 2: Kiểm tra nghiệp vụ tích chọn cập nhật công nợ (Chỉ áp dụng khi chi cho Khách hàng hoặc Nhà cung cấp)
                 if ($is_debt_affected === 1 && $recipient_group === 'customer' && !empty($recipient_id)) {
-                    // TÄƒng cÃ´ng ná»£ khÃ¡ch hÃ ng (KhÃ¡ch ná»£ thÃªm cá»­a hÃ ng)
+                    // Tăng công nợ khách hàng (Khách nợ thêm cửa hàng)
                     $stmt_cus = $db->prepare("SELECT debt FROM customers WHERE id = ?");
                     $stmt_cus->execute([$recipient_id]);
                     $current_debt = floatval($stmt_cus->fetchColumn());
@@ -108,14 +108,14 @@ class ExpenseController
                     $stmt_upd = $db->prepare("UPDATE customers SET debt = ? WHERE id = ?");
                     $stmt_upd->execute([$new_debt, $recipient_id]);
 
-                    // Ghi Sá»• chi tiáº¿t cÃ´ng ná»£
+                    // Ghi Sổ chi tiết công nợ
                     $stmt_log = $db->prepare("INSERT INTO customer_debt_history (customer_id, transaction_type, reference_code, debt_increase, balance, description) VALUES (?, 'payment', ?, ?, ?, ?)");
-                    $stmt_log->execute([$recipient_id, $expense_code, $amount, $new_debt, "Háº¡ch toÃ¡n tÄƒng ná»£ tá»« phiáº¿u chi thá»§ cÃ´ng $expense_code"]);
+                    $stmt_log->execute([$recipient_id, $expense_code, $amount, $new_debt, "Hạch toán tăng nợ từ phiếu chi thủ công $expense_code"]);
                 }
 
                 $db->commit();
 
-                // Tráº£ vá» trang danh sÃ¡ch (Táº¡m chuyá»ƒn vá» danh sÃ¡ch khÃ¡ch hÃ ng hoáº·c mÃ n hÃ¬nh cÃ´ng ná»£ tÃ¹y tÃ­ch chá»n)
+                // Trả về trang danh sách (Tạm chuyển về danh sách khách hàng hoặc màn hình công nợ tùy tích chọn)
                 if ($is_debt_affected === 1 && $recipient_group === 'customer') {
                     header("Location: index.php?action=customer_debt&id=$recipient_id&success=expense_created");
                 } else {
@@ -124,11 +124,11 @@ class ExpenseController
                 exit;
             } catch (Exception $e) {
                 $db->rollBack();
-                die("Lá»—i há»‡ thá»‘ng khi táº¡o phiáº¿u chi thá»§ cÃ´ng: " . $e->getMessage());
+                die("Lỗi hệ thống khi tạo phiếu chi thủ công: " . $e->getMessage());
             }
         }
     }
-    // 3. DANH SÃCH PHIáº¾U CHI (Há»— trá»£ XÃ³a hÃ ng loáº¡t)
+    // 3. DANH SÁCH PHIẾU CHI (Hỗ trợ Xóa hàng loạt)
     public function index()
     {
         $db = (new Database())->getConnection();
@@ -137,7 +137,7 @@ class ExpenseController
         require_once __DIR__ . '/../views/fund/expense_list.php';
     }
 
-    // 4. XEM CHI TIáº¾T & IN PHIáº¾U CHI
+    // 4. XEM CHI TIẾT & IN PHIẾU CHI
     public function detail()
     {
         $id = $_GET['id'] ?? 0;
@@ -151,19 +151,19 @@ class ExpenseController
         $stmt->execute([$id]);
         $expense = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$expense) die("KhÃ´ng tÃ¬m tháº¥y phiáº¿u chi!");
+        if (!$expense) die("Không tìm thấy phiếu chi!");
 
         require_once __DIR__ . '/../views/fund/expense_detail.php';
     }
 
-    // 5. Cáº¬P NHáº¬T PHIáº¾U CHI (KhÃ³a cá»©ng theo luáº­t Há»‡ thá»‘ng)
+    // 5. CẬP NHẬT PHIẾU CHI (Khóa cứng theo luật Sapo)
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'];
             $description = trim($_POST['description']);
             $reference_code = trim($_POST['reference_code']);
-            // CÃ¡c trÆ°á»ng khÃ¡c nhÆ° Sá»‘ tiá»n, Äá»‘i tÆ°á»£ng, Chi nhÃ¡nh khÃ´ng Ä‘Æ°á»£c phÃ©p láº¥y tá»« POST Ä‘á»ƒ chá»‘ng hack
+            // Các trường khác như Số tiền, Đối tượng, Chi nhánh không được phép lấy từ POST để chống hack
 
             $db = (new Database())->getConnection();
             $stmt = $db->prepare("UPDATE expenses SET description = ?, reference_code = ? WHERE id = ?");
@@ -174,7 +174,7 @@ class ExpenseController
         }
     }
 
-    // 6. XÃ“A PHIáº¾U CHI (ÄÆ¡n láº» & HÃ ng loáº¡t kÃ¨m HoÃ n tÃ¡c CÃ´ng ná»£)
+    // 6. XÓA PHIẾU CHI (Đơn lẻ & Hàng loạt kèm Hoàn tác Công nợ)
     public function delete()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -187,13 +187,13 @@ class ExpenseController
                 $db->beginTransaction();
 
                 foreach ($ids as $id) {
-                    // 1. Láº¥y thÃ´ng tin phiáº¿u chi trÆ°á»›c khi xÃ³a
+                    // 1. Lấy thông tin phiếu chi trước khi xóa
                     $stmt_ex = $db->prepare("SELECT amount, is_debt_affected, recipient_group, recipient_id, expense_code FROM expenses WHERE id = ?");
                     $stmt_ex->execute([$id]);
                     $expense = $stmt_ex->fetch(PDO::FETCH_ASSOC);
 
                     if ($expense) {
-                        // 2. Náº¿u phiáº¿u chi nÃ y tá»«ng lÃ m TÄ‚NG cÃ´ng ná»£ khÃ¡ch -> XÃ³a phiáº¿u thÃ¬ pháº£i GIáº¢M cÃ´ng ná»£ tráº£ láº¡i
+                        // 2. Nếu phiếu chi này từng làm TĂNG công nợ khách -> Xóa phiếu thì phải GIẢM công nợ trả lại
                         if ($expense['is_debt_affected'] == 1 && $expense['recipient_group'] == 'customer' && $expense['recipient_id']) {
                             $customer_id = $expense['recipient_id'];
 
@@ -201,30 +201,29 @@ class ExpenseController
                             $stmt_cus->execute([$customer_id]);
                             $current_debt = floatval($stmt_cus->fetchColumn());
 
-                            $new_debt = $current_debt - $expense['amount']; // Trá»« ngÆ°á»£c láº¡i
+                            $new_debt = $current_debt - $expense['amount']; // Trừ ngược lại
 
                             $stmt_upd = $db->prepare("UPDATE customers SET debt = ? WHERE id = ?");
                             $stmt_upd->execute([$new_debt, $customer_id]);
 
-                            // Ghi log hoÃ n tÃ¡c
+                            // Ghi log hoàn tác
                             $stmt_log = $db->prepare("INSERT INTO customer_debt_history (customer_id, transaction_type, reference_code, debt_decrease, balance, description) VALUES (?, 'adjustment', ?, ?, ?, ?)");
-                            $stmt_log->execute([$customer_id, $expense['expense_code'], $expense['amount'], $new_debt, "HoÃ n tÃ¡c xÃ³a phiáº¿u chi " . $expense['expense_code']]);
+                            $stmt_log->execute([$customer_id, $expense['expense_code'], $expense['amount'], $new_debt, "Hoàn tác xóa phiếu chi " . $expense['expense_code']]);
                         }
 
-                        // 3. XÃ³a phiáº¿u chi
+                        // 3. Xóa phiếu chi
                         $stmt_del = $db->prepare("DELETE FROM expenses WHERE id = ?");
                         $stmt_del->execute([$id]);
                     }
                 }
 
                 $db->commit();
-                echo json_encode(['status' => 'success', 'msg' => 'ÄÃ£ xÃ³a chá»©ng tá»« vÃ  hoÃ n tÃ¡c cÃ´ng ná»£ (náº¿u cÃ³) thÃ nh cÃ´ng!']);
+                echo json_encode(['status' => 'success', 'msg' => 'Đã xóa chứng từ và hoàn tác công nợ (nếu có) thành công!']);
             } catch (Exception $e) {
                 $db->rollBack();
-                echo json_encode(['status' => 'error', 'msg' => 'Lá»—i há»‡ thá»‘ng: ' . $e->getMessage()]);
+                echo json_encode(['status' => 'error', 'msg' => 'Lỗi hệ thống: ' . $e->getMessage()]);
             }
             exit;
         }
     }
 }
-

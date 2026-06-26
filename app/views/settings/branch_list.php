@@ -1,4 +1,4 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php
 /**
  * @var array $branches
@@ -7,7 +7,7 @@
 ?>
 
 <style>
-    /* CÃ¡c CSS cÅ© giá»¯ nguyÃªn */
+    /* Các CSS cũ giữ nguyên */
     .v3-header {
         display: flex;
         justify-content: space-between;
@@ -198,7 +198,7 @@
         gap: 15px;
     }
 
-    /* CSS Äáº¶C BIá»†T CHO DANH SÃCH KÃ‰O THáº¢ */
+    /* CSS ĐẶC BIỆT CHO DANH SÁCH KÉO THẢ */
     .sortable-list {
         list-style: none;
         padding: 0;
@@ -242,30 +242,30 @@
 </style>
 
 <div class="v3-header">
-    <div class="v3-title"><a href="index.php?action=settings_hub" style="text-decoration:none; color:#637381; margin-right:10px;">â†</a> Quáº£n lÃ½ chi nhÃ¡nh</div>
+    <div class="v3-title"><a href="index.php?action=settings_hub" style="text-decoration:none; color:#637381; margin-right:10px;">←</a> Quản lý chi nhánh</div>
     <div style="display: flex; gap: 10px;">
-        <button class="btn-outline" onclick="openRoutingModal()"><i class="fa-solid fa-sort"></i> CÃ i Ä‘áº·t CN nháº­n Ä‘Æ¡n Online</button>
-        <button class="btn-primary" onclick="openModal()">+ ThÃªm má»›i chi nhÃ¡nh</button>
+        <button class="btn-outline" onclick="openRoutingModal()"><i class="fa-solid fa-sort"></i> Cài đặt CN nhận đơn Online</button>
+        <button class="btn-primary" onclick="openModal()">+ Thêm mới chi nhánh</button>
     </div>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">âœ… Cáº­p nháº­t chi nhÃ¡nh thÃ nh cÃ´ng!</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Cập nhật chi nhánh thành công!</div>
 <?php endif; ?>
 <?php if (isset($_GET['success_transfer'])): ?>
-    <div style="background:#fff8ea; color:#8a6100; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #ffea8a; font-weight:500;">ðŸ“¦ ÄÃ£ xÃ³a dá»¯ liá»‡u kho vÃ  chuyá»ƒn giao giao dá»‹ch thÃ nh cÃ´ng!</div>
+    <div style="background:#fff8ea; color:#8a6100; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #ffea8a; font-weight:500;">📦 Đã xóa dữ liệu kho và chuyển giao giao dịch thành công!</div>
 <?php endif; ?>
 
 <div class="v3-card">
     <table class="v3-table">
         <thead>
             <tr>
-                <th>TÃªn chi nhÃ¡nh</th>
-                <th>MÃ£ CN</th>
-                <th>ThÃ´ng tin liÃªn há»‡</th>
-                <th>Quáº£n lÃ½ kho</th>
-                <th>Tráº¡ng thÃ¡i</th>
-                <th style="text-align:right;">Thao tÃ¡c</th>
+                <th>Tên chi nhánh</th>
+                <th>Mã CN</th>
+                <th>Thông tin liên hệ</th>
+                <th>Quản lý kho</th>
+                <th>Trạng thái</th>
+                <th style="text-align:right;">Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -275,28 +275,28 @@
                         <a href="javascript:void(0)" style="color:#0088ff; font-weight:bold; text-decoration:none;" onclick='editBranch(<?php echo json_encode($b); ?>)'>
                             <?php echo htmlspecialchars($b['branch_name']); ?>
                         </a>
-                        <?php if ($b['is_default'] == 1) echo '<span class="badge badge-default">Máº·c Ä‘á»‹nh</span>'; ?>
+                        <?php if ($b['is_default'] == 1) echo '<span class="badge badge-default">Mặc định</span>'; ?>
                     </td>
                     <td style="color:#637381; font-weight:500;"><?php echo $b['branch_code']; ?></td>
                     <td>
-                        <div style="font-size:13px;">ðŸ“ž <?php echo htmlspecialchars($b['phone'] ?? '---'); ?></div>
-                        <div style="font-size:12px; color:#637381; margin-top:3px;">ðŸ“ <?php echo htmlspecialchars($b['address_detail']); ?></div>
+                        <div style="font-size:13px;">📞 <?php echo htmlspecialchars($b['phone'] ?? '---'); ?></div>
+                        <div style="font-size:12px; color:#637381; margin-top:3px;">📍 <?php echo htmlspecialchars($b['address_detail']); ?></div>
                     </td>
-                    <td><?php echo $b['has_inventory'] ? 'âœ… CÃ³ kho' : '<span style="color:#919eab;">KhÃ´ng</span>'; ?></td>
+                    <td><?php echo $b['has_inventory'] ? '✅ Có kho' : '<span style="color:#919eab;">Không</span>'; ?></td>
                     <td>
                         <?php
-                        if ($b['status'] == 'active') echo '<span class="badge badge-active">Äang hoáº¡t Ä‘á»™ng</span>';
-                        elseif ($b['status'] == 'inactive') echo '<span class="badge badge-inactive">Ngá»«ng hoáº¡t Ä‘á»™ng</span>';
-                        else echo '<span class="badge badge-expired">Háº¿t háº¡n</span>';
+                        if ($b['status'] == 'active') echo '<span class="badge badge-active">Đang hoạt động</span>';
+                        elseif ($b['status'] == 'inactive') echo '<span class="badge badge-inactive">Ngừng hoạt động</span>';
+                        else echo '<span class="badge badge-expired">Hết hạn</span>';
                         ?>
                     </td>
                     <td style="text-align:right;">
                         <?php if ($b['is_default'] == 0): ?>
                             <?php if ($b['status'] == 'active'): ?>
-                                <a href="index.php?action=toggle_branch_status&id=<?php echo $b['id']; ?>&status=inactive" class="btn-outline" style="font-size:12px; color:#d82c0d; border-color:#fca5a5;">Ngá»«ng HÄ</a>
+                                <a href="index.php?action=toggle_branch_status&id=<?php echo $b['id']; ?>&status=inactive" class="btn-outline" style="font-size:12px; color:#d82c0d; border-color:#fca5a5;">Ngừng HĐ</a>
                             <?php else: ?>
-                                <a href="index.php?action=toggle_branch_status&id=<?php echo $b['id']; ?>&status=active" class="btn-primary" style="font-size:12px; background:#108043;">KÃ­ch hoáº¡t</a>
-                                <button class="btn-outline" style="font-size:12px; color:#8a6100; border-color:#ffea8a; margin-top:5px;" onclick="openTransferModal(<?php echo $b['id']; ?>, '<?php echo htmlspecialchars($b['branch_name'], ENT_QUOTES); ?>')">XÃ³a kho</button>
+                                <a href="index.php?action=toggle_branch_status&id=<?php echo $b['id']; ?>&status=active" class="btn-primary" style="font-size:12px; background:#108043;">Kích hoạt</a>
+                                <button class="btn-outline" style="font-size:12px; color:#8a6100; border-color:#ffea8a; margin-top:5px;" onclick="openTransferModal(<?php echo $b['id']; ?>, '<?php echo htmlspecialchars($b['branch_name'], ENT_QUOTES); ?>')">Xóa kho</button>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
@@ -308,24 +308,24 @@
 
 <div id="branch_modal" class="modal">
     <div class="modal-content">
-        <h3 id="modal_title" style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px;">ThÃªm má»›i chi nhÃ¡nh</h3>
+        <h3 id="modal_title" style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px;">Thêm mới chi nhánh</h3>
         <form action="index.php?action=store_branch" method="POST">
             <input type="hidden" name="id" id="modal_id">
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label>TÃªn chi nhÃ¡nh <span>*</span></label>
-                    <input type="text" name="branch_name" id="branch_name" class="form-control" required placeholder="VD: Há»‡ thá»‘ng Cáº§u Giáº¥y">
+                    <label>Tên chi nhánh <span>*</span></label>
+                    <input type="text" name="branch_name" id="branch_name" class="form-control" required placeholder="VD: Sapo Cầu Giấy">
                 </div>
                 <div class="form-group">
-                    <label>MÃ£ chi nhÃ¡nh</label>
-                    <input type="text" name="branch_code" id="branch_code" class="form-control" placeholder="Tá»± Ä‘á»™ng sinh náº¿u Ä‘á»ƒ trá»‘ng">
+                    <label>Mã chi nhánh</label>
+                    <input type="text" name="branch_code" id="branch_code" class="form-control" placeholder="Tự động sinh nếu để trống">
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Sá»‘ Ä‘iá»‡n thoáº¡i</label>
+                    <label>Số điện thoại</label>
                     <input type="text" name="phone" id="phone" class="form-control">
                 </div>
                 <div class="form-group">
@@ -336,9 +336,9 @@
 
             <div style="background:#f4f6f8; padding:15px; border-radius:6px; margin-bottom:15px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <label style="margin:0; font-weight:bold; color:#0088ff;">ðŸ“ ThÃ´ng tin Ä‘á»‹a chá»‰</label>
+                    <label style="margin:0; font-weight:bold; color:#0088ff;">📍 Thông tin địa chỉ</label>
                     <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-                        Äá»‹a chá»‰ má»›i (2 Cáº¥p)
+                        Địa chỉ mới (2 Cấp)
                         <label class="switch">
                             <input type="checkbox" name="is_new_address_format" id="is_new_address_format" value="1" onchange="toggleAddressFormat()">
                             <span class="slider"></span>
@@ -348,21 +348,21 @@
 
                 <div class="grid-2">
                     <div class="form-group">
-                        <label>Tá»‰nh/ThÃ nh phá»‘ <span>*</span></label>
+                        <label>Tỉnh/Thành phố <span>*</span></label>
                         <input type="text" name="province" id="province" class="form-control" required>
                     </div>
                     <div class="form-group" id="district_group">
-                        <label>Quáº­n/Huyá»‡n <span>*</span></label>
+                        <label>Quận/Huyện <span>*</span></label>
                         <input type="text" name="district" id="district" class="form-control">
                     </div>
                 </div>
                 <div class="grid-2">
                     <div class="form-group">
-                        <label>PhÆ°á»ng/XÃ£ <span>*</span></label>
+                        <label>Phường/Xã <span>*</span></label>
                         <input type="text" name="ward" id="ward" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Äá»‹a chá»‰ cá»¥ thá»ƒ <span>*</span></label>
+                        <label>Địa chỉ cụ thể <span>*</span></label>
                         <input type="text" name="address_detail" id="address_detail" class="form-control" required>
                     </div>
                 </div>
@@ -371,23 +371,23 @@
             <div style="border-top:1px dashed #c4cdd5; padding-top:15px; margin-bottom:15px;">
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
                     <label class="switch"><input type="checkbox" name="has_inventory" id="has_inventory" value="1" checked><span class="slider"></span></label>
-                    <div><b>Thiáº¿t láº­p lÃ m chi nhÃ¡nh quáº£n lÃ½ kho</b><br><small style="color:#637381;">Tá»± Ä‘á»™ng lÆ°u kho toÃ n bá»™ sáº£n pháº©m táº¡i chi nhÃ¡nh nÃ y.</small></div>
+                    <div><b>Thiết lập làm chi nhánh quản lý kho</b><br><small style="color:#637381;">Tự động lưu kho toàn bộ sản phẩm tại chi nhánh này.</small></div>
                 </label>
 
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
                     <input type="checkbox" name="is_default" id="is_default" value="1" style="width:16px;height:16px;">
-                    <div><b>Chi nhÃ¡nh máº·c Ä‘á»‹nh</b><br><small style="color:#637381;">Ãp dá»¥ng máº·c Ä‘á»‹nh cho cÃ¡c giao dá»‹ch trÃªn toÃ n há»‡ thá»‘ng.</small></div>
+                    <div><b>Chi nhánh mặc định</b><br><small style="color:#637381;">Áp dụng mặc định cho các giao dịch trên toàn hệ thống.</small></div>
                 </label>
 
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
                     <input type="checkbox" name="is_pickup_location" id="is_pickup_location" value="1" style="width:16px;height:16px;">
-                    <div><b>Äá»‹a chá»‰ láº¥y hÃ ng</b><br><small style="color:#637381;">Sá»­ dá»¥ng lÃ m Ä‘iá»ƒm Ä‘á»ƒ Ä‘Æ¡n vá»‹ váº­n chuyá»ƒn (GHN, ViettelPost) Ä‘áº¿n láº¥y hÃ ng.</small></div>
+                    <div><b>Địa chỉ lấy hàng</b><br><small style="color:#637381;">Sử dụng làm điểm để đơn vị vận chuyển (GHN, ViettelPost) đến lấy hàng.</small></div>
                 </label>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" class="btn-outline" onclick="document.getElementById('branch_modal').style.display='none'">Há»§y</button>
-                <button type="submit" class="btn-primary">LÆ°u chi nhÃ¡nh</button>
+                <button type="button" class="btn-outline" onclick="document.getElementById('branch_modal').style.display='none'">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu chi nhánh</button>
             </div>
         </form>
     </div>
@@ -395,16 +395,16 @@
 
 <div id="transfer_modal" class="modal">
     <div class="modal-content" style="width:450px;">
-        <h3 style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px; color:#d82c0d;">ðŸ“¦ XÃ³a dá»¯ liá»‡u kho</h3>
-        <p style="font-size:14px; color:#212b36; line-height:1.5;">Chi nhÃ¡nh <b><span id="transfer_branch_name"></span></b> Ä‘ang cÃ³ cÃ¡c giao dá»‹ch xuáº¥t/nháº­p kho dá»Ÿ dang. Äá»ƒ xÃ³a dá»¯ liá»‡u kho an toÃ n, báº¡n báº¯t buá»™c pháº£i chá»n má»™t chi nhÃ¡nh khÃ¡c Ä‘á»ƒ tiáº¿p nháº­n cÃ¡c giao dá»‹ch nÃ y.</p>
+        <h3 style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px; color:#d82c0d;">📦 Xóa dữ liệu kho</h3>
+        <p style="font-size:14px; color:#212b36; line-height:1.5;">Chi nhánh <b><span id="transfer_branch_name"></span></b> đang có các giao dịch xuất/nhập kho dở dang. Để xóa dữ liệu kho an toàn, bạn bắt buộc phải chọn một chi nhánh khác để tiếp nhận các giao dịch này.</p>
 
         <form action="index.php?action=transfer_branch_data" method="POST">
             <input type="hidden" name="from_branch_id" id="from_branch_id">
 
             <div class="form-group" style="background:#fff8ea; padding:15px; border-radius:6px; border:1px solid #ffea8a; margin-top:15px;">
-                <label style="color:#8a6100;">Chá»n chi nhÃ¡nh tiáº¿p nháº­n giao dá»‹ch: <span>*</span></label>
+                <label style="color:#8a6100;">Chọn chi nhánh tiếp nhận giao dịch: <span>*</span></label>
                 <select name="to_branch_id" class="form-control" required style="border-color:#8a6100;">
-                    <option value="">-- Chá»n chi nhÃ¡nh Ä‘ang hoáº¡t Ä‘á»™ng --</option>
+                    <option value="">-- Chọn chi nhánh đang hoạt động --</option>
                     <?php foreach ($active_branches as $ab): ?>
                         <option value="<?php echo $ab['id']; ?>"><?php echo htmlspecialchars($ab['branch_name']); ?></option>
                     <?php endforeach; ?>
@@ -412,8 +412,8 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                <button type="button" class="btn-outline" onclick="document.getElementById('transfer_modal').style.display='none'">Há»§y</button>
-                <button type="submit" class="btn-primary" style="background:#d82c0d;" onclick="return confirm('XÃ¡c nháº­n di dá»i dá»¯ liá»‡u sang chi nhÃ¡nh má»›i vÃ  xÃ³a cá» quáº£n lÃ½ kho cá»§a chi nhÃ¡nh nÃ y?')">XÃ¡c nháº­n & XÃ³a kho</button>
+                <button type="button" class="btn-outline" onclick="document.getElementById('transfer_modal').style.display='none'">Hủy</button>
+                <button type="submit" class="btn-primary" style="background:#d82c0d;" onclick="return confirm('Xác nhận di dời dữ liệu sang chi nhánh mới và xóa cờ quản lý kho của chi nhánh này?')">Xác nhận & Xóa kho</button>
             </div>
         </form>
     </div>
@@ -421,22 +421,22 @@
 
 <div id="routing_modal" class="modal">
     <div class="modal-content" style="width: 500px;">
-        <h3 style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px; color:#212b36;"><i class="fa-solid fa-sort"></i> CÃ i Ä‘áº·t thá»© tá»± nháº­n Ä‘Æ¡n Online</h3>
+        <h3 style="margin-top:0; border-bottom:1px solid #dfe3e8; padding-bottom:10px; color:#212b36;"><i class="fa-solid fa-sort"></i> Cài đặt thứ tự nhận đơn Online</h3>
         <p style="font-size: 13px; color: #637381; margin-bottom: 10px;">
-            Nháº¥n giá»¯ biá»ƒu tÆ°á»£ng <i class="fa-solid fa-grip-vertical"></i> vÃ  kÃ©o tháº£ lÃªn xuá»‘ng Ä‘á»ƒ sáº¯p xáº¿p Æ°u tiÃªn. Chi nhÃ¡nh xáº¿p trÃªn cÃ¹ng sáº½ Ä‘Æ°á»£c gá»i láº¥y hÃ ng Ä‘áº§u tiÃªn (náº¿u Ä‘á»§ tá»“n kho).<br>
-            <i style="color:#8a6100;">*Chá»‰ hiá»ƒn thá»‹ chi nhÃ¡nh: Äang hoáº¡t Ä‘á»™ng + CÃ³ quáº£n lÃ½ kho + LÃ  Ä‘iá»ƒm láº¥y hÃ ng.</i>
+            Nhấn giữ biểu tượng <i class="fa-solid fa-grip-vertical"></i> và kéo thả lên xuống để sắp xếp ưu tiên. Chi nhánh xếp trên cùng sẽ được gọi lấy hàng đầu tiên (nếu đủ tồn kho).<br>
+            <i style="color:#8a6100;">*Chỉ hiển thị chi nhánh: Đang hoạt động + Có quản lý kho + Là điểm lấy hàng.</i>
         </p>
 
         <ul class="sortable-list" id="routing_list">
             <?php
-            // Lá»c cÃ¡c chi nhÃ¡nh Ä‘á»§ Ä‘iá»u kiá»‡n nháº­n Ä‘Æ¡n Online
+            // Lọc các chi nhánh đủ điều kiện nhận đơn Online
             $eligible_branches = array_filter($branches, function ($b) {
                 return $b['status'] == 'active' && $b['has_inventory'] == 1 && $b['is_pickup_location'] == 1;
             });
 
             if (empty($eligible_branches)):
             ?>
-                <li style="padding: 20px; text-align: center; color: #d82c0d;">KhÃ´ng cÃ³ chi nhÃ¡nh nÃ o Ä‘á»§ Ä‘iá»u kiá»‡n nháº­n Ä‘Æ¡n.</li>
+                <li style="padding: 20px; text-align: center; color: #d82c0d;">Không có chi nhánh nào đủ điều kiện nhận đơn.</li>
             <?php else: ?>
                 <?php foreach ($eligible_branches as $index => $eb): ?>
                     <li class="sortable-item" draggable="true" data-id="<?php echo $eb['id']; ?>">
@@ -444,18 +444,18 @@
                             <i class="fa-solid fa-grip-vertical drag-handle"></i>
                             <div>
                                 <b style="color: #0088ff;"><?php echo htmlspecialchars($eb['branch_name']); ?></b>
-                                <div style="font-size: 12px; color: #637381;">Æ¯u tiÃªn sá»‘: <span class="priority-num"><?php echo $index + 1; ?></span></div>
+                                <div style="font-size: 12px; color: #637381;">Ưu tiên số: <span class="priority-num"><?php echo $index + 1; ?></span></div>
                             </div>
                         </div>
-                        <span style="font-size: 12px; color: #108043; background: #eafff0; padding: 2px 6px; border-radius: 4px;">Sáºµn sÃ ng</span>
+                        <span style="font-size: 12px; color: #108043; background: #eafff0; padding: 2px 6px; border-radius: 4px;">Sẵn sàng</span>
                     </li>
                 <?php endforeach; ?>
             <?php endif; ?>
         </ul>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-            <button type="button" class="btn-outline" onclick="document.getElementById('routing_modal').style.display='none'">Há»§y</button>
-            <button type="button" class="btn-primary" onclick="saveRoutingPriority()">ðŸ’¾ LÆ°u thá»© tá»±</button>
+            <button type="button" class="btn-outline" onclick="document.getElementById('routing_modal').style.display='none'">Hủy</button>
+            <button type="button" class="btn-primary" onclick="saveRoutingPriority()">💾 Lưu thứ tự</button>
         </div>
     </div>
 </div>
@@ -464,7 +464,7 @@
         document.getElementById('routing_modal').style.display = 'flex';
     }
 
-    // --- LOGIC KÃ‰O THáº¢ (DRAG & DROP) Báº°NG VANILLA JS ---
+    // --- LOGIC KÉO THẢ (DRAG & DROP) BẰNG VANILLA JS ---
     const sortableList = document.getElementById("routing_list");
     let draggedItem = null;
 
@@ -507,7 +507,7 @@
         }).element;
     }
 
-    // Cáº­p nháº­t láº¡i sá»‘ thá»© tá»± hiá»ƒn thá»‹ sau khi kÃ©o
+    // Cập nhật lại số thứ tự hiển thị sau khi kéo
     function updatePriorityNumbers() {
         const items = sortableList.querySelectorAll('.sortable-item');
         items.forEach((item, index) => {
@@ -515,7 +515,7 @@
         });
     }
 
-    // AJAX LÆ°u xuá»‘ng Database
+    // AJAX Lưu xuống Database
     function saveRoutingPriority() {
         const items = sortableList.querySelectorAll('.sortable-item');
         const priorities = Array.from(items).map(item => item.getAttribute('data-id'));
@@ -551,10 +551,10 @@
     }
 
     function openModal() {
-        document.getElementById('frm_store_settings')?.reset(); // Náº¿u cÃ³ form trÃ¹ng id thÃ¬ cáº©n tháº­n, á»Ÿ Ä‘Ã¢y form ko cÃ³ id
+        document.getElementById('frm_store_settings')?.reset(); // Nếu có form trùng id thì cẩn thận, ở đây form ko có id
         document.getElementById('modal_id').value = '';
         document.getElementById('branch_code').readOnly = false;
-        document.getElementById('modal_title').innerText = 'ThÃªm má»›i chi nhÃ¡nh';
+        document.getElementById('modal_title').innerText = 'Thêm mới chi nhánh';
         document.getElementById('branch_modal').style.display = 'flex';
         toggleAddressFormat();
     }
@@ -563,7 +563,7 @@
         document.getElementById('modal_id').value = b.id;
         document.getElementById('branch_name').value = b.branch_name;
         document.getElementById('branch_code').value = b.branch_code;
-        document.getElementById('branch_code').readOnly = true; // Há»‡ thá»‘ng ko cho sá»­a mÃ£
+        document.getElementById('branch_code').readOnly = true; // Sapo ko cho sửa mã
 
         document.getElementById('phone').value = b.phone;
         document.getElementById('email').value = b.email;
@@ -577,7 +577,7 @@
         document.getElementById('is_default').checked = (b.is_default == 1);
         document.getElementById('is_pickup_location').checked = (b.is_pickup_location == 1);
 
-        document.getElementById('modal_title').innerText = 'âš™ï¸ Chá»‰nh sá»­a: ' + b.branch_name;
+        document.getElementById('modal_title').innerText = '⚙️ Chỉnh sửa: ' + b.branch_name;
         document.getElementById('branch_modal').style.display = 'flex';
         toggleAddressFormat();
     }
@@ -590,4 +590,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

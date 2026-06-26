@@ -1,14 +1,14 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    .Há»‡ thá»‘ng-header-bar {
+    .sapo-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .Há»‡ thá»‘ng-card {
+    .sapo-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -41,26 +41,26 @@
         background: #0070d2;
     }
 
-    .Há»‡ thá»‘ng-table {
+    .sapo-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .Há»‡ thá»‘ng-table th,
-    .Há»‡ thá»‘ng-table td {
+    .sapo-table th,
+    .sapo-table td {
         padding: 15px 12px;
         border-bottom: 1px solid #f4f6f8;
         text-align: left;
     }
 
-    .Há»‡ thá»‘ng-table th {
+    .sapo-table th {
         color: #637381;
         font-weight: 500;
         font-size: 14px;
         background: #fafbfc;
     }
 
-    .Há»‡ thá»‘ng-grid {
+    .sapo-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
@@ -75,42 +75,42 @@
     }
 </style>
 
-<div class="Há»‡ thá»‘ng-header-bar">
-    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Danh má»¥c sáº£n pháº©m</h2>
+<div class="sapo-header-bar">
+    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Danh mục sản phẩm</h2>
 </div>
 
-<div class="Há»‡ thá»‘ng-grid">
+<div class="sapo-grid">
     <div class="col-form">
-        <div class="Há»‡ thá»‘ng-card">
-            <h3 style="font-size: 16px; margin-bottom: 15px; color: #212b36;">ThÃªm danh má»¥c má»›i</h3>
+        <div class="sapo-card">
+            <h3 style="font-size: 16px; margin-bottom: 15px; color: #212b36;">Thêm danh mục mới</h3>
             <form action="index.php?action=product_category" method="POST">
                 <input type="hidden" name="add_category" value="1">
 
                 <div style="margin-bottom: 15px;">
-                    <label style="font-weight: 500; font-size: 14px;">TÃªn danh má»¥c <span style="color:red;">*</span></label>
-                    <input type="text" name="category_name" class="form-control" placeholder="VD: Äiá»‡n thoáº¡i di Ä‘á»™ng" required>
+                    <label style="font-weight: 500; font-size: 14px;">Tên danh mục <span style="color:red;">*</span></label>
+                    <input type="text" name="category_name" class="form-control" placeholder="VD: Điện thoại di động" required>
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label style="font-weight: 500; font-size: 14px;">MÃ´ táº£</label>
-                    <textarea name="description" class="form-control" rows="4" placeholder="Nháº­p mÃ´ táº£ cho danh má»¥c nÃ y..."></textarea>
+                    <label style="font-weight: 500; font-size: 14px;">Mô tả</label>
+                    <textarea name="description" class="form-control" rows="4" placeholder="Nhập mô tả cho danh mục này..."></textarea>
                 </div>
 
-                <button type="submit" class="btn-save">+ ThÃªm má»›i danh má»¥c</button>
+                <button type="submit" class="btn-save">+ Thêm mới danh mục</button>
             </form>
         </div>
     </div>
 
     <div class="col-table">
-        <div class="Há»‡ thá»‘ng-card" style="padding: 0; overflow: hidden;">
+        <div class="sapo-card" style="padding: 0; overflow: hidden;">
             <?php if (!empty($categories)): ?>
-                <table class="Há»‡ thá»‘ng-table">
+                <table class="sapo-table">
                     <thead>
                         <tr>
                             <th style="width: 50px;">ID</th>
-                            <th>TÃªn danh má»¥c</th>
-                            <th>MÃ´ táº£</th>
-                            <th style="width: 100px; text-align: center;">Thao tÃ¡c</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th style="width: 100px; text-align: center;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,8 +121,8 @@
                                 <td style="color: #637381;"><?php echo htmlspecialchars($row['description']); ?></td>
                                 <td style="text-align: center;">
                                     <a href="index.php?action=product_category&delete_id=<?php echo $row['id']; ?>"
-                                        onclick="return confirm('Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a danh má»¥c nÃ y?');"
-                                        style="color: #ff4d4f; text-decoration: none; font-size: 14px;">ðŸ—‘ï¸ XÃ³a</a>
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');"
+                                        style="color: #ff4d4f; text-decoration: none; font-size: 14px;">🗑️ Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -130,9 +130,9 @@
                 </table>
             <?php else: ?>
                 <div style="text-align: center; padding: 50px 20px;">
-                    <div style="font-size: 50px; margin-bottom: 15px;">ðŸ“‚</div>
-                    <h3 style="font-size: 16px; color: #212b36;">ChÆ°a cÃ³ danh má»¥c nÃ o</h3>
-                    <p style="color: #637381; font-size: 14px;">HÃ£y sá»­ dá»¥ng form bÃªn trÃ¡i Ä‘á»ƒ thÃªm danh má»¥c Ä‘áº§u tiÃªn.</p>
+                    <div style="font-size: 50px; margin-bottom: 15px;">📂</div>
+                    <h3 style="font-size: 16px; color: #212b36;">Chưa có danh mục nào</h3>
+                    <p style="color: #637381; font-size: 14px;">Hãy sử dụng form bên trái để thêm danh mục đầu tiên.</p>
                 </div>
             <?php endif; ?>
         </div>
@@ -140,4 +140,3 @@
 </div>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

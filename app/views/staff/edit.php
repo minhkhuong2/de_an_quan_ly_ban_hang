@@ -1,11 +1,11 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php
 /** @var array $staff */
 /** @var array $current_permissions */
 ?>
 
 <style>
-    .Há»‡ thá»‘ng-header-bar {
+    .sapo-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -32,7 +32,7 @@
         font-weight: 500;
     }
 
-    .Há»‡ thá»‘ng-card {
+    .sapo-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -40,7 +40,7 @@
         margin-bottom: 20px;
     }
 
-    .Há»‡ thá»‘ng-card-title {
+    .sapo-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -79,7 +79,7 @@
         flex: 1;
     }
 
-    /* CSS RIÃŠNG CHO PHÃ‚N QUYá»€N */
+    /* CSS RIÊNG CHO PHÂN QUYỀN */
     .perm-group {
         margin-bottom: 20px;
     }
@@ -119,140 +119,140 @@
 </style>
 
 <form action="index.php?action=edit_staff&id=<?php echo $staff['id']; ?>" method="POST">
-    <div class="Há»‡ thá»‘ng-header-bar">
-        <h2><a href="index.php?action=staff_list" style="text-decoration:none; color:#637381;">â†</a> Há»“ sÆ¡: <?php echo htmlspecialchars($staff['full_name'] ?? ''); ?></h2>
+    <div class="sapo-header-bar">
+        <h2><a href="index.php?action=staff_list" style="text-decoration:none; color:#637381;">←</a> Hồ sơ: <?php echo htmlspecialchars($staff['full_name'] ?? ''); ?></h2>
         <div>
-            <a href="index.php?action=staff_list" class="btn-cancel">Há»§y</a>
-            <button type="submit" class="btn-save">LÆ°u thay Ä‘á»•i</button>
+            <a href="index.php?action=staff_list" class="btn-cancel">Hủy</a>
+            <button type="submit" class="btn-save">Lưu thay đổi</button>
         </div>
     </div>
 
     <?php if (isset($_GET['success'])): ?>
-        <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight: 500;">âœ… LÆ°u thÃ´ng tin vÃ  phÃ¢n quyá»n thÃ nh cÃ´ng!</div>
+        <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight: 500;">✅ Lưu thông tin và phân quyền thành công!</div>
     <?php endif; ?>
 
     <div style="display: flex; gap: 20px; align-items: flex-start;">
         <div style="flex: 0 0 68%;">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">
-                    ðŸ›¡ï¸ PhÃ¢n quyá»n chi tiáº¿t (Quyá»n quáº£n trá»‹)
+            <div class="sapo-card">
+                <div class="sapo-card-title">
+                    🛡️ Phân quyền chi tiết (Quyền quản trị)
                     <div style="float: right;">
-                        <button type="button" onclick="checkAll(true)" style="background:#fff; border:1px solid #c4cdd5; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">TÃ­ch chá»n táº¥t cáº£</button>
-                        <button type="button" onclick="checkAll(false)" style="background:#fff; border:1px solid #c4cdd5; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Bá» chá»n táº¥t cáº£</button>
+                        <button type="button" onclick="checkAll(true)" style="background:#fff; border:1px solid #c4cdd5; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Tích chọn tất cả</button>
+                        <button type="button" onclick="checkAll(false)" style="background:#fff; border:1px solid #c4cdd5; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Bỏ chọn tất cả</button>
                     </div>
                 </div>
 
                 <div class="perm-group">
-                    <div class="perm-group-title">1. ÄÆ¡n hÃ ng</div>
+                    <div class="perm-group-title">1. Đơn hàng</div>
                     <div class="perm-list">
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_view" <?php echo in_array('order_view', $current_permissions) ? 'checked' : ''; ?>> Xem danh sÃ¡ch Ä‘Æ¡n hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_create" <?php echo in_array('order_create', $current_permissions) ? 'checked' : ''; ?>> Táº¡o Ä‘Æ¡n hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_edit" <?php echo in_array('order_edit', $current_permissions) ? 'checked' : ''; ?>> Sá»­a Ä‘Æ¡n hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_delete" <?php echo in_array('order_delete', $current_permissions) ? 'checked' : ''; ?>> Há»§y / XÃ³a Ä‘Æ¡n hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_export" <?php echo in_array('order_export', $current_permissions) ? 'checked' : ''; ?>> Xuáº¥t file Excel</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_price_edit" <?php echo in_array('order_price_edit', $current_permissions) ? 'checked' : ''; ?>> Chá»‰nh sá»­a giÃ¡ bÃ¡n thá»§ cÃ´ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_limit_view" <?php echo in_array('order_limit_view', $current_permissions) ? 'checked' : ''; ?>> Chá»‰ xem Ä‘Æ¡n do mÃ¬nh táº¡o</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_view" <?php echo in_array('order_view', $current_permissions) ? 'checked' : ''; ?>> Xem danh sách đơn hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_create" <?php echo in_array('order_create', $current_permissions) ? 'checked' : ''; ?>> Tạo đơn hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_edit" <?php echo in_array('order_edit', $current_permissions) ? 'checked' : ''; ?>> Sửa đơn hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_delete" <?php echo in_array('order_delete', $current_permissions) ? 'checked' : ''; ?>> Hủy / Xóa đơn hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_export" <?php echo in_array('order_export', $current_permissions) ? 'checked' : ''; ?>> Xuất file Excel</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_price_edit" <?php echo in_array('order_price_edit', $current_permissions) ? 'checked' : ''; ?>> Chỉnh sửa giá bán thủ công</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="order_limit_view" <?php echo in_array('order_limit_view', $current_permissions) ? 'checked' : ''; ?>> Chỉ xem đơn do mình tạo</label>
                     </div>
                 </div>
 
                 <div class="perm-group">
-                    <div class="perm-group-title">2. Sáº£n pháº©m & Danh má»¥c</div>
+                    <div class="perm-group-title">2. Sản phẩm & Danh mục</div>
                     <div class="perm-list">
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_view" <?php echo in_array('product_view', $current_permissions) ? 'checked' : ''; ?>> Xem sáº£n pháº©m</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_create" <?php echo in_array('product_create', $current_permissions) ? 'checked' : ''; ?>> ThÃªm má»›i / Sá»­a sáº£n pháº©m</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_delete" <?php echo in_array('product_delete', $current_permissions) ? 'checked' : ''; ?>> XÃ³a sáº£n pháº©m</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_cost_view" <?php echo in_array('product_cost_view', $current_permissions) ? 'checked' : ''; ?> style="accent-color:#cf1322;"> <b>Xem giÃ¡ vá»‘n</b></label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="category_manage" <?php echo in_array('category_manage', $current_permissions) ? 'checked' : ''; ?>> Quáº£n lÃ½ danh má»¥c</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_view" <?php echo in_array('product_view', $current_permissions) ? 'checked' : ''; ?>> Xem sản phẩm</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_create" <?php echo in_array('product_create', $current_permissions) ? 'checked' : ''; ?>> Thêm mới / Sửa sản phẩm</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_delete" <?php echo in_array('product_delete', $current_permissions) ? 'checked' : ''; ?>> Xóa sản phẩm</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="product_cost_view" <?php echo in_array('product_cost_view', $current_permissions) ? 'checked' : ''; ?> style="accent-color:#cf1322;"> <b>Xem giá vốn</b></label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="category_manage" <?php echo in_array('category_manage', $current_permissions) ? 'checked' : ''; ?>> Quản lý danh mục</label>
                     </div>
                 </div>
 
                 <div class="perm-group">
-                    <div class="perm-group-title">3. Quáº£n lÃ½ Kho</div>
+                    <div class="perm-group-title">3. Quản lý Kho</div>
                     <div class="perm-list">
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="inventory_view" <?php echo in_array('inventory_view', $current_permissions) ? 'checked' : ''; ?>> Xem tá»“n kho</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="inventory_edit" <?php echo in_array('inventory_edit', $current_permissions) ? 'checked' : ''; ?>> Khá»Ÿi táº¡o & Äiá»u chá»‰nh kho</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="purchase_view" <?php echo in_array('purchase_view', $current_permissions) ? 'checked' : ''; ?>> Xem ÄÆ¡n Ä‘áº·t hÃ ng nháº­p</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="purchase_create" <?php echo in_array('purchase_create', $current_permissions) ? 'checked' : ''; ?>> Táº¡o / Sá»­a ÄÆ¡n nháº­p hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="supplier_manage" <?php echo in_array('supplier_manage', $current_permissions) ? 'checked' : ''; ?>> Quáº£n lÃ½ NhÃ  cung cáº¥p</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="inventory_view" <?php echo in_array('inventory_view', $current_permissions) ? 'checked' : ''; ?>> Xem tồn kho</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="inventory_edit" <?php echo in_array('inventory_edit', $current_permissions) ? 'checked' : ''; ?>> Khởi tạo & Điều chỉnh kho</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="purchase_view" <?php echo in_array('purchase_view', $current_permissions) ? 'checked' : ''; ?>> Xem Đơn đặt hàng nhập</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="purchase_create" <?php echo in_array('purchase_create', $current_permissions) ? 'checked' : ''; ?>> Tạo / Sửa Đơn nhập hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="supplier_manage" <?php echo in_array('supplier_manage', $current_permissions) ? 'checked' : ''; ?>> Quản lý Nhà cung cấp</label>
                     </div>
                 </div>
 
                 <div class="perm-group">
-                    <div class="perm-group-title">4. KhÃ¡ch hÃ ng & BÃ¡o cÃ¡o</div>
+                    <div class="perm-group-title">4. Khách hàng & Báo cáo</div>
                     <div class="perm-list">
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="customer_manage" <?php echo in_array('customer_manage', $current_permissions) ? 'checked' : ''; ?>> Quáº£n lÃ½ KhÃ¡ch hÃ ng</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="report_revenue" <?php echo in_array('report_revenue', $current_permissions) ? 'checked' : ''; ?>> Xem BÃ¡o cÃ¡o Doanh thu</label>
-                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="report_profit" <?php echo in_array('report_profit', $current_permissions) ? 'checked' : ''; ?> style="accent-color:#cf1322;"> <b>Xem BÃ¡o cÃ¡o Lá»£i nhuáº­n</b></label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="customer_manage" <?php echo in_array('customer_manage', $current_permissions) ? 'checked' : ''; ?>> Quản lý Khách hàng</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="report_revenue" <?php echo in_array('report_revenue', $current_permissions) ? 'checked' : ''; ?>> Xem Báo cáo Doanh thu</label>
+                        <label class="perm-item"><input type="checkbox" name="permissions[]" value="report_profit" <?php echo in_array('report_profit', $current_permissions) ? 'checked' : ''; ?> style="accent-color:#cf1322;"> <b>Xem Báo cáo Lợi nhuận</b></label>
                     </div>
                 </div>
 
-                <p style="font-size: 13px; color: #637381; margin-top: 20px;">â„¹ï¸ <b>Máº¹o:</b> Äá»ƒ báº£o máº­t thÃ´ng tin lá»£i nhuáº­n, báº¡n khÃ´ng nÃªn cáº¥p quyá»n "Xem giÃ¡ vá»‘n" vÃ  "Xem bÃ¡o cÃ¡o lá»£i nhuáº­n" cho nhÃ¢n viÃªn bÃ¡n hÃ ng.</p>
+                <p style="font-size: 13px; color: #637381; margin-top: 20px;">ℹ️ <b>Mẹo:</b> Để bảo mật thông tin lợi nhuận, bạn không nên cấp quyền "Xem giá vốn" và "Xem báo cáo lợi nhuận" cho nhân viên bán hàng.</p>
             </div>
         </div>
 
         <div style="flex: 1;">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin nhÃ¢n viÃªn</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thông tin nhân viên</div>
                 <div class="row-flex">
-                    <div class="form-group"><label>Há»</label><input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($staff['last_name'] ?? ''); ?>"></div>
-                    <div class="form-group"><label>TÃªn <span style="color:red;">*</span></label><input type="text" name="first_name" class="form-control" required value="<?php echo htmlspecialchars($staff['first_name'] ?? ''); ?>"></div>
+                    <div class="form-group"><label>Họ</label><input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($staff['last_name'] ?? ''); ?>"></div>
+                    <div class="form-group"><label>Tên <span style="color:red;">*</span></label><input type="text" name="first_name" class="form-control" required value="<?php echo htmlspecialchars($staff['first_name'] ?? ''); ?>"></div>
                 </div>
                 <div class="form-group">
-                    <label>Email (TÃ i khoáº£n Ä‘Äƒng nháº­p)</label>
-                    <input type="email" value="<?php echo htmlspecialchars($staff['email']); ?>" class="form-control" readonly style="background:#f4f6f8; cursor:not-allowed;" title="KhÃ´ng thá»ƒ Ä‘á»•i Email">
+                    <label>Email (Tài khoản đăng nhập)</label>
+                    <input type="email" value="<?php echo htmlspecialchars($staff['email']); ?>" class="form-control" readonly style="background:#f4f6f8; cursor:not-allowed;" title="Không thể đổi Email">
                 </div>
                 <div class="form-group">
-                    <label>Äiá»‡n thoáº¡i <span style="color:red;">*</span></label>
+                    <label>Điện thoại <span style="color:red;">*</span></label>
                     <input type="text" name="phone" class="form-control" required value="<?php echo htmlspecialchars($staff['phone'] ?? ''); ?>">
                 </div>
                 <div class="form-group">
-                    <label>NhÃ³m Vai trÃ² máº·c Ä‘á»‹nh</label>
+                    <label>Nhóm Vai trò mặc định</label>
                     <select name="role" class="form-control" onchange="autoAssignPermissions(this.value)">
-                        <option value="Admin" <?php echo ($staff['role'] == 'Admin') ? 'selected' : ''; ?>>Chá»§ cá»­a hÃ ng (Admin)</option>
-                        <option value="NhÃ¢n viÃªn bÃ¡n hÃ ng" <?php echo ($staff['role'] == 'NhÃ¢n viÃªn bÃ¡n hÃ ng') ? 'selected' : ''; ?>>NhÃ¢n viÃªn bÃ¡n hÃ ng (Thu ngÃ¢n)</option>
-                        <option value="NhÃ¢n viÃªn kho" <?php echo ($staff['role'] == 'NhÃ¢n viÃªn kho') ? 'selected' : ''; ?>>NhÃ¢n viÃªn kho</option>
-                        <option value="TÃ¹y chá»‰nh" <?php echo ($staff['role'] == 'TÃ¹y chá»‰nh') ? 'selected' : ''; ?>>TÃ¹y chá»‰nh phÃ¢n quyá»n</option>
+                        <option value="Admin" <?php echo ($staff['role'] == 'Admin') ? 'selected' : ''; ?>>Chủ cửa hàng (Admin)</option>
+                        <option value="Nhân viên bán hàng" <?php echo ($staff['role'] == 'Nhân viên bán hàng') ? 'selected' : ''; ?>>Nhân viên bán hàng (Thu ngân)</option>
+                        <option value="Nhân viên kho" <?php echo ($staff['role'] == 'Nhân viên kho') ? 'selected' : ''; ?>>Nhân viên kho</option>
+                        <option value="Tùy chỉnh" <?php echo ($staff['role'] == 'Tùy chỉnh') ? 'selected' : ''; ?>>Tùy chỉnh phân quyền</option>
                     </select>
                 </div>
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">Tráº¡ng thÃ¡i báº£o máº­t</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Trạng thái bảo mật</div>
                 <div style="font-size: 14px; margin-bottom: 10px;">
-                    TÃ¬nh tráº¡ng tÃ i khoáº£n:
-                    <?php if ($staff['status'] == 'Äang kÃ­ch hoáº¡t'): ?>
-                        <span style="color:#108043; font-weight:bold;">â— ÄÃ£ xÃ¡c nháº­n máº­t kháº©u</span>
+                    Tình trạng tài khoản:
+                    <?php if ($staff['status'] == 'Đang kích hoạt'): ?>
+                        <span style="color:#108043; font-weight:bold;">● Đã xác nhận mật khẩu</span>
                     <?php else: ?>
-                        <span style="color:#cf1322; font-weight:bold;">â—‹ Äang chá» xÃ¡c nháº­n</span>
+                        <span style="color:#cf1322; font-weight:bold;">○ Đang chờ xác nhận</span>
                     <?php endif; ?>
                 </div>
-                <p style="font-size: 12px; color: #637381; margin: 0;">(Chá»‰ nhÃ¢n viÃªn Ä‘Ã£ kÃ­ch hoáº¡t má»›i cÃ³ thá»ƒ Ä‘Äƒng nháº­p vÃ o há»‡ thá»‘ng Há»‡ thá»‘ng).</p>
+                <p style="font-size: 12px; color: #637381; margin: 0;">(Chỉ nhân viên đã kích hoạt mới có thể đăng nhập vào hệ thống Sapo).</p>
             </div>
         </div>
     </div>
 </form>
 
 <script>
-    // HÃ m chá»n nhanh táº¥t cáº£ checkbox
+    // Hàm chọn nhanh tất cả checkbox
     function checkAll(status) {
         document.querySelectorAll('input[name="permissions[]"]').forEach(cb => cb.checked = status);
     }
 
-    // HÃ m tá»± Ä‘á»™ng tÃ­ch cÃ¡c quyá»n máº«u theo Vai trÃ² (Chá»©c nÄƒng cao cáº¥p Há»‡ thá»‘ng)
+    // Hàm tự động tích các quyền mẫu theo Vai trò (Chức năng cao cấp Sapo)
     function autoAssignPermissions(role) {
-        if (role === 'TÃ¹y chá»‰nh') return; // KhÃ´ng can thiá»‡p náº¿u chá»n tÃ¹y chá»‰nh
+        if (role === 'Tùy chỉnh') return; // Không can thiệp nếu chọn tùy chỉnh
 
-        checkAll(false); // XÃ³a tráº¯ng trÆ°á»›c khi gÃ¡n
+        checkAll(false); // Xóa trắng trước khi gán
 
         if (role === 'Admin') {
-            checkAll(true); // Admin cÃ³ táº¥t cáº£ quyá»n
-        } else if (role === 'NhÃ¢n viÃªn bÃ¡n hÃ ng') {
+            checkAll(true); // Admin có tất cả quyền
+        } else if (role === 'Nhân viên bán hàng') {
             const salePerms = ['order_view', 'order_create', 'product_view', 'customer_manage'];
             salePerms.forEach(p => {
                 let cb = document.querySelector(`input[value="${p}"]`);
                 if (cb) cb.checked = true;
             });
-        } else if (role === 'NhÃ¢n viÃªn kho') {
+        } else if (role === 'Nhân viên kho') {
             const inventoryPerms = ['product_view', 'inventory_view', 'inventory_edit', 'purchase_view', 'purchase_create', 'supplier_manage'];
             inventoryPerms.forEach(p => {
                 let cb = document.querySelector(`input[value="${p}"]`);
@@ -263,4 +263,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

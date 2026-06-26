@@ -1,4 +1,4 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
     .v3-header {
@@ -36,7 +36,7 @@
         padding: 20px;
     }
 
-    /* Thiáº¿t káº¿ form hÃ ng ngang */
+    /* Thiết kế form hàng ngang */
     .setting-row {
         display: flex;
         justify-content: space-between;
@@ -72,7 +72,7 @@
         flex: 0 0 auto;
     }
 
-    /* NÃšT Gáº T (TOGGLE SWITCH) CHUáº¨N IOS/Há»‡ thá»‘ng */
+    /* NÚT GẠT (TOGGLE SWITCH) CHUẨN IOS/SAPO */
     .switch {
         position: relative;
         display: inline-block;
@@ -119,7 +119,7 @@
         transform: translateX(20px);
     }
 
-    /* Form control cÆ¡ báº£n */
+    /* Form control cơ bản */
     .form-control {
         width: 100%;
         padding: 8px 12px;
@@ -145,39 +145,39 @@
 </style>
 
 <div class="v3-header">
-    <div class="v3-title">Cáº¥u hÃ¬nh kÃªnh bÃ¡n táº¡i quáº§y (POS)</div>
-    <button type="submit" form="posSettingsForm" class="btn-primary">ðŸ’¾ LÆ°u cáº¥u hÃ¬nh</button>
+    <div class="v3-title">Cấu hình kênh bán tại quầy (POS)</div>
+    <button type="submit" form="posSettingsForm" class="btn-primary">💾 Lưu cấu hình</button>
 </div>
 
 <form id="posSettingsForm" action="index.php?action=save_pos_settings" method="POST">
 
     <div class="v3-card">
-        <div class="v3-card-header">1. Cáº¥u hÃ¬nh bÃ¡n hÃ ng chung</div>
+        <div class="v3-card-header">1. Cấu hình bán hàng chung</div>
         <div class="v3-card-body">
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">Kiá»ƒu thanh toÃ¡n</div>
-                    <div class="setting-desc">Chá»n thanh toÃ¡n 1 bÆ°á»›c (Nhanh) hoáº·c 2 bÆ°á»›c (Chi tiáº¿t nhiá»u hÃ¬nh thá»©c)</div>
+                    <div class="setting-title">Kiểu thanh toán</div>
+                    <div class="setting-desc">Chọn thanh toán 1 bước (Nhanh) hoặc 2 bước (Chi tiết nhiều hình thức)</div>
                 </div>
                 <div class="setting-action" style="width: 200px;">
                     <select name="pos_payment_steps" class="form-control">
-                        <option value="1" <?php echo ($settings_db['pos_payment_steps'] == '1') ? 'selected' : ''; ?>>Thanh toÃ¡n 1 bÆ°á»›c</option>
-                        <option value="2" <?php echo ($settings_db['pos_payment_steps'] == '2') ? 'selected' : ''; ?>>Thanh toÃ¡n 2 bÆ°á»›c</option>
+                        <option value="1" <?php echo ($settings_db['pos_payment_steps'] == '1') ? 'selected' : ''; ?>>Thanh toán 1 bước</option>
+                        <option value="2" <?php echo ($settings_db['pos_payment_steps'] == '2') ? 'selected' : ''; ?>>Thanh toán 2 bước</option>
                     </select>
                 </div>
             </div>
 
             <?php
-            // Máº£ng chá»©a cÃ¡c Toggles á»Ÿ Khá»‘i 1
+            // Mảng chứa các Toggles ở Khối 1
             $block1_toggles = [
-                'pos_allow_negative_stock' => ['Cho phÃ©p bÃ¡n Ã¢m', 'Há»‡ thá»‘ng sáº½ ghi nháº­n tá»“n Ã¢m náº¿u bÃ¡n hÃ ng khi háº¿t tá»“n kho.'],
-                'pos_suggest_amount' => ['Gá»£i Ã½ tiá»n thanh toÃ¡n', 'Há»‡ thá»‘ng gá»£i Ã½ sá»‘ tiá»n khÃ¡ch Ä‘Æ°a dá»±a trÃªn tá»•ng tiá»n cáº§n tráº£.'],
-                'pos_allow_price_edit' => ['Äiá»u chá»‰nh giÃ¡', 'Cho phÃ©p nhÃ¢n viÃªn thay Ä‘á»•i giÃ¡ bÃ¡n hoáº·c thÃªm khuyáº¿n máº¡i tay.'],
-                'pos_auto_promotions' => ['Ãp dá»¥ng khuyáº¿n máº¡i tá»± Ä‘á»™ng', 'Há»‡ thá»‘ng tá»± Ä‘á»™ng quÃ©t vÃ  trá»« tiá»n cÃ¡c chÆ°Æ¡ng trÃ¬nh KM há»£p lá»‡.'],
-                'pos_use_promo_code' => ['Sá»­ dá»¥ng mÃ£ khuyáº¿n máº¡i (Coupon)', 'Hiá»ƒn thá»‹ Ã´ nháº­p mÃ£ giáº£m giÃ¡ trÃªn mÃ n hÃ¬nh POS.'],
-                'pos_shift_management' => ['Quáº£n lÃ½ ca lÃ m viá»‡c', 'Theo dÃµi thÃ´ng tin, doanh thu cá»§a tá»«ng ca lÃ m viá»‡c.'],
-                'pos_Há»‡ thá»‘ng_qr' => ['Káº¿t ná»‘i hiá»ƒn thá»‹ Há»‡ thá»‘ng QR', 'Hiá»ƒn thá»‹ mÃ£ QR VietQR Ä‘á»ƒ khÃ¡ch quÃ©t thanh toÃ¡n nhanh.']
+                'pos_allow_negative_stock' => ['Cho phép bán âm', 'Hệ thống sẽ ghi nhận tồn âm nếu bán hàng khi hết tồn kho.'],
+                'pos_suggest_amount' => ['Gợi ý tiền thanh toán', 'Hệ thống gợi ý số tiền khách đưa dựa trên tổng tiền cần trả.'],
+                'pos_allow_price_edit' => ['Điều chỉnh giá', 'Cho phép nhân viên thay đổi giá bán hoặc thêm khuyến mại tay.'],
+                'pos_auto_promotions' => ['Áp dụng khuyến mại tự động', 'Hệ thống tự động quét và trừ tiền các chương trình KM hợp lệ.'],
+                'pos_use_promo_code' => ['Sử dụng mã khuyến mại (Coupon)', 'Hiển thị ô nhập mã giảm giá trên màn hình POS.'],
+                'pos_shift_management' => ['Quản lý ca làm việc', 'Theo dõi thông tin, doanh thu của từng ca làm việc.'],
+                'pos_sapo_qr' => ['Kết nối hiển thị Sapo QR', 'Hiển thị mã QR VietQR để khách quét thanh toán nhanh.']
             ];
 
             foreach ($block1_toggles as $key => $info):
@@ -201,27 +201,27 @@
     </div>
 
     <div class="v3-card">
-        <div class="v3-card-header">2. MÃ¡y in & Máº«u in hÃ³a Ä‘Æ¡n</div>
+        <div class="v3-card-header">2. Máy in & Mẫu in hóa đơn</div>
         <div class="v3-card-body">
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">Lá»±a chá»n khá»• in máº·c Ä‘á»‹nh</div>
-                    <div class="setting-desc">TÃ¹y chá»n khá»• giáº¥y phÃ¹ há»£p vá»›i mÃ¡y in táº¡i cá»­a hÃ ng.</div>
+                    <div class="setting-title">Lựa chọn khổ in mặc định</div>
+                    <div class="setting-desc">Tùy chọn khổ giấy phù hợp với máy in tại cửa hàng.</div>
                 </div>
                 <div class="setting-action" style="width: 200px;">
                     <select name="pos_print_size" class="form-control">
-                        <option value="80mm" <?php echo ($settings_db['pos_print_size'] == '80mm') ? 'selected' : ''; ?>>Khá»• 80mm (MÃ¡y in nhiá»‡t)</option>
-                        <option value="58mm" <?php echo ($settings_db['pos_print_size'] == '58mm') ? 'selected' : ''; ?>>Khá»• 57/58mm (MÃ¡y in mini)</option>
-                        <option value="A4" <?php echo ($settings_db['pos_print_size'] == 'A4') ? 'selected' : ''; ?>>Khá»• A4 / A5 (MÃ¡y in vÄƒn phÃ²ng)</option>
+                        <option value="80mm" <?php echo ($settings_db['pos_print_size'] == '80mm') ? 'selected' : ''; ?>>Khổ 80mm (Máy in nhiệt)</option>
+                        <option value="58mm" <?php echo ($settings_db['pos_print_size'] == '58mm') ? 'selected' : ''; ?>>Khổ 57/58mm (Máy in mini)</option>
+                        <option value="A4" <?php echo ($settings_db['pos_print_size'] == 'A4') ? 'selected' : ''; ?>>Khổ A4 / A5 (Máy in văn phòng)</option>
                     </select>
                 </div>
             </div>
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">Sá»‘ báº£n in (LiÃªn)</div>
-                    <div class="setting-desc">Sá»‘ lÆ°á»£ng hÃ³a Ä‘Æ¡n tá»± Ä‘á»™ng in ra má»—i khi thanh toÃ¡n.</div>
+                    <div class="setting-title">Số bản in (Liên)</div>
+                    <div class="setting-desc">Số lượng hóa đơn tự động in ra mỗi khi thanh toán.</div>
                 </div>
                 <div class="setting-action" style="width: 100px;">
                     <input type="number" name="pos_print_copies" class="form-control" value="<?php echo $settings_db['pos_print_copies'] ?? '1'; ?>" min="1" max="5">
@@ -230,8 +230,8 @@
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">Tá»± Ä‘á»™ng in hÃ³a Ä‘Æ¡n khi thanh toÃ¡n</div>
-                    <div class="setting-desc">Máº·c Ä‘á»‹nh hiá»ƒn thá»‹ cá»­a sá»• in ngay khi áº¥n nÃºt thanh toÃ¡n thÃ nh cÃ´ng.</div>
+                    <div class="setting-title">Tự động in hóa đơn khi thanh toán</div>
+                    <div class="setting-desc">Mặc định hiển thị cửa sổ in ngay khi ấn nút thanh toán thành công.</div>
                 </div>
                 <div class="setting-action">
                     <label class="switch">
@@ -245,13 +245,13 @@
     </div>
 
     <div class="v3-card">
-        <div class="v3-card-header">3. BÃ¡n hÃ ng Offline</div>
+        <div class="v3-card-header">3. Bán hàng Offline</div>
         <div class="v3-card-body">
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">Sá»­ dá»¥ng cháº¿ Ä‘á»™ bÃ¡n hÃ ng Offline</div>
-                    <div class="setting-desc">Cho phÃ©p bÃ¡n hÃ ng bÃ¬nh thÆ°á»ng ngay cáº£ khi máº¥t káº¿t ná»‘i máº¡ng Internet. Dá»¯ liá»‡u sáº½ Ä‘á»“ng bá»™ khi cÃ³ máº¡ng trá»Ÿ láº¡i.</div>
-                    <button type="button" class="btn-primary" style="background: #fff; color: #212b36; border: 1px solid #c4cdd5; margin-top: 10px; font-size: 13px; padding: 6px 12px;">ðŸ”„ Äá»“ng bá»™ láº¡i dá»¯ liá»‡u vá» mÃ¡y</button>
+                    <div class="setting-title">Sử dụng chế độ bán hàng Offline</div>
+                    <div class="setting-desc">Cho phép bán hàng bình thường ngay cả khi mất kết nối mạng Internet. Dữ liệu sẽ đồng bộ khi có mạng trở lại.</div>
+                    <button type="button" class="btn-primary" style="background: #fff; color: #212b36; border: 1px solid #c4cdd5; margin-top: 10px; font-size: 13px; padding: 6px 12px;">🔄 Đồng bộ lại dữ liệu về máy</button>
                 </div>
                 <div class="setting-action">
                     <label class="switch">
@@ -266,4 +266,3 @@
 </form>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

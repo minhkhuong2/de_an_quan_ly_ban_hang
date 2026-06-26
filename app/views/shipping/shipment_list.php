@@ -1,4 +1,4 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php
 /**
  * @var string $keyword
@@ -42,7 +42,7 @@
         font-size: 14px;
     }
 
-    /* Thanh Thao tÃ¡c hÃ ng loáº¡t (áº¨n máº·c Ä‘á»‹nh) */
+    /* Thanh Thao tác hàng loạt (Ẩn mặc định) */
     .bulk-action-bar {
         background: #e5f0ff;
         padding: 12px 15px;
@@ -139,65 +139,65 @@
 </style>
 
 <div class="v3-header">
-    <div class="v3-title">ðŸ“¦ Quáº£n lÃ½ danh sÃ¡ch Váº­n Ä‘Æ¡n</div>
+    <div class="v3-title">📦 Quản lý danh sách Vận đơn</div>
     <div style="display: flex; gap: 10px;">
-        <button class="btn-outline" onclick="alert('TÃ­nh nÄƒng Xuáº¥t Excel Ä‘ang cáº­p nháº­t!')">ðŸ“¥ Xuáº¥t file</button>
-        <a href="index.php?action=order_list" class="btn-primary">+ Táº¡o Ä‘Æ¡n hÃ ng má»›i</a>
+        <button class="btn-outline" onclick="alert('Tính năng Xuất Excel đang cập nhật!')">📥 Xuất file</button>
+        <a href="index.php?action=order_list" class="btn-primary">+ Tạo đơn hàng mới</a>
     </div>
 </div>
 
 <?php if (isset($_GET['success_status'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #33d067;">âœ… Cáº­p nháº­t tráº¡ng thÃ¡i váº­n Ä‘Æ¡n thÃ nh cÃ´ng!</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #33d067;">✅ Cập nhật trạng thái vận đơn thành công!</div>
 <?php endif; ?>
 <?php if (isset($_GET['success_recon'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #33d067;">ðŸ’° Äá»‘i soÃ¡t thÃ nh cÃ´ng! Há»‡ thá»‘ng Ä‘Ã£ tá»± Ä‘á»™ng táº¡o Phiáº¿u Thu tiá»n COD vÃ o Sá»• quá»¹.</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #33d067;">💰 Đối soát thành công! Hệ thống đã tự động tạo Phiếu Thu tiền COD vào Sổ quỹ.</div>
 <?php endif; ?>
 
 <form class="v3-filter-bar" method="GET" action="index.php">
     <input type="hidden" name="action" value="shipment_list">
 
-    <input type="text" name="keyword" class="v3-form-control" placeholder="TÃ¬m MÃ£ Váº­n Ä‘Æ¡n, TÃªn KH..." value="<?php echo htmlspecialchars($keyword); ?>" style="width: 250px;">
+    <input type="text" name="keyword" class="v3-form-control" placeholder="Tìm Mã Vận đơn, Tên KH..." value="<?php echo htmlspecialchars($keyword); ?>" style="width: 250px;">
 
     <select name="status" class="v3-form-control">
-        <option value="all">Táº¥t cáº£ Tráº¡ng thÃ¡i Giao hÃ ng</option>
-        <option value="pending" <?php echo $status_filter == 'pending' ? 'selected' : ''; ?>>Chá» láº¥y hÃ ng</option>
-        <option value="delivering" <?php echo $status_filter == 'delivering' ? 'selected' : ''; ?>>Äang giao hÃ ng</option>
-        <option value="delivered" <?php echo $status_filter == 'delivered' ? 'selected' : ''; ?>>ÄÃ£ giao thÃ nh cÃ´ng</option>
-        <option value="returning" <?php echo $status_filter == 'returning' ? 'selected' : ''; ?>>Äang hoÃ n hÃ ng</option>
+        <option value="all">Tất cả Trạng thái Giao hàng</option>
+        <option value="pending" <?php echo $status_filter == 'pending' ? 'selected' : ''; ?>>Chờ lấy hàng</option>
+        <option value="delivering" <?php echo $status_filter == 'delivering' ? 'selected' : ''; ?>>Đang giao hàng</option>
+        <option value="delivered" <?php echo $status_filter == 'delivered' ? 'selected' : ''; ?>>Đã giao thành công</option>
+        <option value="returning" <?php echo $status_filter == 'returning' ? 'selected' : ''; ?>>Đang hoàn hàng</option>
     </select>
 
     <select name="recon_status" class="v3-form-control">
-        <option value="all">Tráº¡ng thÃ¡i Äá»‘i soÃ¡t</option>
-        <option value="unreconciled" <?php echo $recon_filter == 'unreconciled' ? 'selected' : ''; ?>>ðŸ”´ ChÆ°a Ä‘á»‘i soÃ¡t (Äang ná»£ COD)</option>
-        <option value="reconciled" <?php echo $recon_filter == 'reconciled' ? 'selected' : ''; ?>>âœ… ÄÃ£ Ä‘á»‘i soÃ¡t (ÄÃ£ nháº­n tiá»n)</option>
+        <option value="all">Trạng thái Đối soát</option>
+        <option value="unreconciled" <?php echo $recon_filter == 'unreconciled' ? 'selected' : ''; ?>>🔴 Chưa đối soát (Đang nợ COD)</option>
+        <option value="reconciled" <?php echo $recon_filter == 'reconciled' ? 'selected' : ''; ?>>✅ Đã đối soát (Đã nhận tiền)</option>
     </select>
 
-    <button type="submit" class="btn-primary">Lá»c Váº­n Ä‘Æ¡n</button>
+    <button type="submit" class="btn-primary">Lọc Vận đơn</button>
 </form>
 
 <div id="bulk_bar" class="bulk-action-bar">
-    <span style="font-weight:600; color:#0056b3;">ÄÃ£ chá»n <span id="selected_count">0</span> váº­n Ä‘Æ¡n:</span>
-    <button class="btn-outline" onclick="openStatusModal()">ðŸ”„ Äá»•i tráº¡ng thÃ¡i</button>
-    <button class="btn-primary" style="background:#108043;" onclick="openReconModal()">ðŸ’° Thá»±c hiá»‡n Äá»‘i soÃ¡t (Thu tiá»n)</button>
-    <button class="btn-outline" onclick="alert('TÃ­nh nÄƒng In Phiáº¿u bÃ n giao Ä‘ang cáº­p nháº­t')">ðŸ–¨ï¸ In Phiáº¿u bÃ n giao</button>
+    <span style="font-weight:600; color:#0056b3;">Đã chọn <span id="selected_count">0</span> vận đơn:</span>
+    <button class="btn-outline" onclick="openStatusModal()">🔄 Đổi trạng thái</button>
+    <button class="btn-primary" style="background:#108043;" onclick="openReconModal()">💰 Thực hiện Đối soát (Thu tiền)</button>
+    <button class="btn-outline" onclick="alert('Tính năng In Phiếu bàn giao đang cập nhật')">🖨️ In Phiếu bàn giao</button>
 </div>
 
 <table class="v3-table">
     <thead>
         <tr>
             <th style="width:40px; text-align:center;"><input type="checkbox" id="check_all" onclick="toggleCheckAll()"></th>
-            <th>MÃ£ Váº­n ÄÆ¡n</th>
-            <th>MÃ£ ÄÆ¡n Há»‡ thá»‘ng / KhÃ¡ch hÃ ng</th>
-            <th>Äá»‘i tÃ¡c</th>
-            <th>Tráº¡ng thÃ¡i Giao / Äá»‘i soÃ¡t</th>
-            <th style="text-align:right;">Tiá»n COD</th>
-            <th style="text-align:right;">PhÃ­ Ship</th>
+            <th>Mã Vận Đơn</th>
+            <th>Mã Đơn Sapo / Khách hàng</th>
+            <th>Đối tác</th>
+            <th>Trạng thái Giao / Đối soát</th>
+            <th style="text-align:right;">Tiền COD</th>
+            <th style="text-align:right;">Phí Ship</th>
         </tr>
     </thead>
     <tbody>
         <?php if (empty($shipments)): ?>
             <tr>
-                <td colspan="7" style="text-align:center; padding:30px; color:#637381;">KhÃ´ng tÃ¬m tháº¥y váº­n Ä‘Æ¡n nÃ o phÃ¹ há»£p.</td>
+                <td colspan="7" style="text-align:center; padding:30px; color:#637381;">Không tìm thấy vận đơn nào phù hợp.</td>
             </tr>
         <?php else: ?>
             <?php foreach ($shipments as $s): ?>
@@ -205,22 +205,22 @@
                     <td style="text-align:center;"><input type="checkbox" class="row-checkbox" value="<?php echo $s['id']; ?>" onclick="updateBulkBar()"></td>
                     <td><b style="color:#0088ff;"><?php echo htmlspecialchars($s['tracking_code']); ?></b></td>
                     <td>
-                        <a href="index.php?action=view_order&id=<?php echo $s['order_id']; ?>" style="font-weight:bold; color:#212b36; text-decoration:none;">ðŸ“¦ <?php echo $s['order_code']; ?></a><br>
-                        <small style="color:#637381;">ðŸ‘¤ <?php echo htmlspecialchars($s['customer_name']); ?></small>
+                        <a href="index.php?action=view_order&id=<?php echo $s['order_id']; ?>" style="font-weight:bold; color:#212b36; text-decoration:none;">📦 <?php echo $s['order_code']; ?></a><br>
+                        <small style="color:#637381;">👤 <?php echo htmlspecialchars($s['customer_name']); ?></small>
                     </td>
                     <td><b style="text-transform:uppercase; color:#e67e22;"><?php echo $s['partner_code']; ?></b></td>
                     <td>
                         <?php
-                        if ($s['status'] == 'delivered') echo '<span class="badge badge-delivered">ÄÃ£ giao</span>';
-                        elseif ($s['status'] == 'delivering') echo '<span class="badge badge-delivering">Äang giao</span>';
-                        elseif ($s['status'] == 'returning') echo '<span class="badge badge-returning">Äang hoÃ n</span>';
+                        if ($s['status'] == 'delivered') echo '<span class="badge badge-delivered">Đã giao</span>';
+                        elseif ($s['status'] == 'delivering') echo '<span class="badge badge-delivering">Đang giao</span>';
+                        elseif ($s['status'] == 'returning') echo '<span class="badge badge-returning">Đang hoàn</span>';
                         else echo '<span class="badge" style="background:#f4f6f8; border:1px solid #c4cdd5;">' . $s['status'] . '</span>';
                         ?>
                         <br>
-                        <?php echo $s['recon_status'] == 'reconciled' ? '<span style="font-size:12px; color:#108043;">âœ… ÄÃ£ Ä.SoÃ¡t</span>' : '<span style="font-size:12px; color:#d82c0d;">ðŸ”´ ChÆ°a Ä.SoÃ¡t</span>'; ?>
+                        <?php echo $s['recon_status'] == 'reconciled' ? '<span style="font-size:12px; color:#108043;">✅ Đã Đ.Soát</span>' : '<span style="font-size:12px; color:#d82c0d;">🔴 Chưa Đ.Soát</span>'; ?>
                     </td>
-                    <td style="text-align:right; font-weight:bold; color:#0088ff;"><?php echo number_format($s['cod_amount'], 0, '', '.'); ?> Ä‘</td>
-                    <td style="text-align:right; color:#d82c0d;">- <?php echo number_format($s['shipping_fee'], 0, '', '.'); ?> Ä‘</td>
+                    <td style="text-align:right; font-weight:bold; color:#0088ff;"><?php echo number_format($s['cod_amount'], 0, '', '.'); ?> đ</td>
+                    <td style="text-align:right; color:#d82c0d;">- <?php echo number_format($s['shipping_fee'], 0, '', '.'); ?> đ</td>
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -229,22 +229,22 @@
 
 <div id="status_modal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0;">ðŸ”„ Cáº­p nháº­t tráº¡ng thÃ¡i thá»§ cÃ´ng</h3>
-        <p style="font-size:13px; color:#637381;">Ãp dá»¥ng cho cÃ¡c váº­n Ä‘Æ¡n Shipper ngoÃ i hoáº·c há»‡ thá»‘ng chÆ°a ká»‹p Ä‘á»“ng bá»™.</p>
+        <h3 style="margin-top:0;">🔄 Cập nhật trạng thái thủ công</h3>
+        <p style="font-size:13px; color:#637381;">Áp dụng cho các vận đơn Shipper ngoài hoặc hệ thống chưa kịp đồng bộ.</p>
         <form action="index.php?action=update_shipment_status" method="POST">
             <input type="hidden" name="shipment_ids" id="status_shipment_ids">
             <div class="form-group" style="margin-top:15px;">
-                <label>Tráº¡ng thÃ¡i má»›i</label>
+                <label>Trạng thái mới</label>
                 <select name="new_status" class="v3-form-control">
-                    <option value="delivering">ðŸšš Äang giao hÃ ng</option>
-                    <option value="delivered">âœ… ÄÃ£ giao thÃ nh cÃ´ng</option>
-                    <option value="returning">ðŸ”„ Äang hoÃ n hÃ ng</option>
-                    <option value="returned">ðŸ”™ ÄÃ£ hoÃ n kho</option>
+                    <option value="delivering">🚚 Đang giao hàng</option>
+                    <option value="delivered">✅ Đã giao thành công</option>
+                    <option value="returning">🔄 Đang hoàn hàng</option>
+                    <option value="returned">🔙 Đã hoàn kho</option>
                 </select>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button type="button" class="btn-outline" onclick="document.getElementById('status_modal').style.display='none'">Há»§y</button>
-                <button type="submit" class="btn-primary">LÆ°u Cáº­p Nháº­t</button>
+                <button type="button" class="btn-outline" onclick="document.getElementById('status_modal').style.display='none'">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu Cập Nhật</button>
             </div>
         </form>
     </div>
@@ -252,13 +252,13 @@
 
 <div id="recon_modal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:#108043;">ðŸ’° Ghi nháº­n Äá»‘i soÃ¡t (Thu tiá»n COD)</h3>
-        <p style="font-size:13px; color:#d82c0d; background:#ffe4e4; padding:10px; border-radius:4px;">âš ï¸ LÆ°u Ã½: Chá»‰ chá»n cÃ¡c Ä‘Æ¡n CÃ™NG Má»˜T HÃƒNG Váº¬N CHUYá»‚N vÃ  ÄÃƒ GIAO/HOÃ€N Ä‘á»ƒ trÃ¡nh lá»—i káº¿ toÃ¡n!</p>
+        <h3 style="margin-top:0; color:#108043;">💰 Ghi nhận Đối soát (Thu tiền COD)</h3>
+        <p style="font-size:13px; color:#d82c0d; background:#ffe4e4; padding:10px; border-radius:4px;">⚠️ Lưu ý: Chỉ chọn các đơn CÙNG MỘT HÃNG VẬN CHUYỂN và ĐÃ GIAO/HOÀN để tránh lỗi kế toán!</p>
         <form action="index.php?action=reconcile_shipments" method="POST">
             <input type="hidden" name="recon_shipment_ids" id="recon_shipment_ids">
 
             <div class="form-group" style="margin-top:15px;">
-                <label>Chi nhÃ¡nh ghi nháº­n Tiá»n vÃ o sá»• quá»¹ <span>*</span></label>
+                <label>Chi nhánh ghi nhận Tiền vào sổ quỹ <span>*</span></label>
                 <select name="recon_branch_id" class="v3-form-control" required>
                     <?php foreach ($branches as $b): ?>
                         <option value="<?php echo $b['id']; ?>"><?php echo htmlspecialchars($b['branch_name']); ?></option>
@@ -266,20 +266,20 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Ghi chÃº Ä‘á»‘i soÃ¡t</label>
-                <input type="text" name="recon_note" class="v3-form-control" placeholder="VD: Äá»‘i soÃ¡t GHN tuáº§n 1 thÃ¡ng 6">
+                <label>Ghi chú đối soát</label>
+                <input type="text" name="recon_note" class="v3-form-control" placeholder="VD: Đối soát GHN tuần 1 tháng 6">
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button type="button" class="btn-outline" onclick="document.getElementById('recon_modal').style.display='none'">Há»§y</button>
-                <button type="submit" class="btn-primary" style="background:#108043;">XÃ¡c nháº­n Táº¡o Phiáº¿u Äá»‘i SoÃ¡t</button>
+                <button type="button" class="btn-outline" onclick="document.getElementById('recon_modal').style.display='none'">Hủy</button>
+                <button type="submit" class="btn-primary" style="background:#108043;">Xác nhận Tạo Phiếu Đối Soát</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Logic Checkbox HÃ ng loáº¡t
+    // Logic Checkbox Hàng loạt
     function toggleCheckAll() {
         let isChecked = document.getElementById('check_all').checked;
         let checkboxes = document.querySelectorAll('.row-checkbox');
@@ -300,14 +300,14 @@
         }
     }
 
-    // Má»Ÿ Modal Tráº¡ng thÃ¡i
+    // Mở Modal Trạng thái
     function openStatusModal() {
         let ids = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value).join(',');
         document.getElementById('status_shipment_ids').value = ids;
         document.getElementById('status_modal').style.display = 'flex';
     }
 
-    // Má»Ÿ Modal Äá»‘i soÃ¡t
+    // Mở Modal Đối soát
     function openReconModal() {
         let ids = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value).join(',');
         document.getElementById('recon_shipment_ids').value = ids;
@@ -316,4 +316,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

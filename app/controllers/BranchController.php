@@ -1,17 +1,17 @@
-﻿<?php
-// ÄÆ°á»ng dáº«n: app/controllers/BranchController.php
+<?php
+// Đường dẫn: app/controllers/BranchController.php
 require_once __DIR__ . '/../../config/database.php';
 
 class BranchController
 {
-    // 1. GIAO DIá»†N DANH SÃCH CHI NHÃNH
+    // 1. GIAO DIỆN DANH SÁCH CHI NHÁNH
     public function index()
     {
         $db = (new Database())->getConnection();
         $stmt = $db->query("SELECT * FROM branches ORDER BY routing_priority ASC, is_default DESC, created_at ASC");
         $branches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Láº¥y danh sÃ¡ch chi nhÃ¡nh Ä‘ang hoáº¡t Ä‘á»™ng Ä‘á»ƒ lÃ m dropdown Chuyá»ƒn giao dá»¯ liá»‡u
+        // Lấy danh sách chi nhánh đang hoạt động để làm dropdown Chuyển giao dữ liệu
         $active_branches = array_filter($branches, function ($b) {
             return $b['status'] === 'active';
         });
@@ -19,7 +19,7 @@ class BranchController
         require_once __DIR__ . '/../views/settings/branch_list.php';
     }
 
-    // 2. LÆ¯U THÃŠM Má»šI HOáº¶C Cáº¬P NHáº¬T
+    // 2. LƯU THÊM MỚI HOẶC CẬP NHẬT
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,7 +27,7 @@ class BranchController
 
             $branch_name = trim($_POST['branch_name'] ?? '');
             $branch_code = trim($_POST['branch_code'] ?? '');
-            if (empty($branch_code)) $branch_code = 'CN' . date('YmdHis'); // Tá»± sinh mÃ£ náº¿u Ä‘á»ƒ trá»‘ng
+            if (empty($branch_code)) $branch_code = 'CN' . date('YmdHis'); // Tự sinh mã nếu để trống
 
             $phone = trim($_POST['phone'] ?? '');
             $email = trim($_POST['email'] ?? '');
@@ -45,15 +45,15 @@ class BranchController
 
             $db = (new Database())->getConnection();
 
-            // Náº¿u set lÃ m máº·c Ä‘á»‹nh, pháº£i gá»¡ máº·c Ä‘á»‹nh cá»§a cÃ¡c chi nhÃ¡nh khÃ¡c
+            // Nếu set làm mặc định, phải gỡ mặc định của các chi nhánh khác
             if ($is_default == 1) {
                 $db->query("UPDATE branches SET is_default = 0");
-                $has_inventory = 1; // Máº·c Ä‘á»‹nh báº¯t buá»™c pháº£i cÃ³ quáº£n lÃ½ kho
-                $is_pickup_location = 1; // Máº·c Ä‘á»‹nh báº¯t buá»™c lÃ  Ä‘iá»ƒm láº¥y hÃ ng
+                $has_inventory = 1; // Mặc định bắt buộc phải có quản lý kho
+                $is_pickup_location = 1; // Mặc định bắt buộc là điểm lấy hàng
             }
 
             if ($id > 0) {
-                // UPDATE (LÆ°u Ã½: KhÃ´ng cho sá»­a branch_code theo tÃ i liá»‡u Há»‡ thá»‘ng)
+                // UPDATE (Lưu ý: Không cho sửa branch_code theo tài liệu Sapo)
                 $stmt = $db->prepare("UPDATE branches SET branch_name=?, phone=?, email=?, country=?, province=?, district=?, ward=?, address_detail=?, is_new_address_format=?, has_inventory=?, is_default=?, is_pickup_location=? WHERE id=?");
                 $stmt->execute([$branch_name, $phone, $email, $country, $province, $district, $ward, $address_detail, $is_new_address_format, $has_inventory, $is_default, $is_pickup_location, $id]);
             } else {
@@ -67,7 +67,7 @@ class BranchController
         }
     }
 
-    // 3. Äá»”I TRáº NG THÃI (Ngá»«ng hoáº¡t Ä‘á»™ng / KÃ­ch hoáº¡t)
+    // 3. ĐỔI TRẠNG THÁI (Ngừng hoạt động / Kích hoạt)
     public function toggle_status()
     {
         $id = intval($_GET['id'] ?? 0);
@@ -78,7 +78,7 @@ class BranchController
         header("Location: index.php?action=branch_list&success=1");
     }
 
-    // 4. CHUYá»‚N GIAO GIAO Dá»ŠCH & XÃ“A KHO CHI NHÃNH ÄÃ“NG Cá»¬A
+    // 4. CHUYỂN GIAO GIAO DỊCH & XÓA KHO CHI NHÁNH ĐÓNG CỬA
     public function transfer_and_delete()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -89,25 +89,25 @@ class BranchController
             try {
                 $db->beginTransaction();
 
-                // Chuyá»ƒn ÄÆ¡n hÃ ng chÆ°a giao xong sang chi nhÃ¡nh má»›i
+                // Chuyển Đơn hàng chưa giao xong sang chi nhánh mới
                 $db->prepare("UPDATE orders SET branch_id = ? WHERE branch_id = ? AND shipping_status != 'delivered'")->execute([$to_branch_id, $from_branch_id]);
 
-                // Chuyá»ƒn Phiáº¿u thu / chi liÃªn quan sang chi nhÃ¡nh má»›i
+                // Chuyển Phiếu thu / chi liên quan sang chi nhánh mới
                 $db->prepare("UPDATE receipts SET branch_id = ? WHERE branch_id = ?")->execute([$to_branch_id, $from_branch_id]);
                 $db->prepare("UPDATE expenses SET branch_id = ? WHERE branch_id = ?")->execute([$to_branch_id, $from_branch_id]);
 
-                // XÃ³a cá» quáº£n lÃ½ kho cá»§a chi nhÃ¡nh cÅ©
+                // Xóa cờ quản lý kho của chi nhánh cũ
                 $db->prepare("UPDATE branches SET has_inventory = 0 WHERE id = ?")->execute([$from_branch_id]);
 
                 $db->commit();
                 header("Location: index.php?action=branch_list&success_transfer=1");
             } catch (Exception $e) {
                 $db->rollBack();
-                die("Lá»—i há»‡ thá»‘ng khi chuyá»ƒn giao dá»¯ liá»‡u: " . $e->getMessage());
+                die("Lỗi hệ thống khi chuyển giao dữ liệu: " . $e->getMessage());
             }
         }
     }
-    // 5. Cáº¬P NHáº¬T THá»¨ Tá»° Æ¯U TIÃŠN NHáº¬N ÄÆ N ONLINE (KÃ‰O THáº¢)
+    // 5. CẬP NHẬT THỨ TỰ ƯU TIÊN NHẬN ĐƠN ONLINE (KÉO THẢ)
     public function update_priority()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -116,20 +116,19 @@ class BranchController
                 $db = (new Database())->getConnection();
                 try {
                     $db->beginTransaction();
-                    // LÆ°u thá»© tá»± 1, 2, 3... dá»±a trÃªn máº£ng gá»­i lÃªn tá»« Javascript
+                    // Lưu thứ tự 1, 2, 3... dựa trên mảng gửi lên từ Javascript
                     foreach ($data['priorities'] as $index => $id) {
                         $stmt = $db->prepare("UPDATE branches SET routing_priority = ? WHERE id = ?");
                         $stmt->execute([$index + 1, $id]);
                     }
                     $db->commit();
-                    echo json_encode(['status' => 'success', 'msg' => 'ÄÃ£ lÆ°u cáº¥u hÃ¬nh Æ°u tiÃªn nháº­n Ä‘Æ¡n Online!']);
+                    echo json_encode(['status' => 'success', 'msg' => 'Đã lưu cấu hình ưu tiên nhận đơn Online!']);
                 } catch (Exception $e) {
                     $db->rollBack();
-                    echo json_encode(['status' => 'error', 'msg' => 'Lá»—i: ' . $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'msg' => 'Lỗi: ' . $e->getMessage()]);
                 }
             }
             exit;
         }
     }
 }
-

@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 
 /** @var array $price_lists */
 require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <style>
-    /* ÄÃ£ thÃªm tiá»n tá»‘ v3- vÃ  !important Ä‘á»ƒ chá»‘ng xung Ä‘á»™t vá»›i Template Admin cÅ© */
+    /* Đã thêm tiền tố v3- và !important để chống xung đột với Template Admin cũ */
     .v3-header {
         display: flex;
         justify-content: space-between;
@@ -83,7 +83,7 @@ require_once __DIR__ . '/../layout/header.php';
         border-color: #0088ff;
     }
 
-    /* NhÃ£n lá»c Há»‡ thá»‘ng */
+    /* Nhãn lọc Sapo */
     .v3-filter-tag {
         background: #e5f0ff;
         color: #0088ff;
@@ -107,7 +107,7 @@ require_once __DIR__ . '/../layout/header.php';
         color: #d82c0d;
     }
 
-    /* Table Listing (ÄÃ£ bá»c khung cuá»™n ngang chá»‘ng bÃ³p ngháº¹t) */
+    /* Table Listing (Đã bọc khung cuộn ngang chống bóp nghẹt) */
     .v3-table-wrapper {
         width: 100%;
         overflow-x: auto;
@@ -180,29 +180,29 @@ require_once __DIR__ . '/../layout/header.php';
 </style>
 
 <div class="v3-header">
-    <div class="v3-title">Danh sÃ¡ch báº£ng giÃ¡ sáº£n pháº©m</div>
-    <a href="index.php?action=add_price_list" class="v3-btn-primary">+ Táº¡o báº£ng giÃ¡ má»›i</a>
+    <div class="v3-title">Danh sách bảng giá sản phẩm</div>
+    <a href="index.php?action=add_price_list" class="v3-btn-primary">+ Tạo bảng giá mới</a>
 </div>
 
 <?php if (isset($_GET['success']) && $_GET['success'] == 'items_saved'): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-size:14px;">âœ… ÄÃ£ cáº¥u hÃ¬nh vÃ  lÆ°u danh sÃ¡ch sáº£n pháº©m Ã¡p dá»¥ng báº£ng giÃ¡ thÃ nh cÃ´ng!</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-size:14px;">✅ Đã cấu hình và lưu danh sách sản phẩm áp dụng bảng giá thành công!</div>
 <?php endif; ?>
 
 <div class="v3-card">
     <div class="v3-tabs-bar">
-        <div class="v3-tab-item active" onclick="filterByTab('all', this)">Táº¥t cáº£ báº£ng giÃ¡</div>
-        <div class="v3-tab-item" onclick="filterByTab('customer_group', this)">Theo nhÃ³m khÃ¡ch hÃ ng</div>
-        <div class="v3-tab-item" onclick="filterByTab('branch', this)">Theo chi nhÃ¡nh</div>
-        <div class="v3-tab-item" onclick="filterByTab('channel', this)">Theo kÃªnh bÃ¡n hÃ ng</div>
+        <div class="v3-tab-item active" onclick="filterByTab('all', this)">Tất cả bảng giá</div>
+        <div class="v3-tab-item" onclick="filterByTab('customer_group', this)">Theo nhóm khách hàng</div>
+        <div class="v3-tab-item" onclick="filterByTab('branch', this)">Theo chi nhánh</div>
+        <div class="v3-tab-item" onclick="filterByTab('channel', this)">Theo kênh bán hàng</div>
     </div>
 
     <div class="v3-filter-bar">
-        <input type="text" id="search_input" class="v3-form-control" style="width: 280px;" placeholder="TÃ¬m theo mÃ£ hoáº·c tÃªn báº£ng giÃ¡..." oninput="applyFilters()">
+        <input type="text" id="search_input" class="v3-form-control" style="width: 280px;" placeholder="Tìm theo mã hoặc tên bảng giá..." oninput="applyFilters()">
 
         <select id="filter_status" class="v3-form-control" style="width: 180px;" onchange="applyFilters()">
-            <option value="">-- Táº¥t cáº£ tráº¡ng thÃ¡i --</option>
-            <option value="active">Äang Ã¡p dá»¥ng</option>
-            <option value="draft">Ngá»«ng Ã¡p dá»¥ng / NhÃ¡p</option>
+            <option value="">-- Tất cả trạng thái --</option>
+            <option value="active">Đang áp dụng</option>
+            <option value="draft">Ngừng áp dụng / Nháp</option>
         </select>
 
         <div id="filter_tags_box" style="display: flex; gap: 10px; align-items: center; margin-left: 10px;"></div>
@@ -212,26 +212,26 @@ require_once __DIR__ . '/../layout/header.php';
         <table class="v3-table">
             <thead>
                 <tr>
-                    <th style="width: 12%;">MÃ£ báº£ng giÃ¡</th>
-                    <th style="width: 30%;">TÃªn báº£ng giÃ¡</th>
-                    <th style="width: 23%;">Loáº¡i báº£ng giÃ¡</th>
-                    <th style="width: 20%;">Má»©c Ä‘iá»u chá»‰nh giÃ¡</th>
-                    <th style="width: 15%;">Tráº¡ng thÃ¡i</th>
+                    <th style="width: 12%;">Mã bảng giá</th>
+                    <th style="width: 30%;">Tên bảng giá</th>
+                    <th style="width: 23%;">Loại bảng giá</th>
+                    <th style="width: 20%;">Mức điều chỉnh giá</th>
+                    <th style="width: 15%;">Trạng thái</th>
                 </tr>
             </thead>
             <tbody id="price_list_tbody">
                 <?php if (empty($price_lists)): ?>
                     <tr>
-                        <td colspan="5" style="text-align:center; color:#8c98a4; padding:30px;">Há»‡ thá»‘ng chÆ°a ghi nháº­n báº£ng giÃ¡ nÃ o.</td>
+                        <td colspan="5" style="text-align:center; color:#8c98a4; padding:30px;">Hệ thống chưa ghi nhận bảng giá nào.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($price_lists as $pl): ?>
                         <?php
-                        $type_text = 'Theo kÃªnh bÃ¡n hÃ ng';
-                        if ($pl['target_type'] == 'customer_group') $type_text = 'Theo nhÃ³m khÃ¡ch hÃ ng';
-                        if ($pl['target_type'] == 'branch') $type_text = 'Theo chi nhÃ¡nh';
+                        $type_text = 'Theo kênh bán hàng';
+                        if ($pl['target_type'] == 'customer_group') $type_text = 'Theo nhóm khách hàng';
+                        if ($pl['target_type'] == 'branch') $type_text = 'Theo chi nhánh';
 
-                        $adj_text = ($pl['adjustment_type'] == 'increase' ? 'TÄƒng: +' : 'Giáº£m: -') . $pl['adjustment_value'] . '%';
+                        $adj_text = ($pl['adjustment_type'] == 'increase' ? 'Tăng: +' : 'Giảm: -') . $pl['adjustment_value'] . '%';
                         $adj_color = ($pl['adjustment_type'] == 'increase' ? '#d82c0d' : '#108043');
                         ?>
                         <tr class="pl-row" style="cursor: pointer;" onclick="window.location.href='index.php?action=price_list_detail&id=<?php echo $pl['id']; ?>'"
@@ -246,7 +246,7 @@ require_once __DIR__ . '/../layout/header.php';
                             <td style="font-weight: 600; color: <?php echo $adj_color; ?>;"><?php echo $adj_text; ?></td>
                             <td>
                                 <span class="v3-badge <?php echo $pl['status'] == 'active' ? 'v3-status-active' : 'v3-status-draft'; ?>">
-                                    <?php echo $pl['status'] == 'active' ? 'Äang Ã¡p dá»¥ng' : 'Ngá»«ng Ã¡p dá»¥ng'; ?>
+                                    <?php echo $pl['status'] == 'active' ? 'Đang áp dụng' : 'Ngừng áp dụng'; ?>
                                 </span>
                             </td>
                         </tr>
@@ -275,8 +275,8 @@ require_once __DIR__ . '/../layout/header.php';
         tagsBox.innerHTML = '';
 
         if (status) {
-            let statusText = status === 'active' ? 'Äang Ã¡p dá»¥ng' : 'Ngá»«ng Ã¡p dá»¥ng';
-            tagsBox.innerHTML = `<div class="v3-filter-tag">Tráº¡ng thÃ¡i: ${statusText} <span onclick="clearStatusFilter()">Ã—</span></div>`;
+            let statusText = status === 'active' ? 'Đang áp dụng' : 'Ngừng áp dụng';
+            tagsBox.innerHTML = `<div class="v3-filter-tag">Trạng thái: ${statusText} <span onclick="clearStatusFilter()">×</span></div>`;
         }
 
         document.querySelectorAll('.pl-row').forEach(row => {
@@ -299,4 +299,3 @@ require_once __DIR__ . '/../layout/header.php';
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

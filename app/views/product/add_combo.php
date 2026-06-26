@@ -1,9 +1,9 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php
-/** @var array $baseProducts Khai bÃ¡o áº©n Ä‘á»ƒ mÃ¡ch cho VS Code biáº¿t biáº¿n nÃ y tá»“n táº¡i */
+/** @var array $baseProducts Khai báo ẩn để mách cho VS Code biết biến này tồn tại */
 ?>
 <style>
-    .Há»‡ thá»‘ng-header-bar {
+    .sapo-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -31,34 +31,34 @@
         margin-left: 10px;
     }
 
-    .Há»‡ thá»‘ng-grid {
+    .sapo-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .Há»‡ thá»‘ng-col-left {
+    .sapo-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .Há»‡ thá»‘ng-col-right {
+    .sapo-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .Há»‡ thá»‘ng-card {
+    .sapo-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .Há»‡ thá»‘ng-card-title {
+    .sapo-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -129,37 +129,37 @@
 </style>
 
 <form action="index.php?action=add_combo" method="POST" enctype="multipart/form-data">
-    <div class="Há»‡ thá»‘ng-header-bar">
-        <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_list" style="color:#637381; text-decoration:none; margin-right: 10px;">â†</a> ThÃªm sáº£n pháº©m Combo</h2>
+    <div class="sapo-header-bar">
+        <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_list" style="color:#637381; text-decoration:none; margin-right: 10px;">←</a> Thêm sản phẩm Combo</h2>
         <div>
-            <a href="index.php?action=product_list" class="btn-cancel">Há»§y</a>
-            <button type="submit" class="btn-save">LÆ°u sáº£n pháº©m</button>
+            <a href="index.php?action=product_list" class="btn-cancel">Hủy</a>
+            <button type="submit" class="btn-save">Lưu sản phẩm</button>
         </div>
     </div>
 
-    <div class="Há»‡ thá»‘ng-grid">
-        <div class="Há»‡ thá»‘ng-col-left">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin chung</div>
-                <div class="form-group"><label>TÃªn sáº£n pháº©m *</label><input type="text" name="product_name" class="form-control" required></div>
+    <div class="sapo-grid">
+        <div class="sapo-col-left">
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thông tin chung</div>
+                <div class="form-group"><label>Tên sản phẩm *</label><input type="text" name="product_name" class="form-control" required></div>
                 <div class="row-flex">
-                    <div class="form-group"><label>MÃ£ SKU</label><input type="text" name="sku" class="form-control"></div>
-                    <div class="form-group"><label>MÃ£ váº¡ch / Barcode</label><input type="text" name="barcode" class="form-control"></div>
+                    <div class="form-group"><label>Mã SKU</label><input type="text" name="sku" class="form-control"></div>
+                    <div class="form-group"><label>Mã vạch / Barcode</label><input type="text" name="barcode" class="form-control"></div>
                 </div>
-                <div class="form-group" style="width: 48%;"><label>ÄÆ¡n vá»‹ tÃ­nh</label><input type="text" name="unit" class="form-control" value="Combo"></div>
-                <div class="form-group"><label>MÃ´ táº£</label><textarea class="form-control" name="description" rows="3"></textarea></div>
+                <div class="form-group" style="width: 48%;"><label>Đơn vị tính</label><input type="text" name="unit" class="form-control" value="Combo"></div>
+                <div class="form-group"><label>Mô tả</label><textarea class="form-control" name="description" rows="3"></textarea></div>
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ nh pháº§n Combo</div>
-                <p style="font-size: 14px; color: #637381; margin-bottom: 10px;">Sá»‘ lÆ°á»£ng thÃ nh pháº§n khÃ´ng Ä‘Æ°á»£c phÃ©p láº» hoáº·c nhá» hÆ¡n 1.</p>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thành phần Combo</div>
+                <p style="font-size: 14px; color: #637381; margin-bottom: 10px;">Số lượng thành phần không được phép lẻ hoặc nhỏ hơn 1.</p>
 
                 <table class="table-combo" id="comboTable">
                     <thead>
                         <tr>
-                            <th>Sáº£n pháº©m thÃ nh pháº§n</th>
-                            <th style="width: 150px;">Sá»‘ lÆ°á»£ng</th>
-                            <th style="width: 150px;">ÄÆ¡n giÃ¡</th>
+                            <th>Sản phẩm thành phần</th>
+                            <th style="width: 150px;">Số lượng</th>
+                            <th style="width: 150px;">Đơn giá</th>
                             <th style="width: 50px;"></th>
                         </tr>
                     </thead>
@@ -167,50 +167,50 @@
                         <tr class="item-row">
                             <td>
                                 <select name="component_id[]" class="form-control prod-select" onchange="calcPrice()" required>
-                                    <option value="">-- TÃ¬m kiáº¿m sáº£n pháº©m --</option>
+                                    <option value="">-- Tìm kiếm sản phẩm --</option>
                                     <?php foreach ($baseProducts as $p): ?>
                                         <option value="<?php echo $p['id']; ?>" data-price="<?php echo $p['base_price']; ?>">
-                                            <?php echo htmlspecialchars($p['product_name']); ?> (Tá»“n: <?php echo $p['stock']; ?>)
+                                            <?php echo htmlspecialchars($p['product_name']); ?> (Tồn: <?php echo $p['stock']; ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>
                             <td><input type="number" name="component_qty[]" class="form-control qty-input" value="1" min="1" required oninput="calcPrice()"></td>
-                            <td class="row-price" style="padding-top: 15px;">0 â‚«</td>
-                            <td style="padding-top: 15px;"><a href="javascript:void(0)" onclick="this.closest('tr').remove(); calcPrice();" style="color: red; text-decoration: none;">âœ–</a></td>
+                            <td class="row-price" style="padding-top: 15px;">0 ₫</td>
+                            <td style="padding-top: 15px;"><a href="javascript:void(0)" onclick="this.closest('tr').remove(); calcPrice();" style="color: red; text-decoration: none;">✖</a></td>
                         </tr>
                     </tbody>
                 </table>
-                <button type="button" onclick="addRow()" style="background: #e6f7ff; color: #0088ff; border: 1px dashed #0088ff; padding: 8px 15px; border-radius: 4px; margin-top: 15px; cursor: pointer; width: 100%;">+ ThÃªm sáº£n pháº©m vÃ o combo</button>
+                <button type="button" onclick="addRow()" style="background: #e6f7ff; color: #0088ff; border: 1px dashed #0088ff; padding: 8px 15px; border-radius: 4px; margin-top: 15px; cursor: pointer; width: 100%;">+ Thêm sản phẩm vào combo</button>
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin giÃ¡</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Thông tin giá</div>
                 <div class="row-flex">
-                    <div class="form-group"><label>GiÃ¡ bÃ¡n (â‚«)</label><input type="number" name="base_price" id="total_combo_price" class="form-control" value="0"></div>
-                    <div class="form-group"><label>GiÃ¡ so sÃ¡nh (â‚«)</label><input type="number" name="compare_price" class="form-control" value="0"></div>
+                    <div class="form-group"><label>Giá bán (₫)</label><input type="number" name="base_price" id="total_combo_price" class="form-control" value="0"></div>
+                    <div class="form-group"><label>Giá so sánh (₫)</label><input type="number" name="compare_price" class="form-control" value="0"></div>
                 </div>
-                <p style="font-size: 13px; color: #637381;">Há»‡ thá»‘ng tá»± Ä‘á»™ng tÃ­nh giÃ¡ gá»£i Ã½ dá»±a trÃªn tá»•ng giÃ¡ cÃ¡c sáº£n pháº©m thÃ nh pháº§n. Báº¡n cÃ³ thá»ƒ tá»± sá»­a láº¡i giÃ¡ bÃ¡n Ä‘á»ƒ lÃ m khuyáº¿n mÃ£i.</p>
+                <p style="font-size: 13px; color: #637381;">Hệ thống tự động tính giá gợi ý dựa trên tổng giá các sản phẩm thành phần. Bạn có thể tự sửa lại giá bán để làm khuyến mãi.</p>
             </div>
         </div>
 
-        <div class="Há»‡ thá»‘ng-col-right">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">áº¢nh sáº£n pháº©m Combo</div>
+        <div class="sapo-col-right">
+            <div class="sapo-card">
+                <div class="sapo-card-title">Ảnh sản phẩm Combo</div>
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
                     <div id="upload-placeholder">
                         <div style="font-size: 24px; color: #0088ff;">+</div>
-                        <div style="font-size: 14px;">ThÃªm áº£nh tá»« thiáº¿t bá»‹</div>
+                        <div style="font-size: 14px;">Thêm ảnh từ thiết bị</div>
                     </div>
                     <img id="image-preview" src="" style="display: none; max-width: 100%; max-height: 200px; margin: 0 auto; border-radius: 6px; object-fit: cover;">
                 </div>
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">PhÃ¢n loáº¡i</div>
-                <div class="form-group"><label>Danh má»¥c</label><input type="text" name="category" class="form-control"></div>
-                <div class="form-group"><label>NhÃ£n hiá»‡u</label><input type="text" name="brand" class="form-control"></div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">Phân loại</div>
+                <div class="form-group"><label>Danh mục</label><input type="text" name="category" class="form-control"></div>
+                <div class="form-group"><label>Nhãn hiệu</label><input type="text" name="brand" class="form-control"></div>
                 <div class="form-group"><label>Tag</label><input type="text" name="tags" class="form-control"></div>
             </div>
         </div>
@@ -236,7 +236,7 @@
                 let price = selectBox.options[selectBox.selectedIndex].getAttribute('data-price');
                 let qty = row.querySelector('.qty-input').value || 0;
                 let subTotal = parseFloat(price) * parseInt(qty);
-                row.querySelector('.row-price').innerText = subTotal.toLocaleString() + ' â‚«';
+                row.querySelector('.row-price').innerText = subTotal.toLocaleString() + ' ₫';
                 total += subTotal;
             }
         });
@@ -253,4 +253,3 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

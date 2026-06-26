@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 /** @var array $price_list */
 /** @var array $products */
 /** @var array $existing_items */
 require_once __DIR__ . '/../layout/header.php';
 
-// Xá»­ lÃ½ hiá»ƒn thá»‹ Text quy táº¯c
-$rule_text = ($price_list['adjustment_type'] == 'increase' ? 'TÄƒng giÃ¡' : 'Giáº£m giÃ¡') . ' ' . $price_list['adjustment_value'] . '%';
+// Xử lý hiển thị Text quy tắc
+$rule_text = ($price_list['adjustment_type'] == 'increase' ? 'Tăng giá' : 'Giảm giá') . ' ' . $price_list['adjustment_value'] . '%';
 $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#108043');
 ?>
 
@@ -97,24 +97,24 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
 
 <div class="v3-header">
     <div class="v3-title">
-        <a href="index.php?action=product_price" style="text-decoration:none; color:#637381;">â†</a>
-        Chá»n sáº£n pháº©m Ã¡p dá»¥ng báº£ng giÃ¡
+        <a href="index.php?action=product_price" style="text-decoration:none; color:#637381;">←</a>
+        Chọn sản phẩm áp dụng bảng giá
     </div>
-    <button type="button" class="btn-primary" onclick="document.getElementById('frm_items').submit()">ðŸ’¾ LÆ°u cáº¥u hÃ¬nh báº£ng giÃ¡</button>
+    <button type="button" class="btn-primary" onclick="document.getElementById('frm_items').submit()">💾 Lưu cấu hình bảng giá</button>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-size:14px;">âœ… ÄÃ£ táº¡o báº£ng giÃ¡ thÃ nh cÃ´ng! Vui lÃ²ng chá»n sáº£n pháº©m Ä‘á»ƒ Ã¡p dá»¥ng.</div>
+    <div style="background:#eafff0; color:#108043; padding:12px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-size:14px;">✅ Đã tạo bảng giá thành công! Vui lòng chọn sản phẩm để áp dụng.</div>
 <?php endif; ?>
 
 <div class="v3-card">
     <div class="info-bar">
         <div>
-            <div style="font-size: 13px; color: #637381;">TÃªn báº£ng giÃ¡ Ä‘ang cáº¥u hÃ¬nh:</div>
+            <div style="font-size: 13px; color: #637381;">Tên bảng giá đang cấu hình:</div>
             <div style="font-weight: bold; font-size: 16px; margin-top: 5px; color: #212b36;"><?php echo htmlspecialchars($price_list['name']); ?></div>
         </div>
         <div style="text-align: right;">
-            <div style="font-size: 13px; color: #637381;">Quy táº¯c Ã¡p dá»¥ng:</div>
+            <div style="font-size: 13px; color: #637381;">Quy tắc áp dụng:</div>
             <div style="font-weight: bold; font-size: 16px; margin-top: 5px; color: <?php echo $rule_color; ?>;">
                 <?php echo $rule_text; ?>
             </div>
@@ -128,16 +128,16 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
             <thead>
                 <tr>
                     <th style="width: 5%; text-align: center;"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
-                    <th style="width: 45%;">Sáº£n pháº©m</th>
-                    <th style="width: 15%; text-align: right;">GiÃ¡ bÃ¡n láº» (Gá»‘c)</th>
-                    <th style="width: 20%; text-align: center;">Má»©c Ä‘iá»u chá»‰nh</th>
-                    <th style="width: 15%; text-align: right;">GiÃ¡ má»›i Ã¡p dá»¥ng</th>
+                    <th style="width: 45%;">Sản phẩm</th>
+                    <th style="width: 15%; text-align: right;">Giá bán lẻ (Gốc)</th>
+                    <th style="width: 20%; text-align: center;">Mức điều chỉnh</th>
+                    <th style="width: 15%; text-align: right;">Giá mới áp dụng</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($products)): ?>
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 30px; color: #8c98a4;">ChÆ°a cÃ³ sáº£n pháº©m nÃ o trong há»‡ thá»‘ng.</td>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: #8c98a4;">Chưa có sản phẩm nào trong hệ thống.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($products as $p): ?>
@@ -145,7 +145,7 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
                         $is_checked = in_array($p['id'], $existing_items) ? 'checked' : '';
                         $base_price = $p['base_price'];
 
-                        // Tá»± Ä‘á»™ng tÃ­nh toÃ¡n giÃ¡ má»›i (LÃ m trÃ²n sá»‘ nguyÃªn theo tÃ i liá»‡u Há»‡ thá»‘ng)
+                        // Tự động tính toán giá mới (Làm tròn số nguyên theo tài liệu Sapo)
                         $adj_val = $price_list['adjustment_value'];
                         if ($price_list['adjustment_type'] == 'increase') {
                             $custom_price = round($base_price * (1 + ($adj_val / 100)));
@@ -162,13 +162,13 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
                                 <div class="item-sku">SKU: <?php echo $p['sku']; ?></div>
                             </td>
                             <td style="text-align: right; color: #637381; text-decoration: line-through;">
-                                <?php echo number_format($base_price, 0, ',', '.'); ?> â‚«
+                                <?php echo number_format($base_price, 0, ',', '.'); ?> ₫
                             </td>
                             <td style="text-align: center; font-weight: 500; color: <?php echo $rule_color; ?>;">
                                 <?php echo $rule_text; ?>
                             </td>
                             <td style="text-align: right; font-weight: bold; color: #0088ff; font-size: 15px;">
-                                <?php echo number_format($custom_price, 0, ',', '.'); ?> â‚«
+                                <?php echo number_format($custom_price, 0, ',', '.'); ?> ₫
                                 <input type="hidden" name="custom_prices[<?php echo $p['id']; ?>]" value="<?php echo $custom_price; ?>">
                             </td>
                         </tr>
@@ -188,4 +188,3 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-

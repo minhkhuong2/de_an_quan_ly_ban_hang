@@ -1,8 +1,8 @@
-﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $supplier */ ?>
 
 <style>
-    .Há»‡ thá»‘ng-card {
+    .sapo-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -10,7 +10,7 @@
         margin-bottom: 20px;
     }
 
-    .Há»‡ thá»‘ng-card-title {
+    .sapo-card-title {
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 20px;
@@ -59,8 +59,8 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <h2 style="font-size: 22px; font-weight: bold; color: #212b36;">
-        <a href="index.php?action=supplier_list" style="text-decoration:none; color:#637381; margin-right: 10px;">â†</a>
-        Cáº­p nháº­t nhÃ  cung cáº¥p: <span style="color: #0088ff;"><?php echo htmlspecialchars($supplier['supplier_code']); ?></span>
+        <a href="index.php?action=supplier_list" style="text-decoration:none; color:#637381; margin-right: 10px;">←</a>
+        Cập nhật nhà cung cấp: <span style="color: #0088ff;"><?php echo htmlspecialchars($supplier['supplier_code']); ?></span>
     </h2>
 </div>
 
@@ -68,20 +68,20 @@
     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
 
         <div style="flex: 1 1 65%; min-width: 600px;">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ðŸ“ ThÃ´ng tin chung</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">📝 Thông tin chung</div>
                 <div class="form-group">
-                    <label>TÃªn nhÃ  cung cáº¥p <span style="color:red;">*</span></label>
+                    <label>Tên nhà cung cấp <span style="color:red;">*</span></label>
                     <input type="text" name="supplier_name" class="form-control" value="<?php echo htmlspecialchars($supplier['supplier_name']); ?>" required>
                 </div>
 
                 <div class="row-2-cols">
                     <div class="form-group">
-                        <label>MÃ£ nhÃ  cung cáº¥p</label>
+                        <label>Mã nhà cung cấp</label>
                         <input type="text" name="supplier_code" class="form-control" value="<?php echo htmlspecialchars($supplier['supplier_code']); ?>">
                     </div>
                     <div class="form-group">
-                        <label>Sá»‘ Ä‘iá»‡n thoáº¡i</label>
+                        <label>Số điện thoại</label>
                         <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($supplier['phone']); ?>">
                     </div>
                 </div>
@@ -92,39 +92,39 @@
                         <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($supplier['email']); ?>">
                     </div>
                     <div class="form-group">
-                        <label>MÃ£ sá»‘ thuáº¿</label>
+                        <label>Mã số thuế</label>
                         <input type="text" name="tax_code" class="form-control" value="<?php echo htmlspecialchars($supplier['tax_code']); ?>">
                     </div>
                 </div>
             </div>
 
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">ðŸ“ ThÃ´ng tin Ä‘á»‹a chá»‰</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">📍 Thông tin địa chỉ</div>
                 <div class="form-group">
-                    <label>Äá»‹a chá»‰ cá»¥ thá»ƒ</label>
+                    <label>Địa chỉ cụ thể</label>
                     <textarea name="address" class="form-control" rows="3"><?php echo htmlspecialchars($supplier['address']); ?></textarea>
                 </div>
             </div>
         </div>
 
         <div style="flex: 1 1 30%; min-width: 300px;">
-            <div class="Há»‡ thá»‘ng-card">
-                <div class="Há»‡ thá»‘ng-card-title">âš™ï¸ ThÃ´ng tin khÃ¡c</div>
+            <div class="sapo-card">
+                <div class="sapo-card-title">⚙️ Thông tin khác</div>
                 <div class="form-group">
-                    <label>NhÃ³m nhÃ  cung cáº¥p</label>
+                    <label>Nhóm nhà cung cấp</label>
                     <select class="form-control">
-                        <option>BÃ¡n buÃ´n</option>
-                        <option>Äáº¡i lÃ½</option>
+                        <option>Bán buôn</option>
+                        <option>Đại lý</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>NhÃ¢n viÃªn phá»¥ trÃ¡ch</label>
+                    <label>Nhân viên phụ trách</label>
                     <input type="text" name="employee" class="form-control" value="<?php echo htmlspecialchars($_SESSION['user']['full_name'] ?? 'Admin'); ?>" readonly style="background:#f4f6f8; cursor:not-allowed; color:#0088ff; font-weight:bold;">
                 </div>
 
                 <div class="form-group">
-                    <label>Ghi chÃº</label>
+                    <label>Ghi chú</label>
                     <textarea class="form-control" rows="4"></textarea>
                 </div>
             </div>
@@ -132,10 +132,9 @@
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid #dfe3e8; padding-top: 20px; padding-bottom: 40px;">
-        <button type="button" style="padding: 10px 20px; border-radius: 4px; border: 1px solid #c4cdd5; background: #fff; cursor: pointer; font-weight:500;" onclick="window.location.href='index.php?action=supplier_list'">Há»§y bá»</button>
-        <button type="submit" style="padding: 10px 20px; border-radius: 4px; border: none; background: #0088ff; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,136,255,0.2);">ðŸ’¾ LÆ°u thay Ä‘á»•i</button>
+        <button type="button" style="padding: 10px 20px; border-radius: 4px; border: 1px solid #c4cdd5; background: #fff; cursor: pointer; font-weight:500;" onclick="window.location.href='index.php?action=supplier_list'">Hủy bỏ</button>
+        <button type="submit" style="padding: 10px 20px; border-radius: 4px; border: none; background: #0088ff; color: #fff; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,136,255,0.2);">💾 Lưu thay đổi</button>
     </div>
 </form>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
-
