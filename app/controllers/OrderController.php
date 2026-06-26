@@ -47,8 +47,13 @@ class OrderController
         $db = (new Database())->getConnection();
 
         // 1. LẤY CẤU HÌNH HỆ THỐNG ĐỂ FIX LỖI UNDEFINED VARIABLE
-        $stmt_set = $db->query("SELECT setting_key, setting_value FROM settings");
-        $settings_db = $stmt_set->fetchAll(PDO::FETCH_KEY_PAIR);
+        $settings_db = [];
+        try {
+            $stmt_set = $db->query("SELECT setting_key, setting_value FROM settings");
+            $settings_db = $stmt_set->fetchAll(PDO::FETCH_KEY_PAIR);
+        } catch (PDOException $e) {
+            // Bỏ qua lỗi nếu bảng settings không có cấu trúc key-value
+        }
 
         // Nếu DB chưa có cấu hình (đề phòng chạy mới), ta gán giá trị mặc định để không bao giờ lỗi
         if (empty($settings_db)) {

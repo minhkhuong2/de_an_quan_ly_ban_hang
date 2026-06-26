@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 24, 2026 lúc 08:42 PM
+-- Thời gian đã tạo: Th6 25, 2026 lúc 09:16 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -245,6 +245,22 @@ INSERT INTO `expenses` (`id`, `expense_code`, `payment_method`, `recipient_group
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `e_invoices`
+--
+
+CREATE TABLE `e_invoices` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `invoice_number` varchar(50) NOT NULL COMMENT 'Số hóa đơn (Tự tăng)',
+  `invoice_symbol` varchar(20) NOT NULL COMMENT 'Ký hiệu HĐ (VD: 1C26TAA)',
+  `cqt_code` varchar(100) DEFAULT NULL COMMENT 'Mã tra cứu Cơ quan Thuế (Giả lập)',
+  `status` enum('draft','issued') DEFAULT 'issued',
+  `issued_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `fund_transfers`
 --
 
@@ -356,6 +372,9 @@ CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `order_code` varchar(50) DEFAULT NULL,
   `customer_id` int(11) NOT NULL,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
   `subtotal` decimal(15,2) DEFAULT 0.00,
   `total_amount` decimal(15,2) NOT NULL,
   `paid_amount` decimal(15,2) DEFAULT 0.00,
@@ -371,17 +390,22 @@ CREATE TABLE `orders` (
   `payment_method` varchar(50) DEFAULT 'cash',
   `order_status` varchar(50) DEFAULT 'pending',
   `shipping_status` varchar(50) DEFAULT 'pending',
-  `sales_channel` varchar(50) DEFAULT 'pos'
+  `sales_channel` varchar(50) DEFAULT 'pos',
+  `is_archived` tinyint(1) DEFAULT 0 COMMENT '0: Bình thường, 1: Đã lưu trữ',
+  `packing_status` varchar(50) DEFAULT 'pending' COMMENT 'pending, packing, packed',
+  `assigned_staff_id` int(11) DEFAULT NULL COMMENT 'ID Nhân viên phụ trách',
+  `tags` varchar(255) DEFAULT NULL COMMENT 'Các tag cách nhau dấu phẩy (VD: V.I.P, Gấp)',
+  `has_e_invoice` tinyint(1) DEFAULT 0 COMMENT '1: Đã xuất Hóa đơn điện tử'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`) VALUES
-(1, 'DH001', 1, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos'),
-(2, 'DH002', 1, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos'),
-(3, 'DH003', 1, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos');
+INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `customer_name`, `phone`, `address`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`, `is_archived`, `packing_status`, `assigned_staff_id`, `tags`, `has_e_invoice`) VALUES
+(1, 'DH001', 1, NULL, NULL, NULL, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'delivering', 'pos', 0, 'packing', NULL, NULL, 0),
+(2, 'DH002', 1, NULL, NULL, NULL, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'pending', 'pos', 0, 'packing', NULL, NULL, 0),
+(3, 'DH003', 1, NULL, NULL, NULL, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos', 0, 'pending', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -791,6 +815,27 @@ INSERT INTO `receipts` (`id`, `receipt_code`, `payment_method`, `payer_group`, `
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `saved_filters`
+--
+
+CREATE TABLE `saved_filters` (
+  `id` int(11) NOT NULL,
+  `module_name` varchar(50) NOT NULL COMMENT 'orders, shipments, products',
+  `filter_name` varchar(100) NOT NULL,
+  `filter_data` text NOT NULL COMMENT 'Lưu chuỗi JSON các điều kiện lọc',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `saved_filters`
+--
+
+INSERT INTO `saved_filters` (`id`, `module_name`, `filter_name`, `filter_data`, `created_at`) VALUES
+(1, 'orders', 'Nợ COD / Chưa thanh toán', '{\"payment_status\":\"pending\"}', '2026-06-24 18:54:28');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `settings`
 --
 
@@ -838,6 +883,13 @@ CREATE TABLE `shipments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `shipments`
+--
+
+INSERT INTO `shipments` (`id`, `order_id`, `branch_id`, `tracking_code`, `partner_code`, `status`, `cod_amount`, `shipping_fee`, `recon_status`, `recon_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 'GHTK2606267833', 'ghtk', 'pending', 0.00, 0.00, 'unreconciled', NULL, '2026-06-25 18:44:53', '2026-06-25 18:44:53');
 
 -- --------------------------------------------------------
 
@@ -1147,6 +1199,12 @@ ALTER TABLE `expenses`
   ADD UNIQUE KEY `expense_code` (`expense_code`);
 
 --
+-- Chỉ mục cho bảng `e_invoices`
+--
+ALTER TABLE `e_invoices`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `fund_transfers`
 --
 ALTER TABLE `fund_transfers`
@@ -1284,6 +1342,12 @@ ALTER TABLE `receipts`
   ADD UNIQUE KEY `receipt_code` (`receipt_code`);
 
 --
+-- Chỉ mục cho bảng `saved_filters`
+--
+ALTER TABLE `saved_filters`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `settings`
 --
 ALTER TABLE `settings`
@@ -1408,6 +1472,12 @@ ALTER TABLE `expenses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT cho bảng `e_invoices`
+--
+ALTER TABLE `e_invoices`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `fund_transfers`
 --
 ALTER TABLE `fund_transfers`
@@ -1528,6 +1598,12 @@ ALTER TABLE `receipts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT cho bảng `saved_filters`
+--
+ALTER TABLE `saved_filters`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT cho bảng `settings`
 --
 ALTER TABLE `settings`
@@ -1537,7 +1613,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT cho bảng `shipments`
 --
 ALTER TABLE `shipments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `shipping_partners`
