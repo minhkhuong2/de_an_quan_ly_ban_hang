@@ -1,8 +1,8 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .Há»‡ thá»‘ng-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -42,32 +42,32 @@
         font-weight: bold;
     }
 
-    /* Tăng */
+    /* TÄƒng */
     .diff-negative {
         color: #cf1322;
         font-weight: bold;
     }
 
-    /* Giảm */
+    /* Giáº£m */
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2><a href="index.php?action=inventory_check_list" style="text-decoration:none; color:#637381;">←</a> Tạo phiếu kiểm kho</h2>
+    <h2><a href="index.php?action=inventory_check_list" style="text-decoration:none; color:#637381;">â†</a> Táº¡o phiáº¿u kiá»ƒm kho</h2>
 </div>
 
 <form action="index.php?action=add_inventory_check" method="POST">
     <div style="display: flex; gap: 20px;">
         <div style="flex: 0 0 70%;">
-            <div class="sapo-card">
-                <div style="font-weight: bold; margin-bottom: 15px;">Sản phẩm cần kiểm</div>
+            <div class="Há»‡ thá»‘ng-card">
+                <div style="font-weight: bold; margin-bottom: 15px;">Sáº£n pháº©m cáº§n kiá»ƒm</div>
 
                 <div style="position: relative;">
-                    <span style="position: absolute; left: 10px; top: 8px;">🔍</span>
+                    <span style="position: absolute; left: 10px; top: 8px;">ðŸ”</span>
                     <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
-                        <option value="">Tìm kiếm sản phẩm để kiểm kho...</option>
+                        <option value="">TÃ¬m kiáº¿m sáº£n pháº©m Ä‘á»ƒ kiá»ƒm kho...</option>
                         <?php foreach ($allProducts as $p): ?>
                             <option value="<?php echo $p['id']; ?>" data-sku="<?php echo htmlspecialchars($p['sku'] ?? ''); ?>" data-stock="<?php echo $p['stock'] ?? 0; ?>">
-                                <?php echo htmlspecialchars($p['product_name']); ?> (Tồn: <?php echo $p['stock'] ?? 0; ?>)
+                                <?php echo htmlspecialchars($p['product_name']); ?> (Tá»“n: <?php echo $p['stock'] ?? 0; ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -76,11 +76,11 @@
                 <table class="ic-table">
                     <thead>
                         <tr>
-                            <th style="text-align: left;">Sản phẩm</th>
-                            <th>Tồn chi nhánh</th>
-                            <th>Tồn thực tế</th>
-                            <th>SL Chênh lệch</th>
-                            <th>Lý do</th>
+                            <th style="text-align: left;">Sáº£n pháº©m</th>
+                            <th>Tá»“n chi nhÃ¡nh</th>
+                            <th>Tá»“n thá»±c táº¿</th>
+                            <th>SL ChÃªnh lá»‡ch</th>
+                            <th>LÃ½ do</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -90,21 +90,21 @@
         </div>
 
         <div style="flex: 0 0 calc(30% - 20px);">
-            <div class="sapo-card">
-                <div style="font-weight: bold; margin-bottom: 15px;">Thông tin phiếu</div>
+            <div class="Há»‡ thá»‘ng-card">
+                <div style="font-weight: bold; margin-bottom: 15px;">ThÃ´ng tin phiáº¿u</div>
                 <div style="margin-bottom: 15px;">
-                    <label style="color: #637381; font-size: 13px;">Chi nhánh</label>
+                    <label style="color: #637381; font-size: 13px;">Chi nhÃ¡nh</label>
                     <select name="branch" class="form-control">
-                        <option>Cửa hàng chính</option>
+                        <option>Cá»­a hÃ ng chÃ­nh</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="color: #637381; font-size: 13px;">Nhân viên kiểm</label>
+                    <label style="color: #637381; font-size: 13px;">NhÃ¢n viÃªn kiá»ƒm</label>
                     <input type="text" name="employee" class="form-control" value="Admin">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="color: #637381; font-size: 13px;">Ghi chú</label>
-                    <textarea name="note" class="form-control" rows="3" placeholder="Ví dụ: Kiểm kho định kỳ tháng..."></textarea>
+                    <label style="color: #637381; font-size: 13px;">Ghi chÃº</label>
+                    <textarea name="note" class="form-control" rows="3" placeholder="VÃ­ dá»¥: Kiá»ƒm kho Ä‘á»‹nh ká»³ thÃ¡ng..."></textarea>
                 </div>
             </div>
         </div>
@@ -112,7 +112,7 @@
 
     <div style="text-align: right; border-top: 1px solid #dfe3e8; padding-top: 20px;">
         <button type="submit" style="padding: 10px 20px; background: #0088ff; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-            Xác nhận Cân Bằng Kho
+            XÃ¡c nháº­n CÃ¢n Báº±ng Kho
         </button>
     </div>
 </form>
@@ -128,7 +128,7 @@
         const sysStock = parseInt(option.getAttribute('data-stock')) || 0;
 
         if (document.getElementById('row-' + id)) {
-            alert('Sản phẩm này đã có trong danh sách kiểm!');
+            alert('Sáº£n pháº©m nÃ y Ä‘Ã£ cÃ³ trong danh sÃ¡ch kiá»ƒm!');
             select.value = '';
             return;
         }
@@ -148,9 +148,9 @@
             </td>
             <td id="diff-${id}">0</td>
             <td>
-                <select name="reason[]" class="form-control"><option value="">-- Chọn --</option><option value="Hàng hỏng">Hàng hỏng/lỗi</option><option value="Mất cắp">Thất thoát</option><option value="Nhập sai">Sai số liệu nhập</option></select>
+                <select name="reason[]" class="form-control"><option value="">-- Chá»n --</option><option value="HÃ ng há»ng">HÃ ng há»ng/lá»—i</option><option value="Máº¥t cáº¯p">Tháº¥t thoÃ¡t</option><option value="Nháº­p sai">Sai sá»‘ liá»‡u nháº­p</option></select>
             </td>
-            <td><a href="javascript:void(0)" onclick="document.getElementById('row-${id}').remove()" style="color: #ff4d4f; text-decoration:none; font-weight:bold;">×</a></td>
+            <td><a href="javascript:void(0)" onclick="document.getElementById('row-${id}').remove()" style="color: #ff4d4f; text-decoration:none; font-weight:bold;">Ã—</a></td>
         `;
         tbody.appendChild(tr);
         select.value = '';
@@ -175,3 +175,4 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+

@@ -1,17 +1,17 @@
-<?php
-// Đường dẫn file: app/core/App.php
+﻿<?php
+// ÄÆ°á»ng dáº«n file: app/core/App.php
 
 class App
 {
-    // BẢNG ĐỊNH TUYẾN: Ánh xạ action từ URL sang đúng Controller và Hàm xử lý
+    // Báº¢NG Äá»ŠNH TUYáº¾N: Ãnh xáº¡ action tá»« URL sang Ä‘Ãºng Controller vÃ  HÃ m xá»­ lÃ½
     protected $routes = [
-        // --- Tài khoản & Tổng quan ---
+        // --- TÃ i khoáº£n & Tá»•ng quan ---
         'login'            => ['AuthController', 'login'],
         'register'         => ['AuthController', 'register'],
         'logout'           => ['AuthController', 'logout'],
         'dashboard'        => ['DashboardController', 'index'],
 
-        // --- Sản phẩm & Danh mục ---
+        // --- Sáº£n pháº©m & Danh má»¥c ---
         'product_list'     => ['ProductController', 'list'],
         'add_product'      => ['ProductController', 'add'],
         'add_conversion'   => ['ProductController', 'add_conversion'],
@@ -23,10 +23,10 @@ class App
         'edit_category'    => ['ProductController', 'edit_category'],
         'delete_category'  => ['ProductController', 'delete_category'],
         'add_price'        => ['ProductController', 'add_price'],
-        // ĐÂY CHÍNH LÀ DÒNG FIX LỖI 404 CỦA CHÚNG TA:
+        // ÄÃ‚Y CHÃNH LÃ€ DÃ’NG FIX Lá»–I 404 Cá»¦A CHÃšNG TA:
         'quick_update_stock' => ['ProductController', 'quick_update_stock'],
 
-        // Quản lý Bảng giá sản phẩm nâng cao
+        // Quáº£n lÃ½ Báº£ng giÃ¡ sáº£n pháº©m nÃ¢ng cao
         'product_price'             => ['PriceListController', 'index'],
         'add_price_list'            => ['PriceListController', 'create'],
         'store_price_list'          => ['PriceListController', 'store'],
@@ -36,7 +36,7 @@ class App
         'api_update_price_item'     => ['PriceListController', 'update_item_price'],
         'api_delete_price_item'     => ['PriceListController', 'delete_item'],
 
-        // --- Sổ Quỹ & Kế toán Dòng tiền ---
+        // --- Sá»• Quá»¹ & Káº¿ toÃ¡n DÃ²ng tiá»n ---
         'fund_transfers'        => ['FundTransferController', 'index'],
         'create_fund_transfer'  => ['FundTransferController', 'create'],
         'store_fund_transfer'   => ['FundTransferController', 'store'],
@@ -58,17 +58,17 @@ class App
         'update_receipt'        => ['ReceiptController', 'update'],
         'api_delete_receipt'    => ['ReceiptController', 'delete'],
 
-        // --- Quản lý Lý do Thu/Chi ---
+        // --- Quáº£n lÃ½ LÃ½ do Thu/Chi ---
         'fund_reasons'       => ['FundReasonController', 'index'],
         'store_fund_reason'  => ['FundReasonController', 'store'],
         'delete_fund_reason' => ['FundReasonController', 'delete'],
         'update_fund_reason' => ['FundReasonController', 'update'],
         'print_cashbook'     => ['FundReasonController', 'print_cashbook'],
-        // --- Kế toán số quỹ ---
+        // --- Káº¿ toÃ¡n sá»‘ quá»¹ ---
         'fund_dashboard'        => ['FundController', 'dashboard'],
         'export_cashbook'       => ['FundController', 'export'],
 
-        // --- Đối tác ---
+        // --- Äá»‘i tÃ¡c ---
         'customer_list'   => ['CustomerController', 'list'],
         'add_customer'    => ['CustomerController', 'add'],
         'edit_customer'   => ['CustomerController', 'edit'],
@@ -86,12 +86,12 @@ class App
         'customer_debt'        => ['CustomerController', 'debt_history'],
         'adjust_customer_debt' => ['CustomerController', 'adjust_debt'],
 
-        // --- Ứng dụng Quản lý Công nợ ---
+        // --- á»¨ng dá»¥ng Quáº£n lÃ½ CÃ´ng ná»£ ---
         'debt_app_list'         => ['DebtManagementController', 'index'],
         'debt_app_detail'       => ['DebtManagementController', 'detail'],
         'debt_app_adjust'       => ['DebtManagementController', 'adjust'],
 
-        // --- Quản lý Kho ---
+        // --- Quáº£n lÃ½ Kho ---
         'inventory_list'   => ['InventoryController', 'list'],
         'update_stock'     => ['InventoryController', 'update_stock'],
         'purchase_list'    => ['PurchaseOrderController', 'list'],
@@ -121,71 +121,71 @@ class App
         'add_direct_return'       => ['PurchaseReturnController', 'addDirect'],
         'po_list' => ['PurchaseOrderController', 'list'],
 
-        // Quản lý Chi nhánh (Kho lưu trữ)
+        // Quáº£n lÃ½ Chi nhÃ¡nh (Kho lÆ°u trá»¯)
         'branch_list'           => ['BranchController', 'index'],
         'store_branch'          => ['BranchController', 'store'],
         'toggle_branch_status'  => ['BranchController', 'toggle_status'],
         'transfer_branch_data'  => ['BranchController', 'transfer_and_delete'],
         'update_branch_priority' => ['BranchController', 'update_priority'],
 
-        // --- Quản lý IMEI (Cũ) ---
+        // --- Quáº£n lÃ½ IMEI (CÅ©) ---
         'list'             => ['ImeiController', 'list'],
         'add'              => ['ImeiController', 'add'],
         'sell'             => ['ImeiController', 'sell'],
         'warranty'         => ['ImeiController', 'warranty'],
         'returnItem'       => ['ImeiController', 'returnItem'],
         'search'           => ['ImeiController', 'search'],
-        // Quản lý Nhân viên
+        // Quáº£n lÃ½ NhÃ¢n viÃªn
         'staff_list'      => ['StaffController', 'list'],
         'add_staff'       => ['StaffController', 'add'],
         'edit_staff'      => ['StaffController', 'edit'],
         'delete_staff'    => ['StaffController', 'delete'],
         'activate_staff'  => ['StaffController', 'activate'],
 
-        // Quản lý Vận chuyển (Express)
+        // Quáº£n lÃ½ Váº­n chuyá»ƒn (Express)
         'shipping_list'   => ['ShippingController', 'list'],
         'add_shipping'    => ['ShippingController', 'add'],
         'edit_shipping'   => ['ShippingController', 'edit'],
         'delete_shipping' => ['ShippingController', 'delete'],
 
-        // Quản lý Khuyến mại
+        // Quáº£n lÃ½ Khuyáº¿n máº¡i
         'promo_list'   => ['PromotionController', 'list'],
         'add_promo'    => ['PromotionController', 'add'],
         'bulk_action_promo' => ['PromotionController', 'bulkAction'],
-        'view_promo'   => ['PromotionController', 'detail'], // Xem chi tiết
-        'edit_promo'   => ['PromotionController', 'edit'],   // Sửa
+        'view_promo'   => ['PromotionController', 'detail'], // Xem chi tiáº¿t
+        'edit_promo'   => ['PromotionController', 'edit'],   // Sá»­a
         'copy_promo'   => ['PromotionController', 'duplicate'],
         'promo_settings'   => ['PromotionController', 'settings'],
 
-        // Quản lý Cấu hình (Settings)
+        // Quáº£n lÃ½ Cáº¥u hÃ¬nh (Settings)
         'settings'          => ['SettingController', 'pos_settings'],
         'pos_settings'      => ['SettingController', 'pos_settings'],
         'save_pos_settings' => ['SettingController', 'save_pos_settings'],
-        // --- Cấu hình hệ thống ---
+        // --- Cáº¥u hÃ¬nh há»‡ thá»‘ng ---
         'settings_hub'        => ['SettingController', 'index'],
         'store_settings'      => ['SettingController', 'store_info'],
         'update_store_info'   => ['SettingController', 'update_store_info'],
-        // --- Cấu hình Thuế ---
+        // --- Cáº¥u hÃ¬nh Thuáº¿ ---
         'tax_settings'        => ['TaxSettingController', 'index'],
         'update_tax_settings' => ['TaxSettingController', 'update'],
-        // --- Cấu hình Đối tác vận chuyển ---
+        // --- Cáº¥u hÃ¬nh Äá»‘i tÃ¡c váº­n chuyá»ƒn ---
         'shipping_settings'     => ['ShippingController', 'index'],
         'update_shipping_pkg'   => ['ShippingController', 'update_package'],
         'add_shipping_rate'     => ['ShippingController', 'add_rate'],
         'delete_shipping_rate'  => ['ShippingController', 'delete_rate'],
 
-        // Quản lý Nguồn đơn hàng tùy chỉnh
+        // Quáº£n lÃ½ Nguá»“n Ä‘Æ¡n hÃ ng tÃ¹y chá»‰nh
         'order_sources'         => ['OrderSourceController', 'index'],
         'store_order_source'    => ['OrderSourceController', 'store'],
         'update_order_source'   => ['OrderSourceController', 'update'],
         'toggle_source_status'  => ['OrderSourceController', 'toggle_status'],
         'delete_order_source'   => ['OrderSourceController', 'delete'],
 
-        // Cấu hình quy trình xử lý đơn hàng
+        // Cáº¥u hÃ¬nh quy trÃ¬nh xá»­ lÃ½ Ä‘Æ¡n hÃ ng
         'order_settings'        => ['OrderSettingController', 'index'],
         'save_order_settings'   => ['OrderSettingController', 'save'],
 
-        // --- Quản lý Đơn hàng (Online) ---
+        // --- Quáº£n lÃ½ ÄÆ¡n hÃ ng (Online) ---
         'order_list'       => ['OrderController', 'list'],
         'create_order'     => ['OrderController', 'create'],
         'calculate_api'    => ['OrderController', 'calculate_api'],
@@ -202,7 +202,7 @@ class App
         'bulk_order_actions'    => ['OrderController', 'bulk_actions'],
         'export_orders'         => ['OrderController', 'export_orders'],
 
-        // --- Xử lý Đơn hàng (Tiêu chuẩn Sapo Omni) ---
+        // --- Xá»­ lÃ½ ÄÆ¡n hÃ ng (TiÃªu chuáº©n Há»‡ thá»‘ng ) ---
         'order_processing'          => ['OrderProcessingController', 'index'],
         'order_processing_confirm'  => ['OrderProcessingController', 'confirm_bulk'],
         'order_processing_pack'     => ['OrderProcessingController', 'request_pack_bulk'],
@@ -210,22 +210,22 @@ class App
         'order_processing_handover' => ['OrderProcessingController', 'handover_bulk'],
         'order_processing_print'    => ['OrderProcessingController', 'print_docs'],
 
-        // --- Quản lý Vận Đơn ---
+        // --- Quáº£n lÃ½ Váº­n ÄÆ¡n ---
         'shipment_list'         => ['ShipmentController', 'index'],
         'update_shipment_status' => ['ShipmentController', 'update_status_bulk'],
         'reconcile_shipments'   => ['ShipmentController', 'reconcile_bulk'],
 
-        // Cấu hình Phương thức thanh toán
+        // Cáº¥u hÃ¬nh PhÆ°Æ¡ng thá»©c thanh toÃ¡n
         'payment_methods'           => ['PaymentMethodController', 'index'],
         'toggle_payment_method'     => ['PaymentMethodController', 'toggle'],
         'save_payment_config'       => ['PaymentMethodController', 'save_config'],
         'disconnect_payment_method' => ['PaymentMethodController', 'disconnect'],
 
-        // --- Báo Cáo ---
+        // --- BÃ¡o CÃ¡o ---
         'end_of_day_report' => ['ReportController', 'end_of_day'],
 
 
-        // --- POS Bán hàng ---
+        // --- POS BÃ¡n hÃ ng ---
         'pos' => ['OrderController', 'pos'],
         'scan_imei'        => ['OrderController', 'scanImei'],
         'checkout'         => ['OrderController', 'checkout']
@@ -234,22 +234,22 @@ class App
 
     public function __construct()
     {
-        // Kiểm tra và khởi động Session nếu chưa kích hoạt
+        // Kiá»ƒm tra vÃ  khá»Ÿi Ä‘á»™ng Session náº¿u chÆ°a kÃ­ch hoáº¡t
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Lấy action từ URL, nếu không có thì mặc định hiển thị trang tổng quan
+        // Láº¥y action tá»« URL, náº¿u khÃ´ng cÃ³ thÃ¬ máº·c Ä‘á»‹nh hiá»ƒn thá»‹ trang tá»•ng quan
         $action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
-        // Kiểm tra bảo mật đăng nhập
+        // Kiá»ƒm tra báº£o máº­t Ä‘Äƒng nháº­p
         $public_actions = ['login', 'register'];
         if (!isset($_SESSION['user']) && !in_array($action, $public_actions)) {
             header("Location: index.php?action=login");
             exit;
         }
 
-        // Định tuyến xử lý tự động gọi Controller
+        // Äá»‹nh tuyáº¿n xá»­ lÃ½ tá»± Ä‘á»™ng gá»i Controller
         if (array_key_exists($action, $this->routes)) {
             $controllerName = $this->routes[$action][0];
             $methodName = $this->routes[$action][1];
@@ -264,16 +264,17 @@ class App
                     if (method_exists($controller, $methodName)) {
                         $controller->{$methodName}();
                     } else {
-                        echo "<h2 style='color: red; padding: 20px;'>Lỗi: Hàm {$methodName} không tồn tại trong {$controllerName}!</h2>";
+                        echo "<h2 style='color: red; padding: 20px;'>Lá»—i: HÃ m {$methodName} khÃ´ng tá»“n táº¡i trong {$controllerName}!</h2>";
                     }
                 } else {
-                    echo "<h2 style='color: red; padding: 20px;'>Lỗi: Lớp {$controllerName} không tồn tại!</h2>";
+                    echo "<h2 style='color: red; padding: 20px;'>Lá»—i: Lá»›p {$controllerName} khÃ´ng tá»“n táº¡i!</h2>";
                 }
             } else {
-                echo "<h2 style='color: red; padding: 20px;'>Lỗi: Không tìm thấy file Controller tại đường dẫn {$controllerFile}!</h2>";
+                echo "<h2 style='color: red; padding: 20px;'>Lá»—i: KhÃ´ng tÃ¬m tháº¥y file Controller táº¡i Ä‘Æ°á»ng dáº«n {$controllerFile}!</h2>";
             }
         } else {
-            echo "<h2 style='color: red; text-align:center; padding: 50px;'>404 - Trang không tồn tại!</h2>";
+            echo "<h2 style='color: red; text-align:center; padding: 50px;'>404 - Trang khÃ´ng tá»“n táº¡i!</h2>";
         }
     }
 }
+

@@ -1,15 +1,15 @@
-<?php
-// Đường dẫn: app/controllers/ShipmentController.php
+﻿<?php
+// ÄÆ°á»ng dáº«n: app/controllers/ShipmentController.php
 require_once __DIR__ . '/../../config/database.php';
 
 class ShipmentController
 {
-    // 1. DANH SÁCH VẬN ĐƠN (CÓ BỘ LỌC)
+    // 1. DANH SÃCH Váº¬N ÄÆ N (CÃ“ Bá»˜ Lá»ŒC)
     public function index()
     {
         $db = (new Database())->getConnection();
 
-        // Nhận tham số Lọc
+        // Nháº­n tham sá»‘ Lá»c
         $status_filter = $_GET['status'] ?? 'all';
         $recon_filter = $_GET['recon_status'] ?? 'all';
         $keyword = trim($_GET['keyword'] ?? '');
@@ -32,13 +32,13 @@ class ShipmentController
         $stmt = $db->query($query);
         $shipments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Lấy danh sách chi nhánh phục vụ Dropdown Đối soát
+        // Láº¥y danh sÃ¡ch chi nhÃ¡nh phá»¥c vá»¥ Dropdown Äá»‘i soÃ¡t
         $branches = $db->query("SELECT id, branch_name FROM branches WHERE status = 'active'")->fetchAll(PDO::FETCH_ASSOC);
 
         require_once __DIR__ . '/../views/shipping/shipment_list.php';
     }
 
-    // 2. ĐỔI TRẠNG THÁI VẬN ĐƠN HÀNG LOẠT
+    // 2. Äá»”I TRáº NG THÃI Váº¬N ÄÆ N HÃ€NG LOáº T
     public function update_status_bulk()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -56,7 +56,7 @@ class ShipmentController
         }
     }
 
-    // 3. ĐỐI SOÁT VẬN CHUYỂN HÀNG LOẠT (Thu tiền COD về Kế toán)
+    // 3. Äá»I SOÃT Váº¬N CHUYá»‚N HÃ€NG LOáº T (Thu tiá»n COD vá» Káº¿ toÃ¡n)
     public function reconcile_bulk()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -67,18 +67,18 @@ class ShipmentController
 
             $db = (new Database())->getConnection();
 
-            // Bước 3.1: Gom thông tin các vận đơn để tính toán
+            // BÆ°á»›c 3.1: Gom thÃ´ng tin cÃ¡c váº­n Ä‘Æ¡n Ä‘á»ƒ tÃ­nh toÃ¡n
             $placeholders = str_repeat('?,', count($ids) - 1) . '?';
             $stmt = $db->prepare("SELECT partner_code, SUM(cod_amount) as sum_cod, SUM(shipping_fee) as sum_fee, COUNT(DISTINCT partner_code) as diff_partners FROM shipments WHERE id IN ($placeholders) AND recon_status = 'unreconciled' AND status IN ('delivered', 'returned')");
             $stmt->execute($ids);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Bẫy lỗi chuẩn Sapo: Khác đối tác hoặc Trạng thái chưa xong
+            // Báº«y lá»—i chuáº©n Há»‡ thá»‘ng: KhÃ¡c Ä‘á»‘i tÃ¡c hoáº·c Tráº¡ng thÃ¡i chÆ°a xong
             if ($data['diff_partners'] > 1) {
-                die("<script>alert('Lỗi: Vui lòng chỉ chọn vận đơn từ CÙNG MỘT đơn vị vận chuyển để đối soát!'); history.back();</script>");
+                die("<script>alert('Lá»—i: Vui lÃ²ng chá»‰ chá»n váº­n Ä‘Æ¡n tá»« CÃ™NG Má»˜T Ä‘Æ¡n vá»‹ váº­n chuyá»ƒn Ä‘á»ƒ Ä‘á»‘i soÃ¡t!'); history.back();</script>");
             }
             if ($data['sum_cod'] === null) {
-                die("<script>alert('Lỗi: Không có đơn nào hợp lệ! Chỉ đối soát đơn Đã giao/Hoàn và Chưa đối soát.'); history.back();</script>");
+                die("<script>alert('Lá»—i: KhÃ´ng cÃ³ Ä‘Æ¡n nÃ o há»£p lá»‡! Chá»‰ Ä‘á»‘i soÃ¡t Ä‘Æ¡n ÄÃ£ giao/HoÃ n vÃ  ChÆ°a Ä‘á»‘i soÃ¡t.'); history.back();</script>");
             }
 
             $total_received = floatval($data['sum_cod']) - floatval($data['sum_fee']);
@@ -86,18 +86,18 @@ class ShipmentController
             try {
                 $db->beginTransaction();
 
-                // 1. Tạo Phiếu Đối soát
+                // 1. Táº¡o Phiáº¿u Äá»‘i soÃ¡t
                 $stmt_recon = $db->prepare("INSERT INTO shipping_reconciliations (recon_code, partner_code, branch_id, total_cod, total_fee, total_received, note) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt_recon->execute([$recon_code, $data['partner_code'], $branch_id, $data['sum_cod'], $data['sum_fee'], $total_received, $note]);
                 $recon_id = $db->lastInsertId();
 
-                // 2. Đánh dấu Vận đơn đã đối soát
+                // 2. ÄÃ¡nh dáº¥u Váº­n Ä‘Æ¡n Ä‘Ã£ Ä‘á»‘i soÃ¡t
                 $stmt_update = $db->prepare("UPDATE shipments SET recon_status = 'reconciled', recon_id = ? WHERE id IN ($placeholders)");
                 $params = array_merge([$recon_id], $ids);
                 $stmt_update->execute($params);
 
-                // 3. Tự động sinh 1 PHIẾU THU vào Sổ quỹ Kế toán
-                $reason = "Thu tiền đối soát COD từ " . strtoupper($data['partner_code']) . " (Mã: $recon_code)";
+                // 3. Tá»± Ä‘á»™ng sinh 1 PHIáº¾U THU vÃ o Sá»• quá»¹ Káº¿ toÃ¡n
+                $reason = "Thu tiá»n Ä‘á»‘i soÃ¡t COD tá»« " . strtoupper($data['partner_code']) . " (MÃ£: $recon_code)";
                 $stmt_fund = $db->prepare("INSERT INTO receipts (receipt_code, branch_id, receipt_reason, payer_name, amount, payment_method) VALUES (?, ?, ?, ?, ?, 'bank')");
                 $stmt_fund->execute([$recon_code, $branch_id, $reason, strtoupper($data['partner_code']), $total_received]);
 
@@ -105,9 +105,10 @@ class ShipmentController
                 header("Location: index.php?action=shipment_list&success_recon=1");
             } catch (Exception $e) {
                 $db->rollBack();
-                die("Lỗi hệ thống: " . $e->getMessage());
+                die("Lá»—i há»‡ thá»‘ng: " . $e->getMessage());
             }
             exit;
         }
     }
 }
+

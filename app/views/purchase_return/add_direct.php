@@ -1,8 +1,8 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .Há»‡ thá»‘ng-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -10,7 +10,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .Há»‡ thá»‘ng-card-title {
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 20px;
@@ -57,8 +57,8 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <h2 style="font-size: 22px; font-weight: bold; color: #212b36;">
-        <a href="index.php?action=purchase_return_list" style="text-decoration:none; color:#637381; margin-right: 10px;">←</a>
-        Tạo đơn trả hàng nhập (Không theo đơn)
+        <a href="index.php?action=purchase_return_list" style="text-decoration:none; color:#637381; margin-right: 10px;">â†</a>
+        Táº¡o Ä‘Æ¡n tráº£ hÃ ng nháº­p (KhÃ´ng theo Ä‘Æ¡n)
     </h2>
 </div>
 
@@ -66,21 +66,21 @@
     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
 
         <div style="flex: 1 1 65%; min-width: 600px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">👤 Thông tin Nhà cung cấp</div>
-                <input type="text" name="supplier_name" class="form-control" placeholder="Nhập tên nhà cung cấp cần trả hàng..." required>
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">ðŸ‘¤ ThÃ´ng tin NhÃ  cung cáº¥p</div>
+                <input type="text" name="supplier_name" class="form-control" placeholder="Nháº­p tÃªn nhÃ  cung cáº¥p cáº§n tráº£ hÃ ng..." required>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">📦 Chọn sản phẩm xuất trả</div>
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">ðŸ“¦ Chá»n sáº£n pháº©m xuáº¥t tráº£</div>
                 <div style="position: relative;">
-                    <span style="position: absolute; left: 12px; top: 11px; color: #637381;">🔍</span>
+                    <span style="position: absolute; left: 12px; top: 11px; color: #637381;">ðŸ”</span>
                     <select id="product-select" class="form-control" style="padding-left: 40px; font-weight: 500;" onchange="addProductRow()">
-                        <option value="">Tìm kiếm sản phẩm theo tên, mã SKU...</option>
+                        <option value="">TÃ¬m kiáº¿m sáº£n pháº©m theo tÃªn, mÃ£ SKU...</option>
                         <?php foreach ($allProducts as $p): ?>
                             <?php if ($p['stock'] > 0): ?>
                                 <option value="<?php echo $p['id']; ?>" data-sku="<?php echo htmlspecialchars($p['sku'] ?? ''); ?>" data-price="<?php echo htmlspecialchars($p['cost_price'] ?? 0); ?>" data-stock="<?php echo $p['stock']; ?>">
-                                    <?php echo htmlspecialchars($p['product_name']); ?> (Tồn: <?php echo $p['stock']; ?>)
+                                    <?php echo htmlspecialchars($p['product_name']); ?> (Tá»“n: <?php echo $p['stock']; ?>)
                                 </option>
                             <?php endif; ?>
                         <?php endforeach; ?>
@@ -90,46 +90,46 @@
                 <table class="po-table" id="product-table">
                     <thead>
                         <tr style="background: #fafbfc; color: #212b36;">
-                            <th style="width: 35%;">Sản phẩm</th>
-                            <th style="width: 15%; text-align: center;">Tồn kho</th>
-                            <th style="width: 15%; text-align: center;">SL Trả</th>
-                            <th style="width: 20%; text-align: right;">Đơn giá trả</th>
-                            <th style="width: 20%; text-align: right;">Thành tiền</th>
+                            <th style="width: 35%;">Sáº£n pháº©m</th>
+                            <th style="width: 15%; text-align: center;">Tá»“n kho</th>
+                            <th style="width: 15%; text-align: center;">SL Tráº£</th>
+                            <th style="width: 20%; text-align: right;">ÄÆ¡n giÃ¡ tráº£</th>
+                            <th style="width: 20%; text-align: right;">ThÃ nh tiá»n</th>
                             <th style="width: 5%;"></th>
                         </tr>
                     </thead>
                     <tbody id="po-body"></tbody>
                 </table>
                 <div style="text-align: right; margin-top: 30px; font-size: 16px; color: #212b36; border-top: 1px dashed #dfe3e8; padding-top: 20px;">
-                    Tổng giá trị hoàn trả: <strong id="total-amount" style="color: #ff9900; font-size: 22px; margin-left: 10px;">0 ₫</strong>
+                    Tá»•ng giÃ¡ trá»‹ hoÃ n tráº£: <strong id="total-amount" style="color: #ff9900; font-size: 22px; margin-left: 10px;">0 â‚«</strong>
                 </div>
             </div>
         </div>
 
         <div style="flex: 1 1 30%; min-width: 300px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">📝 Thông tin bổ sung</div>
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">ðŸ“ ThÃ´ng tin bá»• sung</div>
                 <div class="form-group">
-                    <label>Chi nhánh xuất trả</label>
+                    <label>Chi nhÃ¡nh xuáº¥t tráº£</label>
                     <select name="branch" class="form-control">
-                        <option>Cửa hàng chính</option>
+                        <option>Cá»­a hÃ ng chÃ­nh</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Nhân viên phụ trách</label>
+                    <label>NhÃ¢n viÃªn phá»¥ trÃ¡ch</label>
                     <input type="text" name="employee" class="form-control" value="Admin">
                 </div>
                 <div class="form-group">
-                    <label>Lý do trả hàng</label>
-                    <textarea name="reason" class="form-control" rows="3" placeholder="Ví dụ: Hàng tồn kho quá lâu, hàng lỗi..."></textarea>
+                    <label>LÃ½ do tráº£ hÃ ng</label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="VÃ­ dá»¥: HÃ ng tá»“n kho quÃ¡ lÃ¢u, hÃ ng lá»—i..."></textarea>
                 </div>
             </div>
         </div>
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid #dfe3e8; padding-top: 20px; padding-bottom: 40px;">
-        <button type="button" style="padding: 10px 20px; border-radius: 4px; border: 1px solid #c4cdd5; background: #fff; cursor: pointer;" onclick="window.location.href='index.php?action=purchase_return_list'">Hủy bỏ</button>
-        <button type="submit" style="padding: 10px 20px; border-radius: 4px; border: none; background: #ff9900; color: #fff; font-weight: bold; cursor: pointer;">📤 Tạo Phiếu Trả Hàng</button>
+        <button type="button" style="padding: 10px 20px; border-radius: 4px; border: 1px solid #c4cdd5; background: #fff; cursor: pointer;" onclick="window.location.href='index.php?action=purchase_return_list'">Há»§y bá»</button>
+        <button type="submit" style="padding: 10px 20px; border-radius: 4px; border: none; background: #ff9900; color: #fff; font-weight: bold; cursor: pointer;">ðŸ“¤ Táº¡o Phiáº¿u Tráº£ HÃ ng</button>
     </div>
 </form>
 
@@ -145,7 +145,7 @@
         const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
 
         if (document.getElementById('row-' + id)) {
-            alert('Sản phẩm đã có trong danh sách!');
+            alert('Sáº£n pháº©m Ä‘Ã£ cÃ³ trong danh sÃ¡ch!');
             select.value = '';
             return;
         }
@@ -161,8 +161,8 @@
                 <input type="hidden" name="product_id[]" value="${id}">
             </td>
             <td><input type="number" name="price[]" id="price-${id}" value="${price}" class="form-control" oninput="updateRowTotal('${id}', ${stock})" style="padding: 8px; text-align: right;"></td>
-            <td id="total-${id}" style="text-align: right; font-weight: bold; color: #212b36;">${new Intl.NumberFormat('vi-VN').format(price)} ₫</td>
-            <td style="text-align: center;"><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 22px; font-weight: bold;">×</a></td>
+            <td id="total-${id}" style="text-align: right; font-weight: bold; color: #212b36;">${new Intl.NumberFormat('vi-VN').format(price)} â‚«</td>
+            <td style="text-align: center;"><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 22px; font-weight: bold;">Ã—</a></td>
         `;
         tbody.appendChild(tr);
         select.value = '';
@@ -173,15 +173,15 @@
         let qtyInput = document.getElementById('qty-' + id);
         let qty = parseInt(qtyInput.value) || 0;
 
-        // Cảnh báo nếu nhập quá tồn kho
+        // Cáº£nh bÃ¡o náº¿u nháº­p quÃ¡ tá»“n kho
         if (qty > maxStock) {
-            alert("Số lượng trả không được vượt quá tồn kho hiện tại (" + maxStock + ")!");
+            alert("Sá»‘ lÆ°á»£ng tráº£ khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ tá»“n kho hiá»‡n táº¡i (" + maxStock + ")!");
             qtyInput.value = maxStock;
             qty = maxStock;
         }
 
         const price = parseFloat(document.getElementById('price-' + id).value) || 0;
-        document.getElementById('total-' + id).innerText = new Intl.NumberFormat('vi-VN').format(qty * price) + ' ₫';
+        document.getElementById('total-' + id).innerText = new Intl.NumberFormat('vi-VN').format(qty * price) + ' â‚«';
         updateGrandTotal();
     }
 
@@ -197,8 +197,9 @@
             let qty = parseInt(document.getElementById('qty-' + id).value) || 0;
             grandTotal += (qty * parseFloat(priceInput.value || 0));
         });
-        document.getElementById('total-amount').innerText = new Intl.NumberFormat('vi-VN').format(grandTotal) + ' ₫';
+        document.getElementById('total-amount').innerText = new Intl.NumberFormat('vi-VN').format(grandTotal) + ' â‚«';
     }
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+

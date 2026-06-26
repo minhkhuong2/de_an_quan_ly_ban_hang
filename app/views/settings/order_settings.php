@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /** @var array $settings */
 /** @var array $advanced */
@@ -40,7 +40,7 @@ require_once __DIR__ . '/../layout/header.php';
         padding: 20px;
     }
 
-    /* Box quy trình xử lý */
+    /* Box quy trÃ¬nh xá»­ lÃ½ */
     .workflow-box {
         border: 1px solid #c4cdd5;
         border-radius: 6px;
@@ -131,74 +131,74 @@ require_once __DIR__ . '/../layout/header.php';
 </style>
 
 <div class="v3-header">
-    <div class="v3-title">Cấu hình quy trình xử lý đơn hàng</div>
-    <button class="btn-primary" onclick="document.getElementById('frm_settings').submit()">💾 Lưu thiết lập</button>
+    <div class="v3-title">Cáº¥u hÃ¬nh quy trÃ¬nh xá»­ lÃ½ Ä‘Æ¡n hÃ ng</div>
+    <button class="btn-primary" onclick="document.getElementById('frm_settings').submit()">ðŸ’¾ LÆ°u thiáº¿t láº­p</button>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Cập nhật cấu hình xử lý đơn hàng thành công!</div>
+    <div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">âœ… Cáº­p nháº­t cáº¥u hÃ¬nh xá»­ lÃ½ Ä‘Æ¡n hÃ ng thÃ nh cÃ´ng!</div>
 <?php endif; ?>
 
 <form id="frm_settings" action="index.php?action=save_order_settings" method="POST">
 
     <div class="v3-card">
-        <div class="card-header">1. Quy trình xử lý đơn hàng (Đóng gói & Giao vận)</div>
+        <div class="card-header">1. Quy trÃ¬nh xá»­ lÃ½ Ä‘Æ¡n hÃ ng (ÄÃ³ng gÃ³i & Giao váº­n)</div>
         <div class="card-body">
             <?php $wf = $settings['order_workflow'] ?? 'basic'; ?>
 
             <label class="workflow-box <?php echo $wf == 'basic' ? 'active' : ''; ?>" onclick="selectWorkflow(this)">
                 <input type="radio" name="order_workflow" value="basic" <?php echo $wf == 'basic' ? 'checked' : ''; ?>>
                 <div>
-                    <div class="wf-title">Quy trình Cơ bản</div>
-                    <div class="wf-desc">Dành cho cửa hàng muốn xử lý đơn nhanh chóng với các bước đơn giản nhất. Bỏ qua các khâu quét mã vạch và phân làn.</div>
+                    <div class="wf-title">Quy trÃ¬nh CÆ¡ báº£n</div>
+                    <div class="wf-desc">DÃ nh cho cá»­a hÃ ng muá»‘n xá»­ lÃ½ Ä‘Æ¡n nhanh chÃ³ng vá»›i cÃ¡c bÆ°á»›c Ä‘Æ¡n giáº£n nháº¥t. Bá» qua cÃ¡c khÃ¢u quÃ©t mÃ£ váº¡ch vÃ  phÃ¢n lÃ n.</div>
                 </div>
             </label>
 
             <label class="workflow-box <?php echo $wf == 'standard' ? 'active' : ''; ?>" onclick="selectWorkflow(this)">
                 <input type="radio" name="order_workflow" value="standard" <?php echo $wf == 'standard' ? 'checked' : ''; ?>>
                 <div>
-                    <div class="wf-title">Quy trình Tiêu chuẩn (Retail Pro / OmniAI)</div>
-                    <div class="wf-desc">Quản lý chặt chẽ từng khâu đóng gói, giao hàng để đảm bảo tính chính xác và giảm sai sót. Yêu cầu xác nhận xuất kho.</div>
+                    <div class="wf-title">Quy trÃ¬nh TiÃªu chuáº©n (Retail Pro / )</div>
+                    <div class="wf-desc">Quáº£n lÃ½ cháº·t cháº½ tá»«ng khÃ¢u Ä‘Ã³ng gÃ³i, giao hÃ ng Ä‘á»ƒ Ä‘áº£m báº£o tÃ­nh chÃ­nh xÃ¡c vÃ  giáº£m sai sÃ³t. YÃªu cáº§u xÃ¡c nháº­n xuáº¥t kho.</div>
                 </div>
             </label>
 
             <label class="workflow-box <?php echo $wf == 'advanced' ? 'active' : ''; ?>" onclick="selectWorkflow(this, true)">
                 <input type="radio" name="order_workflow" value="advanced" <?php echo $wf == 'advanced' ? 'checked' : ''; ?>>
                 <div>
-                    <div class="wf-title">Quy trình Nâng cao (Wave Picking - Enterprise)</div>
-                    <div class="wf-desc">Khuyến nghị từ 1000 đơn/ngày. Tối ưu hóa toàn bộ quy trình bằng cách tự động gom nhóm đơn hàng thông minh.</div>
+                    <div class="wf-title">Quy trÃ¬nh NÃ¢ng cao (Wave Picking - Enterprise)</div>
+                    <div class="wf-desc">Khuyáº¿n nghá»‹ tá»« 1000 Ä‘Æ¡n/ngÃ y. Tá»‘i Æ°u hÃ³a toÃ n bá»™ quy trÃ¬nh báº±ng cÃ¡ch tá»± Ä‘á»™ng gom nhÃ³m Ä‘Æ¡n hÃ ng thÃ´ng minh.</div>
                 </div>
             </label>
 
             <div id="advanced_block" style="display: <?php echo $wf == 'advanced' ? 'block' : 'none'; ?>; background: #f4f6f8; padding: 20px; border-radius: 6px; margin-top: 15px; border: 1px dashed #c4cdd5;">
-                <h4 style="margin-top:0; margin-bottom:15px; color:#212b36;">Cài đặt luồng nhặt hàng & đóng gói (Yêu cầu dùng máy quét mã vạch)</h4>
+                <h4 style="margin-top:0; margin-bottom:15px; color:#212b36;">CÃ i Ä‘áº·t luá»“ng nháº·t hÃ ng & Ä‘Ã³ng gÃ³i (YÃªu cáº§u dÃ¹ng mÃ¡y quÃ©t mÃ£ váº¡ch)</h4>
 
                 <div class="setting-row" style="border-bottom: none; margin-bottom: 10px; padding-bottom: 0;">
                     <input type="checkbox" name="scan_shelf" id="scan_shelf" <?php echo ($advanced['scan_shelf'] ?? 0) ? 'checked' : ''; ?>>
                     <label class="sr-content" for="scan_shelf">
-                        <h4>Yêu cầu quét mã vị trí kệ khi lấy hàng</h4>
-                        <p>Bắt buộc nhân viên quét mã vạch trên kệ trước khi lấy sản phẩm.</p>
+                        <h4>YÃªu cáº§u quÃ©t mÃ£ vá»‹ trÃ­ ká»‡ khi láº¥y hÃ ng</h4>
+                        <p>Báº¯t buá»™c nhÃ¢n viÃªn quÃ©t mÃ£ váº¡ch trÃªn ká»‡ trÆ°á»›c khi láº¥y sáº£n pháº©m.</p>
                     </label>
                 </div>
                 <div class="setting-row" style="border-bottom: none; margin-bottom: 10px; padding-bottom: 0;">
                     <input type="checkbox" name="scan_item_pick" id="scan_item_pick" <?php echo ($advanced['scan_item_pick'] ?? 0) ? 'checked' : ''; ?>>
                     <label class="sr-content" for="scan_item_pick">
-                        <h4>Yêu cầu quét mã sản phẩm khi nhặt hàng</h4>
-                        <p>Xác nhận đã lấy đúng sản phẩm và đủ số lượng vào giỏ hàng.</p>
+                        <h4>YÃªu cáº§u quÃ©t mÃ£ sáº£n pháº©m khi nháº·t hÃ ng</h4>
+                        <p>XÃ¡c nháº­n Ä‘Ã£ láº¥y Ä‘Ãºng sáº£n pháº©m vÃ  Ä‘á»§ sá»‘ lÆ°á»£ng vÃ o giá» hÃ ng.</p>
                     </label>
                 </div>
                 <div class="setting-row" style="border-bottom: none; margin-bottom: 10px; padding-bottom: 0;">
                     <input type="checkbox" name="scan_item_pack" id="scan_item_pack" <?php echo ($advanced['scan_item_pack'] ?? 0) ? 'checked' : ''; ?>>
                     <label class="sr-content" for="scan_item_pack">
-                        <h4>Yêu cầu quét mã sản phẩm khi đóng gói</h4>
-                        <p>Bước kiểm tra cuối cùng trước khi đóng hộp giao đi.</p>
+                        <h4>YÃªu cáº§u quÃ©t mÃ£ sáº£n pháº©m khi Ä‘Ã³ng gÃ³i</h4>
+                        <p>BÆ°á»›c kiá»ƒm tra cuá»‘i cÃ¹ng trÆ°á»›c khi Ä‘Ã³ng há»™p giao Ä‘i.</p>
                     </label>
                 </div>
                 <div class="setting-row" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                     <input type="checkbox" name="strict_wave" id="strict_wave" <?php echo ($advanced['strict_wave'] ?? 0) ? 'checked' : ''; ?>>
                     <label class="sr-content" for="strict_wave">
-                        <h4>Đóng gói tuần tự nghiêm ngặt theo từng "Wave"</h4>
-                        <p>Nếu bật, nhân viên phải hoàn thành tất cả đơn trong 1 đợt gom mới được sang đợt khác.</p>
+                        <h4>ÄÃ³ng gÃ³i tuáº§n tá»± nghiÃªm ngáº·t theo tá»«ng "Wave"</h4>
+                        <p>Náº¿u báº­t, nhÃ¢n viÃªn pháº£i hoÃ n thÃ nh táº¥t cáº£ Ä‘Æ¡n trong 1 Ä‘á»£t gom má»›i Ä‘Æ°á»£c sang Ä‘á»£t khÃ¡c.</p>
                     </label>
                 </div>
             </div>
@@ -206,20 +206,20 @@ require_once __DIR__ . '/../layout/header.php';
     </div>
 
     <div class="v3-card">
-        <div class="card-header">2. Cấu hình vận hành đơn hàng</div>
+        <div class="card-header">2. Cáº¥u hÃ¬nh váº­n hÃ nh Ä‘Æ¡n hÃ ng</div>
         <div class="card-body">
             <div class="setting-row">
                 <input type="checkbox" name="allow_negative_sale_warning" id="allow_negative" <?php echo ($settings['allow_negative_sale_warning'] ?? '1') == '1' ? 'checked' : ''; ?>>
                 <label class="sr-content" for="allow_negative">
-                    <h4>Hiển thị cửa sổ cảnh báo "Cho phép bán âm" tại màn hình tạo đơn</h4>
-                    <p>Nếu bật, hệ thống sẽ hiện popup hỏi ý kiến bạn có muốn tiếp tục bán khi số lượng mua vượt quá tồn kho hay không.</p>
+                    <h4>Hiá»ƒn thá»‹ cá»­a sá»• cáº£nh bÃ¡o "Cho phÃ©p bÃ¡n Ã¢m" táº¡i mÃ n hÃ¬nh táº¡o Ä‘Æ¡n</h4>
+                    <p>Náº¿u báº­t, há»‡ thá»‘ng sáº½ hiá»‡n popup há»i Ã½ kiáº¿n báº¡n cÃ³ muá»‘n tiáº¿p tá»¥c bÃ¡n khi sá»‘ lÆ°á»£ng mua vÆ°á»£t quÃ¡ tá»“n kho hay khÃ´ng.</p>
                 </label>
             </div>
             <div class="setting-row" style="border:none;">
                 <input type="checkbox" name="auto_archive_order" id="auto_archive" <?php echo ($settings['auto_archive_order'] ?? '0') == '1' ? 'checked' : ''; ?>>
                 <label class="sr-content" for="auto_archive">
-                    <h4>Tự động lưu trữ đơn hàng</h4>
-                    <p>Hệ thống tự động chuyển các đơn đã hoàn tất (Đã thanh toán & Đã giao hàng) vào mục Lưu trữ cho gọn danh sách.</p>
+                    <h4>Tá»± Ä‘á»™ng lÆ°u trá»¯ Ä‘Æ¡n hÃ ng</h4>
+                    <p>Há»‡ thá»‘ng tá»± Ä‘á»™ng chuyá»ƒn cÃ¡c Ä‘Æ¡n Ä‘Ã£ hoÃ n táº¥t (ÄÃ£ thanh toÃ¡n & ÄÃ£ giao hÃ ng) vÃ o má»¥c LÆ°u trá»¯ cho gá»n danh sÃ¡ch.</p>
                 </label>
             </div>
         </div>
@@ -227,27 +227,27 @@ require_once __DIR__ . '/../layout/header.php';
 
     <div style="display:flex; gap:20px;">
         <div class="v3-card" style="flex:1;">
-            <div class="card-header">3. Tùy chỉnh nguồn đơn</div>
+            <div class="card-header">3. TÃ¹y chá»‰nh nguá»“n Ä‘Æ¡n</div>
             <div class="card-body">
-                <p style="font-size:13px; color:#637381; margin-bottom:15px;">Quản lý danh sách các nguồn đơn hàng (FB, Shopee, CTV...) hiển thị trên màn hình tạo đơn.</p>
-                <a href="index.php?action=order_sources" style="color:#0088ff; text-decoration:none; font-weight:600;">Quản lý nguồn đơn hàng ➔</a>
+                <p style="font-size:13px; color:#637381; margin-bottom:15px;">Quáº£n lÃ½ danh sÃ¡ch cÃ¡c nguá»“n Ä‘Æ¡n hÃ ng (FB, Shopee, CTV...) hiá»ƒn thá»‹ trÃªn mÃ n hÃ¬nh táº¡o Ä‘Æ¡n.</p>
+                <a href="index.php?action=order_sources" style="color:#0088ff; text-decoration:none; font-weight:600;">Quáº£n lÃ½ nguá»“n Ä‘Æ¡n hÃ ng âž”</a>
             </div>
         </div>
 
         <div class="v3-card" style="flex:1;">
-            <div class="card-header">4. Xử lý dữ liệu khi xóa đơn hàng</div>
+            <div class="card-header">4. Xá»­ lÃ½ dá»¯ liá»‡u khi xÃ³a Ä‘Æ¡n hÃ ng</div>
             <div class="card-body">
                 <div class="setting-row" style="margin-bottom:10px; padding-bottom:10px;">
                     <input type="checkbox" checked disabled>
                     <label class="sr-content">
-                        <h4 style="color:#8c98a4;">Tự động xóa doanh thu và công nợ (Bắt buộc)</h4>
+                        <h4 style="color:#8c98a4;">Tá»± Ä‘á»™ng xÃ³a doanh thu vÃ  cÃ´ng ná»£ (Báº¯t buá»™c)</h4>
                     </label>
                 </div>
                 <div class="setting-row" style="border:none;">
                     <input type="checkbox" name="auto_delete_transaction" id="auto_del_txn" <?php echo ($settings['auto_delete_transaction'] ?? '1') == '1' ? 'checked' : ''; ?>>
                     <label class="sr-content" for="auto_del_txn">
-                        <h4>Tự động xóa giao dịch sổ quỹ, phiếu thu/chi</h4>
-                        <p style="color:#e67e22;">Cảnh báo: Hành động xóa là không thể khôi phục!</p>
+                        <h4>Tá»± Ä‘á»™ng xÃ³a giao dá»‹ch sá»• quá»¹, phiáº¿u thu/chi</h4>
+                        <p style="color:#e67e22;">Cáº£nh bÃ¡o: HÃ nh Ä‘á»™ng xÃ³a lÃ  khÃ´ng thá»ƒ khÃ´i phá»¥c!</p>
                     </label>
                 </div>
             </div>
@@ -255,16 +255,16 @@ require_once __DIR__ . '/../layout/header.php';
     </div>
 
     <div class="v3-card">
-        <div class="card-header">5. Gửi Email nhắc nhở thanh toán</div>
+        <div class="card-header">5. Gá»­i Email nháº¯c nhá»Ÿ thanh toÃ¡n</div>
         <div class="card-body">
-            <h4 style="margin:0 0 10px 0; font-size:14px;">Thời gian gửi nhắc nhở đối với đơn chưa hoàn tất:</h4>
+            <h4 style="margin:0 0 10px 0; font-size:14px;">Thá»i gian gá»­i nháº¯c nhá»Ÿ Ä‘á»‘i vá»›i Ä‘Æ¡n chÆ°a hoÃ n táº¥t:</h4>
             <?php $hours = $settings['reminder_email_hours'] ?? '1'; ?>
             <select name="reminder_email_hours" class="form-control" style="width: 300px; padding: 10px;">
-                <option value="0" <?php echo $hours == '0' ? 'selected' : ''; ?>>Không bao giờ</option>
-                <option value="1" <?php echo $hours == '1' ? 'selected' : ''; ?>>Sau 1 giờ (Khuyến dùng)</option>
-                <option value="6" <?php echo $hours == '6' ? 'selected' : ''; ?>>Sau 6 giờ</option>
-                <option value="10" <?php echo $hours == '10' ? 'selected' : ''; ?>>Sau 10 giờ (Khuyến dùng)</option>
-                <option value="24" <?php echo $hours == '24' ? 'selected' : ''; ?>>Sau 24 giờ</option>
+                <option value="0" <?php echo $hours == '0' ? 'selected' : ''; ?>>KhÃ´ng bao giá»</option>
+                <option value="1" <?php echo $hours == '1' ? 'selected' : ''; ?>>Sau 1 giá» (Khuyáº¿n dÃ¹ng)</option>
+                <option value="6" <?php echo $hours == '6' ? 'selected' : ''; ?>>Sau 6 giá»</option>
+                <option value="10" <?php echo $hours == '10' ? 'selected' : ''; ?>>Sau 10 giá» (Khuyáº¿n dÃ¹ng)</option>
+                <option value="24" <?php echo $hours == '24' ? 'selected' : ''; ?>>Sau 24 giá»</option>
             </select>
         </div>
     </div>
@@ -281,10 +281,11 @@ require_once __DIR__ . '/../layout/header.php';
             block.style.display = 'block';
         } else {
             block.style.display = 'none';
-            // Tắt hết checkbox bên trong nếu không dùng Nâng cao
+            // Táº¯t háº¿t checkbox bÃªn trong náº¿u khÃ´ng dÃ¹ng NÃ¢ng cao
             block.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
         }
     }
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+

@@ -1,8 +1,8 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .Há»‡ thá»‘ng-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -10,24 +10,24 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .Há»‡ thá»‘ng-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
         color: #212b36;
     }
 
-    .sapo-grid {
+    .Há»‡ thá»‘ng-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .Há»‡ thá»‘ng-col-left {
         flex: 0 0 68%;
     }
 
-    .sapo-col-right {
+    .Há»‡ thá»‘ng-col-right {
         flex: 0 0 calc(32% - 20px);
     }
 
@@ -87,23 +87,23 @@
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2><a href="index.php?action=purchase_list" style="text-decoration:none; color:#637381;">←</a> Tạo đơn Nhập hàng trực tiếp</h2>
+    <h2><a href="index.php?action=purchase_list" style="text-decoration:none; color:#637381;">â†</a> Táº¡o Ä‘Æ¡n Nháº­p hÃ ng trá»±c tiáº¿p</h2>
 </div>
 
 <form action="index.php?action=direct_receive" method="POST">
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Nhà cung cấp</div>
-                <input type="text" name="supplier_name" class="form-control" placeholder="Tìm nhà cung cấp hoặc thêm mới...">
+    <div class="Há»‡ thá»‘ng-grid">
+        <div class="Há»‡ thá»‘ng-col-left">
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">NhÃ  cung cáº¥p</div>
+                <input type="text" name="supplier_name" class="form-control" placeholder="TÃ¬m nhÃ  cung cáº¥p hoáº·c thÃªm má»›i...">
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Sản phẩm nhập hàng</div>
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">Sáº£n pháº©m nháº­p hÃ ng</div>
                 <div style="position: relative;">
-                    <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
+                    <span style="position: absolute; left: 10px; top: 10px; color: #637381;">ðŸ”</span>
                     <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
-                        <option value="">Tìm kiếm sản phẩm theo tên, SKU, Barcode...</option>
+                        <option value="">TÃ¬m kiáº¿m sáº£n pháº©m theo tÃªn, SKU, Barcode...</option>
                         <?php foreach ($allProducts as $p): ?>
                             <option value="<?php echo $p['id']; ?>" data-sku="<?php echo htmlspecialchars($p['sku'] ?? ''); ?>" data-price="<?php echo htmlspecialchars($p['cost_price'] ?? 0); ?>">
                                 <?php echo htmlspecialchars($p['product_name']); ?> - SKU: <?php echo htmlspecialchars($p['sku'] ?? '---'); ?>
@@ -115,48 +115,48 @@
                 <table class="po-table" id="product-table">
                     <thead>
                         <tr>
-                            <th>Mã SKU</th>
-                            <th>Tên sản phẩm</th>
-                            <th style="width: 100px;">Đơn vị</th>
-                            <th style="width: 100px;">Số lượng</th>
-                            <th style="width: 150px;">Đơn giá</th>
-                            <th style="width: 150px;">Thành tiền</th>
+                            <th>MÃ£ SKU</th>
+                            <th>TÃªn sáº£n pháº©m</th>
+                            <th style="width: 100px;">ÄÆ¡n vá»‹</th>
+                            <th style="width: 100px;">Sá»‘ lÆ°á»£ng</th>
+                            <th style="width: 150px;">ÄÆ¡n giÃ¡</th>
+                            <th style="width: 150px;">ThÃ nh tiá»n</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody id="po-body"></tbody>
                 </table>
                 <div style="text-align: right; margin-top: 20px; font-size: 16px; color: #212b36;">
-                    <strong>Tổng tiền: <span id="total-amount" style="color: #0088ff; font-size: 18px;">0</span> ₫</strong>
+                    <strong>Tá»•ng tiá»n: <span id="total-amount" style="color: #0088ff; font-size: 18px;">0</span> â‚«</strong>
                 </div>
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin nhập kho</div>
+        <div class="Há»‡ thá»‘ng-col-right">
+            <div class="Há»‡ thá»‘ng-card">
+                <div class="Há»‡ thá»‘ng-card-title">ThÃ´ng tin nháº­p kho</div>
                 <div class="form-group">
-                    <label>Chi nhánh nhập</label>
+                    <label>Chi nhÃ¡nh nháº­p</label>
                     <select name="branch" class="form-control">
-                        <option>Cửa hàng chính</option>
+                        <option>Cá»­a hÃ ng chÃ­nh</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Ngày ghi nhận</label>
+                    <label>NgÃ y ghi nháº­n</label>
                     <input type="date" name="expected_date" class="form-control" value="<?php echo date('Y-m-d'); ?>">
                 </div>
 
                 <div style="margin-top: 25px; padding: 15px; background: #eafff0; border: 1px solid #33d067; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
                     <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
-                    <span style="color: #108043; font-weight: 500; font-size: 14px;">Nhập kho khi tạo đơn</span>
+                    <span style="color: #108043; font-weight: 500; font-size: 14px;">Nháº­p kho khi táº¡o Ä‘Æ¡n</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #dfe3e8; padding-top: 20px;">
-        <button type="button" class="btn" style="border: 1px solid #c4cdd5; background: #fff;" onclick="window.location.href='index.php?action=purchase_list'">Hủy</button>
-        <button type="submit" class="btn btn-approve">Tạo đơn & Nhập kho</button>
+        <button type="button" class="btn" style="border: 1px solid #c4cdd5; background: #fff;" onclick="window.location.href='index.php?action=purchase_list'">Há»§y</button>
+        <button type="submit" class="btn btn-approve">Táº¡o Ä‘Æ¡n & Nháº­p kho</button>
     </div>
 </form>
 
@@ -185,14 +185,14 @@
         tr.innerHTML = `
             <td style="color: #0088ff;">${sku}</td>
             <td style="font-weight: 500;">${name}</td>
-            <td><select class="form-control" style="padding: 6px;"><option>Cái</option></select></td>
+            <td><select class="form-control" style="padding: 6px;"><option>CÃ¡i</option></select></td>
             <td>
                 <input type="number" name="quantity[]" id="qty-${id}" value="1" min="1" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;">
                 <input type="hidden" name="product_id[]" value="${id}">
             </td>
             <td><input type="number" name="price[]" id="price-${id}" value="${price}" class="form-control" oninput="updateRowTotal('${id}')" style="padding: 6px;"></td>
             <td id="total-${id}" style="font-weight: 500;">${new Intl.NumberFormat('vi-VN').format(price)}</td>
-            <td><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold;">×</a></td>
+            <td><a href="javascript:void(0)" onclick="removeRow('${id}')" style="color: #ff4d4f; text-decoration: none; font-size: 20px; font-weight: bold;">Ã—</a></td>
         `;
         tbody.appendChild(tr);
         select.value = '';
@@ -223,3 +223,4 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+

@@ -1,12 +1,12 @@
-<?php
-// Đường dẫn file: app/controllers/PromotionController.php
+﻿<?php
+// ÄÆ°á»ng dáº«n file: app/controllers/PromotionController.php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/PromotionModel.php';
 
 class PromotionController
 {
 
-    // 1. HIỂN THỊ DANH SÁCH (CHUẨN V3)
+    // 1. HIá»‚N THá»Š DANH SÃCH (CHUáº¨N V3)
     public function list()
     {
         $db = (new Database())->getConnection();
@@ -15,23 +15,23 @@ class PromotionController
         $search = $_GET['search'] ?? '';
         $status = $_GET['status'] ?? '';
         $type = $_GET['type'] ?? '';
-        $hinh_thuc = $_GET['hinh_thuc'] ?? ''; // Lấy thêm bộ lọc hình thức
+        $hinh_thuc = $_GET['hinh_thuc'] ?? ''; // Láº¥y thÃªm bá»™ lá»c hÃ¬nh thá»©c
 
         $promotions = $promoModel->getAllPromotions($search, $status, $type, $hinh_thuc);
 
-        // Quét quá hạn -> Đổi thành "Ngừng áp dụng"
+        // QuÃ©t quÃ¡ háº¡n -> Äá»•i thÃ nh "Ngá»«ng Ã¡p dá»¥ng"
         $now = date('Y-m-d H:i:s');
         foreach ($promotions as &$p) {
-            if ($p['no_end_date'] == 0 && $p['end_date'] < $now && $p['status'] != 'Ngừng áp dụng') {
-                $db->prepare("UPDATE promotions SET status = 'Ngừng áp dụng' WHERE id = ?")->execute([$p['id']]);
-                $p['status'] = 'Ngừng áp dụng';
+            if ($p['no_end_date'] == 0 && $p['end_date'] < $now && $p['status'] != 'Ngá»«ng Ã¡p dá»¥ng') {
+                $db->prepare("UPDATE promotions SET status = 'Ngá»«ng Ã¡p dá»¥ng' WHERE id = ?")->execute([$p['id']]);
+                $p['status'] = 'Ngá»«ng Ã¡p dá»¥ng';
             }
         }
         unset($p);
         require_once __DIR__ . '/../views/promotion/list.php';
     }
 
-    // 2. THÊM MỚI CHƯƠNG TRÌNH KHUYẾN MẠI (BẢN HOÀN THIỆN)
+    // 2. THÃŠM Má»šI CHÆ¯Æ NG TRÃŒNH KHUYáº¾N Máº I (Báº¢N HOÃ€N THIá»†N)
     public function add()
     {
         $db = (new Database())->getConnection();
@@ -50,12 +50,12 @@ class PromotionController
             $usage_limit = (!isset($_POST['has_usage_limit'])) ? null : (int)$_POST['usage_limit'];
             $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
 
-            // Xử lý Giá trị giảm mặc định
+            // Xá»­ lÃ½ GiÃ¡ trá»‹ giáº£m máº·c Ä‘á»‹nh
             $d_value = (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0);
             $discount_type = $_POST['discount_type'] ?? 'amount';
             $max_discount_amount = !empty($_POST['max_discount_amount']) ? (float)str_replace(['.', ','], '', $_POST['max_discount_amount']) : null;
 
-            // Xử lý logic JSON tuỳ theo Loại Khuyến Mại
+            // Xá»­ lÃ½ logic JSON tuá»³ theo Loáº¡i Khuyáº¿n Máº¡i
             $product_apply_settings = null;
             $gift_settings = null;
             $shipping_settings = null;
@@ -67,7 +67,7 @@ class PromotionController
                     'category_ids' => $_POST['apply_category_ids'] ?? []
                 ]);
             } elseif ($promo_type === 'gift_by_product' || $promo_type === 'gift_by_order') {
-                // Đóng gói Mua X Tặng Y (Chuẩn V3)
+                // ÄÃ³ng gÃ³i Mua X Táº·ng Y (Chuáº©n V3)
                 $gift_settings = json_encode([
                     'buy_condition_type' => $_POST['buy_condition_type'] ?? 'qty',
                     'buy_min_value' => (float)str_replace(['.', ','], '', $_POST['buy_min_value'] ?? 0),
@@ -84,7 +84,7 @@ class PromotionController
                     'max_gift_applies' => (int)($_POST['max_gift_applies'] ?? 1)
                 ]);
             } elseif ($promo_type === 'free_shipping') {
-                // Đóng gói Freeship (Chuẩn V3)
+                // ÄÃ³ng gÃ³i Freeship (Chuáº©n V3)
                 $max_discount_amount = !empty($_POST['shipping_max_discount']) ? (float)str_replace(['.', ','], '', $_POST['shipping_max_discount']) : null;
                 $shipping_settings = json_encode([
                     'area_scope' => $_POST['shipping_area_scope'] ?? 'all',
@@ -101,7 +101,7 @@ class PromotionController
             $allowed_combinations = !empty($_POST['allowed_combinations']) ? json_encode($_POST['allowed_combinations']) : null;
             $apply_once_per_order = isset($_POST['apply_once_per_order']) ? 1 : 0;
             $now = date('Y-m-d H:i:s');
-            $status = ($start_date > $now) ? 'Chưa áp dụng' : 'Đang áp dụng';
+            $status = ($start_date > $now) ? 'ChÆ°a Ã¡p dá»¥ng' : 'Äang Ã¡p dá»¥ng';
 
             $query = "INSERT INTO promotions (
                 promo_name, promo_code, promo_type, discount_type, discount_value, max_discount_amount, 
@@ -146,17 +146,17 @@ class PromotionController
         require_once __DIR__ . '/../views/promotion/add.php';
     }
 
-    // XỬ LÝ THAO TÁC HÀNG LOẠT (CHUẨN V3)
+    // Xá»¬ LÃ THAO TÃC HÃ€NG LOáº T (CHUáº¨N V3)
     public function bulkAction()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST['promo_ids']) && !empty($_POST['action'])) {
             $db = (new Database())->getConnection();
             $promoModel = new PromotionModel($db);
 
-            // OmniAI V3 dùng từ "Tiếp tục" và "Ngừng"
+            //  V3 dÃ¹ng tá»« "Tiáº¿p tá»¥c" vÃ  "Ngá»«ng"
             $action = $_POST['action'];
-            if ($action === 'Tiếp tục') $action = 'Đang áp dụng';
-            if ($action === 'Ngừng') $action = 'Ngừng áp dụng';
+            if ($action === 'Tiáº¿p tá»¥c') $action = 'Äang Ã¡p dá»¥ng';
+            if ($action === 'Ngá»«ng') $action = 'Ngá»«ng Ã¡p dá»¥ng';
 
             $promoModel->bulkAction($_POST['promo_ids'], $action);
             header("Location: index.php?action=promo_list&success_bulk=1");
@@ -166,7 +166,7 @@ class PromotionController
         exit;
     }
 
-    // 4. XEM CHI TIẾT KHUYẾN MẠI
+    // 4. XEM CHI TIáº¾T KHUYáº¾N Máº I
     public function detail()
     {
         $id = $_GET['id'] ?? 0;
@@ -187,7 +187,7 @@ class PromotionController
         require_once __DIR__ . '/../views/promotion/detail.php';
     }
 
-    // 5. CHỈNH SỬA CHƯƠNG TRÌNH KHUYẾN MẠI (CHUẨN V3 OMNIAI)
+    // 5. CHá»ˆNH Sá»¬A CHÆ¯Æ NG TRÃŒNH KHUYáº¾N Máº I (CHUáº¨N V3 )
     public function edit()
     {
         $id = $_GET['id'] ?? 0;
@@ -201,15 +201,15 @@ class PromotionController
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            // FIX LỖI UNDEFINED VARIABLE
+            // FIX Lá»–I UNDEFINED VARIABLE
             $no_end_date = isset($_POST['no_end_date']) ? 1 : 0;
 
             $end_date = $no_end_date ? '2099-12-31 23:59:59' : ($_POST['end_date'] . ' ' . ($_POST['end_time'] ?? '23:59:59'));
             $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
             $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
 
-            // KIỂM TRA TRẠNG THÁI THEO LUẬT SAPO V3
-            if ($promo['status'] === 'Chưa áp dụng' || $promo['status'] === 'Ngừng áp dụng') {
+            // KIá»‚M TRA TRáº NG THÃI THEO LUáº¬T Há»‡ thá»‘ng V3
+            if ($promo['status'] === 'ChÆ°a Ã¡p dá»¥ng' || $promo['status'] === 'Ngá»«ng Ã¡p dá»¥ng') {
                 $promo_name = $_POST['promo_name'] ?? '';
                 $d_value = (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0);
                 $discount_type = $_POST['discount_type'] ?? 'amount';
@@ -284,7 +284,7 @@ class PromotionController
                     $id
                 ]);
             } else {
-                // 2. ĐANG ÁP DỤNG: CHỈ ĐƯỢC PHÉP SỬA SỐ LƯỢNG VÀ NGÀY KẾT THÚC
+                // 2. ÄANG ÃP Dá»¤NG: CHá»ˆ ÄÆ¯á»¢C PHÃ‰P Sá»¬A Sá» LÆ¯á»¢NG VÃ€ NGÃ€Y Káº¾T THÃšC
                 $query = "UPDATE promotions SET usage_limit = ?, end_date = ?, no_end_date = ? WHERE id = ?";
                 $db->prepare($query)->execute([$usage_limit, $end_date, $no_end_date, $id]);
             }
@@ -294,7 +294,7 @@ class PromotionController
         }
     }
 
-    // 6. SAO CHÉP CHƯƠNG TRÌNH KHUYẾN MẠI (DUPLICATE)
+    // 6. SAO CHÃ‰P CHÆ¯Æ NG TRÃŒNH KHUYáº¾N Máº I (DUPLICATE)
     public function duplicate()
     {
         $id = $_GET['id'] ?? 0;
@@ -302,9 +302,9 @@ class PromotionController
         $promo = (new PromotionModel($db))->getPromotionById($id);
 
         if ($promo) {
-            // Chuẩn bị dữ liệu mờ (Pre-fill) đổ ngược lại form add.php
-            $promo['promo_name'] = $promo['promo_name'] . ' (Bản sao)';
-            $promo['promo_code'] = ''; // Để trống cho hệ thống tự tạo mã mới
+            // Chuáº©n bá»‹ dá»¯ liá»‡u má» (Pre-fill) Ä‘á»• ngÆ°á»£c láº¡i form add.php
+            $promo['promo_name'] = $promo['promo_name'] . ' (Báº£n sao)';
+            $promo['promo_code'] = ''; // Äá»ƒ trá»‘ng cho há»‡ thá»‘ng tá»± táº¡o mÃ£ má»›i
 
             require_once __DIR__ . '/../models/BranchModel.php';
             $branches = (new BranchModel($db))->getAllBranches();
@@ -319,7 +319,7 @@ class PromotionController
         exit;
     }
 
-    // 7. CẤU HÌNH THUẬT TOÁN KHUYẾN MẠI TỔNG
+    // 7. Cáº¤U HÃŒNH THUáº¬T TOÃN KHUYáº¾N Máº I Tá»”NG
     public function settings()
     {
         $db = (new Database())->getConnection();
@@ -340,7 +340,7 @@ class PromotionController
         require_once __DIR__ . '/../views/promotion/settings.php';
     }
     /**
-     * THUẬT TOÁN TÍNH TIỀN CHUẨN SAPO OMNIAI V3 (BẢN CHỐNG LỖ CỘNG DỒN)
+     * THUáº¬T TOÃN TÃNH TIá»€N CHUáº¨N Há»‡ thá»‘ng  V3 (Báº¢N CHá»NG Lá»– Cá»˜NG Dá»’N)
      */
     public function calculateCartTotal($cart_items, $applied_promos, $original_shipping_fee)
     {
@@ -350,11 +350,11 @@ class PromotionController
         $total_shipping_discount = 0;
 
         // =========================================================================
-        // BƯỚC 1: ÁP DỤNG GIẢM GIÁ SẢN PHẨM (LUẬT "CHỈ CHỌN 1 MỨC GIẢM TỐT NHẤT")
+        // BÆ¯á»šC 1: ÃP Dá»¤NG GIáº¢M GIÃ Sáº¢N PHáº¨M (LUáº¬T "CHá»ˆ CHá»ŒN 1 Má»¨C GIáº¢M Tá»T NHáº¤T")
         // =========================================================================
         foreach ($cart_items as &$item) {
             $price_p1 = $item['price'];
-            $best_discount_for_this_item = 0; // Biến lưu mức giảm TỐT NHẤT cho 1 sản phẩm
+            $best_discount_for_this_item = 0; // Biáº¿n lÆ°u má»©c giáº£m Tá»T NHáº¤T cho 1 sáº£n pháº©m
 
             foreach ($applied_promos as $promo) {
                 if ($promo['promo_type'] == 'discount_product' && $this->isProductEligible($item['id'], $promo['product_apply_settings'])) {
@@ -369,14 +369,14 @@ class PromotionController
                         $current_promo_discount = min($promo['discount_value'], $price_p1);
                     }
 
-                    // SAPO RULE: So sánh xem khuyến mại này có tốt hơn khuyến mại trước đó không
+                    // Há»‡ thá»‘ng RULE: So sÃ¡nh xem khuyáº¿n máº¡i nÃ y cÃ³ tá»‘t hÆ¡n khuyáº¿n máº¡i trÆ°á»›c Ä‘Ã³ khÃ´ng
                     if ($current_promo_discount > $best_discount_for_this_item) {
                         $best_discount_for_this_item = $current_promo_discount;
                     }
                 }
             }
 
-            // Chỉ áp dụng Mức giảm TỐT NHẤT duy nhất 1 lần cho sản phẩm này
+            // Chá»‰ Ã¡p dá»¥ng Má»©c giáº£m Tá»T NHáº¤T duy nháº¥t 1 láº§n cho sáº£n pháº©m nÃ y
             $item_discount_total = $best_discount_for_this_item * $item['qty'];
             $total_product_discount += $item_discount_total;
 
@@ -386,7 +386,7 @@ class PromotionController
         unset($item);
 
         // =========================================================================
-        // BƯỚC 2: MUA X TẶNG Y (Giữ nguyên thuật toán quét và tặng Y giá cao nhất)
+        // BÆ¯á»šC 2: MUA X Táº¶NG Y (Giá»¯ nguyÃªn thuáº­t toÃ¡n quÃ©t vÃ  táº·ng Y giÃ¡ cao nháº¥t)
         // =========================================================================
         foreach ($applied_promos as $promo) {
             if ($promo['promo_type'] == 'gift_by_product' || $promo['promo_type'] == 'gift_by_order') {
@@ -430,7 +430,7 @@ class PromotionController
         $subtotal_after_products = array_sum(array_column($cart_items, 'line_total'));
 
         // =========================================================================
-        // BƯỚC 3: GIẢM GIÁ ĐƠN HÀNG (Sapo cho phép áp dụng NHIỀU chương trình cùng lúc)
+        // BÆ¯á»šC 3: GIáº¢M GIÃ ÄÆ N HÃ€NG (Há»‡ thá»‘ng cho phÃ©p Ã¡p dá»¥ng NHIá»€U chÆ°Æ¡ng trÃ¬nh cÃ¹ng lÃºc)
         // =========================================================================
         foreach ($applied_promos as $promo) {
             if ($promo['promo_type'] == 'discount_order') {
@@ -446,14 +446,14 @@ class PromotionController
             }
         }
 
-        // Chốt chặn cuối cùng: Không để tiền giảm lớn hơn tiền hàng
+        // Chá»‘t cháº·n cuá»‘i cÃ¹ng: KhÃ´ng Ä‘á»ƒ tiá»n giáº£m lá»›n hÆ¡n tiá»n hÃ ng
         $total_order_discount = min($total_order_discount, $subtotal_after_products);
         $subtotal_after_orders = $subtotal_after_products - $total_order_discount;
 
         // =========================================================================
-        // BƯỚC 4: VẬN CHUYỂN (LUẬT "CHỈ CHỌN 1 MÃ FREESHIP TỐT NHẤT")
+        // BÆ¯á»šC 4: Váº¬N CHUYá»‚N (LUáº¬T "CHá»ˆ CHá»ŒN 1 MÃƒ FREESHIP Tá»T NHáº¤T")
         // =========================================================================
-        $best_shipping_discount = 0; // Biến lưu mức giảm Freeship lớn nhất
+        $best_shipping_discount = 0; // Biáº¿n lÆ°u má»©c giáº£m Freeship lá»›n nháº¥t
 
         foreach ($applied_promos as $promo) {
             if ($promo['promo_type'] == 'free_shipping') {
@@ -464,7 +464,7 @@ class PromotionController
                     $max_ship_discount = !empty($promo['max_discount_amount']) ? $promo['max_discount_amount'] : $original_shipping_fee;
                     $current_shipping_discount = min($original_shipping_fee, $max_ship_discount);
 
-                    // SAPO RULE: Chỉ lấy mã Freeship có lợi nhất
+                    // Há»‡ thá»‘ng RULE: Chá»‰ láº¥y mÃ£ Freeship cÃ³ lá»£i nháº¥t
                     if ($current_shipping_discount > $best_shipping_discount) {
                         $best_shipping_discount = $current_shipping_discount;
                     }
@@ -476,7 +476,7 @@ class PromotionController
         $final_shipping_fee = $original_shipping_fee - $total_shipping_discount;
 
         // =========================================================================
-        // TỔNG KẾT
+        // Tá»”NG Káº¾T
         // =========================================================================
         $grand_total = $subtotal_after_orders + $final_shipping_fee;
 
@@ -492,7 +492,7 @@ class PromotionController
         ];
     }
 
-    // Hàm phụ trợ cho Bước 1
+    // HÃ m phá»¥ trá»£ cho BÆ°á»›c 1
     private function isProductEligible($product_id, $settings_json)
     {
         if (!$settings_json) return true;
@@ -502,7 +502,7 @@ class PromotionController
         return false;
     }
     /**
-     * HÀM ÁNH XẠ LOẠI KHUYẾN MẠI RA CHUẨN KẾT HỢP
+     * HÃ€M ÃNH Xáº  LOáº I KHUYáº¾N Máº I RA CHUáº¨N Káº¾T Há»¢P
      */
     private function mapComboType($db_promo_type)
     {
@@ -519,12 +519,12 @@ class PromotionController
     }
 
     /**
-     * HÀM KIỂM TRA CHÉO (MUTUAL CONSENT) THEO ĐÚNG TÀI LIỆU
-     * Khuyến mại A phải cho phép loại của B, VÀ Khuyến mại B phải cho phép loại của A
+     * HÃ€M KIá»‚M TRA CHÃ‰O (MUTUAL CONSENT) THEO ÄÃšNG TÃ€I LIá»†U
+     * Khuyáº¿n máº¡i A pháº£i cho phÃ©p loáº¡i cá»§a B, VÃ€ Khuyáº¿n máº¡i B pháº£i cho phÃ©p loáº¡i cá»§a A
      */
     private function checkMutualConsent($promoA, $promoB)
     {
-        // Nếu là cùng 1 khuyến mại thì bỏ qua
+        // Náº¿u lÃ  cÃ¹ng 1 khuyáº¿n máº¡i thÃ¬ bá» qua
         if ($promoA['id'] == $promoB['id']) return true;
 
         $typeA = $this->mapComboType($promoA['promo_type']);
@@ -533,25 +533,25 @@ class PromotionController
         $comboA = json_decode($promoA['allowed_combinations'], true) ?? [];
         $comboB = json_decode($promoB['allowed_combinations'], true) ?? [];
 
-        // A có cho phép B không? VÀ B có cho phép A không?
+        // A cÃ³ cho phÃ©p B khÃ´ng? VÃ€ B cÃ³ cho phÃ©p A khÃ´ng?
         $A_allows_B = in_array($typeB, $comboA);
         $B_allows_A = in_array($typeA, $comboB);
 
         return ($A_allows_B && $B_allows_A);
     }
     /**
-     * HÀM TÌM NHÓM KHUYẾN MẠI TỐT NHẤT (THE BEST VALID GROUP)
+     * HÃ€M TÃŒM NHÃ“M KHUYáº¾N Máº I Tá»T NHáº¤T (THE BEST VALID GROUP)
      */
     public function getBestPromoGroup($eligible_promos, $cart_items, $original_shipping_fee)
     {
         $valid_groups = [];
 
-        // Thuật toán sinh các nhóm (Để đơn giản cho hệ thống nhỏ, ta nhóm theo cặp hoặc bộ 3)
-        // Duyệt qua từng promo làm "Node trung tâm"
+        // Thuáº­t toÃ¡n sinh cÃ¡c nhÃ³m (Äá»ƒ Ä‘Æ¡n giáº£n cho há»‡ thá»‘ng nhá», ta nhÃ³m theo cáº·p hoáº·c bá»™ 3)
+        // Duyá»‡t qua tá»«ng promo lÃ m "Node trung tÃ¢m"
         foreach ($eligible_promos as $promoA) {
-            $current_group = [$promoA]; // Khởi tạo nhóm có chứa A
+            $current_group = [$promoA]; // Khá»Ÿi táº¡o nhÃ³m cÃ³ chá»©a A
 
-            // Tìm các Promo khác có thể chơi chung với TẤT CẢ các thành viên trong nhóm hiện tại
+            // TÃ¬m cÃ¡c Promo khÃ¡c cÃ³ thá»ƒ chÆ¡i chung vá»›i Táº¤T Cáº¢ cÃ¡c thÃ nh viÃªn trong nhÃ³m hiá»‡n táº¡i
             foreach ($eligible_promos as $promoB) {
                 if ($promoA['id'] == $promoB['id']) continue;
 
@@ -568,7 +568,7 @@ class PromotionController
                 }
             }
 
-            // Sinh ra một ID đại diện cho nhóm (để tránh trùng lặp nhóm)
+            // Sinh ra má»™t ID Ä‘áº¡i diá»‡n cho nhÃ³m (Ä‘á»ƒ trÃ¡nh trÃ¹ng láº·p nhÃ³m)
             $group_ids = array_column($current_group, 'id');
             sort($group_ids);
             $group_key = implode('_', $group_ids);
@@ -576,15 +576,15 @@ class PromotionController
             $valid_groups[$group_key] = $current_group;
         }
 
-        // Tính toán thử số tiền giảm giá của từng nhóm để tìm ra "Nhà vô địch"
+        // TÃ­nh toÃ¡n thá»­ sá»‘ tiá»n giáº£m giÃ¡ cá»§a tá»«ng nhÃ³m Ä‘á»ƒ tÃ¬m ra "NhÃ  vÃ´ Ä‘á»‹ch"
         $best_group = [];
         $max_discount_value = -1;
 
         foreach ($valid_groups as $group) {
-            // Gọi cái hàm calculateCartTotal() mà mình làm cho bạn ở bài trước để tính nháp
+            // Gá»i cÃ¡i hÃ m calculateCartTotal() mÃ  mÃ¬nh lÃ m cho báº¡n á»Ÿ bÃ i trÆ°á»›c Ä‘á»ƒ tÃ­nh nhÃ¡p
             $calculation_result = $this->calculateCartTotal($cart_items, $group, $original_shipping_fee);
 
-            // Tính tổng tiền khách ĐƯỢC GIẢM (Càng nhiều càng tốt)
+            // TÃ­nh tá»•ng tiá»n khÃ¡ch ÄÆ¯á»¢C GIáº¢M (CÃ ng nhiá»u cÃ ng tá»‘t)
             $summary = $calculation_result['summary'];
             $total_discount_for_this_group = $summary['total_product_discount']
                 + $summary['total_order_discount']
@@ -592,13 +592,13 @@ class PromotionController
 
             if ($total_discount_for_this_group > $max_discount_value) {
                 $max_discount_value = $total_discount_for_this_group;
-                $best_group = $group; // Chốt nhóm này là nhóm Vô Địch
+                $best_group = $group; // Chá»‘t nhÃ³m nÃ y lÃ  nhÃ³m VÃ´ Äá»‹ch
             }
         }
 
-        return $best_group; // Trả về nhóm khuyến mại có lợi nhất cho khách hàng
+        return $best_group; // Tráº£ vá» nhÃ³m khuyáº¿n máº¡i cÃ³ lá»£i nháº¥t cho khÃ¡ch hÃ ng
     }
-    // HÀM HIỂN THỊ CHI TIẾT
+    // HÃ€M HIá»‚N THá»Š CHI TIáº¾T
     public function view()
     {
         $id = $_GET['id'] ?? 0;
@@ -613,12 +613,12 @@ class PromotionController
 
         $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL")->fetchAll(PDO::FETCH_ASSOC);
         $categories = $db->query("SELECT id, category_name FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-        $applied_orders = []; // Nếu sau này có bảng đơn hàng thì query ở đây
+        $applied_orders = []; // Náº¿u sau nÃ y cÃ³ báº£ng Ä‘Æ¡n hÃ ng thÃ¬ query á»Ÿ Ä‘Ã¢y
 
         require_once __DIR__ . '/../views/promotion/detail.php';
     }
 
-    // HÀM SAO CHÉP (COPY) - ĐÂY LÀ HÀM BẠN ĐANG THIẾU
+    // HÃ€M SAO CHÃ‰P (COPY) - ÄÃ‚Y LÃ€ HÃ€M Báº N ÄANG THIáº¾U
     public function copy()
     {
         $id = $_GET['id'] ?? 0;
@@ -631,14 +631,14 @@ class PromotionController
             exit;
         }
 
-        // Đổi tên và làm mới Mã KM cho bản sao
-        $promo['promo_name'] = $promo['promo_name'] . ' (Bản sao)';
+        // Äá»•i tÃªn vÃ  lÃ m má»›i MÃ£ KM cho báº£n sao
+        $promo['promo_name'] = $promo['promo_name'] . ' (Báº£n sao)';
         if (!empty($promo['promo_code'])) {
             $promo['promo_code'] = 'KM' . strtoupper(substr(md5(uniqid()), 0, 6));
         }
 
-        // Reset trạng thái để không bị khóa
-        $promo['status'] = 'Chưa áp dụng';
+        // Reset tráº¡ng thÃ¡i Ä‘á»ƒ khÃ´ng bá»‹ khÃ³a
+        $promo['status'] = 'ChÆ°a Ã¡p dá»¥ng';
         $promo['used_count'] = 0;
 
         require_once __DIR__ . '/../models/BranchModel.php';
@@ -646,7 +646,8 @@ class PromotionController
         $products = $db->query("SELECT id, product_name, sku FROM products WHERE parent_id IS NULL ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
         $categories = $db->query("SELECT id, category_name FROM categories ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
-        // Chuyển sang trang add.php kèm theo dữ liệu mồi
+        // Chuyá»ƒn sang trang add.php kÃ¨m theo dá»¯ liá»‡u má»“i
         require_once __DIR__ . '/../views/promotion/add.php';
     }
 }
+

@@ -1,7 +1,7 @@
-<?php require_once __DIR__ . '/../layout/header.php'; ?>
+﻿<?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $categories */ ?>
 <style>
-    .sapo-filter-bar {
+    .Há»‡ thá»‘ng-filter-bar {
         display: flex;
         gap: 10px;
         padding: 15px;
@@ -9,7 +9,7 @@
         background: #fff;
     }
 
-    .sapo-filter-bar input {
+    .Há»‡ thá»‘ng-filter-bar input {
         flex: 1;
         padding: 8px 12px;
         border: 1px solid #c4cdd5;
@@ -18,8 +18,8 @@
         font-size: 14px;
     }
 
-    .sapo-filter-bar select,
-    .sapo-filter-bar button {
+    .Há»‡ thá»‘ng-filter-bar select,
+    .Há»‡ thá»‘ng-filter-bar button {
         padding: 8px 12px;
         border: 1px solid #c4cdd5;
         background: #fff;
@@ -28,13 +28,13 @@
         font-size: 14px;
     }
 
-    .sapo-table {
+    .Há»‡ thá»‘ng-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .sapo-table th,
-    .sapo-table td {
+    .Há»‡ thá»‘ng-table th,
+    .Há»‡ thá»‘ng-table td {
         padding: 15px 12px;
         border-bottom: 1px solid #f4f6f8;
         text-align: left;
@@ -42,7 +42,7 @@
         vertical-align: middle;
     }
 
-    .sapo-table th {
+    .Há»‡ thá»‘ng-table th {
         color: #637381;
         font-weight: 500;
         background: #fafbfc;
@@ -54,7 +54,7 @@
         text-align: center !important;
     }
 
-    .sapo-table input[type="checkbox"] {
+    .Há»‡ thá»‘ng-table input[type="checkbox"] {
         width: 16px;
         height: 16px;
         cursor: pointer;
@@ -77,12 +77,12 @@
         border-color: #91d5ff;
     }
 
-    .sapo-dropdown {
+    .Há»‡ thá»‘ng-dropdown {
         position: relative;
         display: inline-block;
     }
 
-    .sapo-dropdown-content {
+    .Há»‡ thá»‘ng-dropdown-content {
         display: none;
         position: absolute;
         background-color: #fff;
@@ -96,7 +96,7 @@
         margin-top: 5px;
     }
 
-    .sapo-dropdown-content::before {
+    .Há»‡ thá»‘ng-dropdown-content::before {
         content: "";
         position: absolute;
         top: -10px;
@@ -106,11 +106,11 @@
         background: transparent;
     }
 
-    .sapo-dropdown:hover .sapo-dropdown-content {
+    .Há»‡ thá»‘ng-dropdown:hover .Há»‡ thá»‘ng-dropdown-content {
         display: block;
     }
 
-    .sapo-dropdown-content a {
+    .Há»‡ thá»‘ng-dropdown-content a {
         color: #212b36;
         padding: 10px 15px;
         text-decoration: none;
@@ -120,7 +120,7 @@
         cursor: pointer;
     }
 
-    .sapo-dropdown-content a:hover {
+    .Há»‡ thá»‘ng-dropdown-content a:hover {
         background-color: #f4f6f8;
         color: #0088ff;
     }
@@ -137,59 +137,59 @@
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Danh mục sản phẩm</h2>
-    <a href="index.php?action=add_category" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Thêm danh mục</a>
+    <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Danh má»¥c sáº£n pháº©m</h2>
+    <a href="index.php?action=add_category" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ ThÃªm danh má»¥c</a>
 </div>
 
-<?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Thao tác danh mục thành công!</div><?php endif; ?>
+<?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">âœ… Thao tÃ¡c danh má»¥c thÃ nh cÃ´ng!</div><?php endif; ?>
 
 <div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; overflow: visible; min-height: 400px;">
 
-    <form action="index.php" method="GET" class="sapo-filter-bar">
+    <form action="index.php" method="GET" class="Há»‡ thá»‘ng-filter-bar">
         <input type="hidden" name="action" value="product_category">
 
         <div style="position: relative; flex: 1;">
-            <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
-            <input type="text" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" placeholder="Tìm kiếm theo tên danh mục..." style="padding-left: 35px; width: 100%;">
+            <span style="position: absolute; left: 10px; top: 10px; color: #637381;">ðŸ”</span>
+            <input type="text" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" placeholder="TÃ¬m kiáº¿m theo tÃªn danh má»¥c..." style="padding-left: 35px; width: 100%;">
         </div>
 
         <select name="type" onchange="this.form.submit()">
-            <option value="">-- Loại danh mục --</option>
-            <option value="manual" <?php echo (($_GET['type'] ?? '') == 'manual') ? 'selected' : ''; ?>>Danh mục Thủ công</option>
-            <option value="auto" <?php echo (($_GET['type'] ?? '') == 'auto') ? 'selected' : ''; ?>>Danh mục Tự động</option>
+            <option value="">-- Loáº¡i danh má»¥c --</option>
+            <option value="manual" <?php echo (($_GET['type'] ?? '') == 'manual') ? 'selected' : ''; ?>>Danh má»¥c Thá»§ cÃ´ng</option>
+            <option value="auto" <?php echo (($_GET['type'] ?? '') == 'auto') ? 'selected' : ''; ?>>Danh má»¥c Tá»± Ä‘á»™ng</option>
         </select>
 
         <select>
-            <option>Kênh bán hàng ▼</option>
+            <option>KÃªnh bÃ¡n hÃ ng â–¼</option>
         </select>
-        <button type="submit" style="background: #e6f7ff; color: #0088ff; border-color: #91d5ff;">Lọc kết quả</button>
+        <button type="submit" style="background: #e6f7ff; color: #0088ff; border-color: #91d5ff;">Lá»c káº¿t quáº£</button>
         <?php if (isset($_GET['search']) || isset($_GET['type'])): ?>
-            <a href="index.php?action=product_category" style="text-decoration:none; padding: 8px 12px; color: #ff4d4f; border: 1px solid #ffa39e; border-radius: 4px;">Xóa bộ lọc</a>
+            <a href="index.php?action=product_category" style="text-decoration:none; padding: 8px 12px; color: #ff4d4f; border: 1px solid #ffa39e; border-radius: 4px;">XÃ³a bá»™ lá»c</a>
         <?php endif; ?>
     </form>
 
     <?php if (!empty($categories)): ?>
-        <table class="sapo-table">
+        <table class="Há»‡ thá»‘ng-table">
             <thead>
                 <tr id="normal-header">
                     <th class="col-cb"><input type="checkbox" onclick="toggleAll(this)"></th>
-                    <th>Danh mục</th>
-                    <th style="width: 150px; text-align: center;">Số lượng SP</th>
-                    <th>Điều kiện áp dụng</th>
+                    <th>Danh má»¥c</th>
+                    <th style="width: 150px; text-align: center;">Sá»‘ lÆ°á»£ng SP</th>
+                    <th>Äiá»u kiá»‡n Ã¡p dá»¥ng</th>
                 </tr>
 
                 <tr id="action-header" style="display: none; background: #e6f7ff; border-top: 1px solid #91d5ff; border-bottom: 1px solid #91d5ff;">
                     <th class="col-cb"><input type="checkbox" checked onclick="toggleAll(this)"></th>
                     <th colspan="3" style="color: #212b36; font-weight: normal; overflow: visible;">
-                        Đã chọn <strong id="selected-count">1</strong> danh mục
+                        ÄÃ£ chá»n <strong id="selected-count">1</strong> danh má»¥c
 
-                        <div class="sapo-dropdown" style="margin-left: 20px;">
-                            <button class="action-btn">Chọn thao tác ▼</button>
-                            <div class="sapo-dropdown-content">
-                                <a>🌐 Hiển thị trên kênh</a>
-                                <a>🚫 Ẩn trên kênh</a>
+                        <div class="Há»‡ thá»‘ng-dropdown" style="margin-left: 20px;">
+                            <button class="action-btn">Chá»n thao tÃ¡c â–¼</button>
+                            <div class="Há»‡ thá»‘ng-dropdown-content">
+                                <a>ðŸŒ Hiá»ƒn thá»‹ trÃªn kÃªnh</a>
+                                <a>ðŸš« áº¨n trÃªn kÃªnh</a>
                                 <div style="height: 1px; background: #dfe3e8; margin: 5px 0;"></div>
-                                <a href="#" id="btn-delete" onclick="return confirm('Xóa danh mục sẽ không xóa sản phẩm bên trong. Bạn có chắc chắn muốn xóa?');" style="color: #ff4d4f;">🗑️ Xóa danh mục</a>
+                                <a href="#" id="btn-delete" onclick="return confirm('XÃ³a danh má»¥c sáº½ khÃ´ng xÃ³a sáº£n pháº©m bÃªn trong. Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a?');" style="color: #ff4d4f;">ðŸ—‘ï¸ XÃ³a danh má»¥c</a>
                             </div>
                         </div>
                     </th>
@@ -205,9 +205,9 @@
                                 <?php echo htmlspecialchars($row['category_name']); ?>
                             </a>
                             <?php if (($row['selection_type'] ?? '') == 'auto'): ?>
-                                <span class="badge-type badge-auto">⚡ Tự động</span>
+                                <span class="badge-type badge-auto">âš¡ Tá»± Ä‘á»™ng</span>
                             <?php else: ?>
-                                <span class="badge-type">Thủ công</span>
+                                <span class="badge-type">Thá»§ cÃ´ng</span>
                             <?php endif; ?>
                         </td>
 
@@ -218,9 +218,9 @@
                         <td style="color: #637381; font-size: 13px;">
                             <?php
                             if (($row['selection_type'] ?? '') == 'auto') {
-                                echo "Sản phẩm thỏa mãn " . (($row['match_type'] ?? 'all') == 'all' ? 'Tất cả điều kiện' : 'Một số điều kiện');
+                                echo "Sáº£n pháº©m thá»a mÃ£n " . (($row['match_type'] ?? 'all') == 'all' ? 'Táº¥t cáº£ Ä‘iá»u kiá»‡n' : 'Má»™t sá»‘ Ä‘iá»u kiá»‡n');
                             } else {
-                                echo "Thêm thủ công từng sản phẩm";
+                                echo "ThÃªm thá»§ cÃ´ng tá»«ng sáº£n pháº©m";
                             }
                             ?>
                         </td>
@@ -230,15 +230,15 @@
         </table>
 
         <div style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: #637381; font-size: 14px; border-top: 1px solid #dfe3e8;">
-            <span>Hiển thị 1 - <?php echo count($categories); ?> danh mục</span>
+            <span>Hiá»ƒn thá»‹ 1 - <?php echo count($categories); ?> danh má»¥c</span>
         </div>
 
     <?php else: ?>
         <div style="text-align: center; padding: 80px 20px;">
-            <div style="font-size: 80px; margin-bottom: 20px;">📂</div>
-            <h3 style="font-size: 20px; color: #212b36; font-weight: bold;">Chưa có danh mục sản phẩm nào</h3>
-            <p style="color: #637381; margin-bottom: 25px;">Tạo danh mục để phân loại sản phẩm, giúp khách hàng dễ dàng tìm kiếm khi mua sắm.</p>
-            <a href="index.php?action=add_category" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ Thêm danh mục</a>
+            <div style="font-size: 80px; margin-bottom: 20px;">ðŸ“‚</div>
+            <h3 style="font-size: 20px; color: #212b36; font-weight: bold;">ChÆ°a cÃ³ danh má»¥c sáº£n pháº©m nÃ o</h3>
+            <p style="color: #637381; margin-bottom: 25px;">Táº¡o danh má»¥c Ä‘á»ƒ phÃ¢n loáº¡i sáº£n pháº©m, giÃºp khÃ¡ch hÃ ng dá»… dÃ ng tÃ¬m kiáº¿m khi mua sáº¯m.</p>
+            <a href="index.php?action=add_category" style="background: #0088ff; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">+ ThÃªm danh má»¥c</a>
         </div>
     <?php endif; ?>
 </div>
@@ -274,3 +274,4 @@
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /** @var string $products_json */
 /** @var string $customers_json */
@@ -11,10 +11,10 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sapo OmniAI - POS Bán hàng</title>
+    <title>Há»‡ thá»‘ng  - POS BÃ¡n hÃ ng</title>
     <link rel="stylesheet" href="css/pos.css?v=1.2">
     <style>
-        /* CSS Bổ sung cho các Modal và Tính năng mới */
+        /* CSS Bá»• sung cho cÃ¡c Modal vÃ  TÃ­nh nÄƒng má»›i */
         .payment-methods {
             display: flex;
             gap: 10px;
@@ -124,15 +124,15 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 <body>
 
     <div class="pos-topbar" style="background: #0088ff; color: #fff; display: flex; align-items: center; padding: 0 20px; height: 55px; gap: 15px;">
-        <a href="index.php?action=dashboard" style="color: #fff; text-decoration: none; font-weight: 600;">← Admin</a>
+        <a href="index.php?action=dashboard" style="color: #fff; text-decoration: none; font-weight: 600;">â† Admin</a>
 
         <div id="network_status" onclick="openSyncModal()" style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-            <span id="wifi_icon">📶</span> <span id="network_text">Online</span>
+            <span id="wifi_icon">ðŸ“¶</span> <span id="network_text">Online</span>
             <span id="unsynced_badge" style="background: #d82c0d; color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 12px; font-weight: bold; display: none;">0</span>
         </div>
 
         <a href="index.php?action=end_of_day_report" target="_blank" style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 4px; color: #fff; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 5px;">
-            📊 Báo cáo
+            ðŸ“Š BÃ¡o cÃ¡o
         </a>
 
         <div class="order-tabs-container" id="order_tabs_bar" style="display: flex; gap: 5px; height: 100%; align-items: flex-end; margin-left: 10px;"></div>
@@ -140,10 +140,10 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 
         <div style="display: flex; align-items: center; gap: 10px; margin-left: auto; width: 400px; position: relative;">
             <div style="position: relative; flex: 1;">
-                <span style="position: absolute; left: 12px; top: 8px; color: #8c98a4;">🔍</span>
-                <input type="text" id="product_search" placeholder="F3 - Tìm SP hoặc quét mã..." style="width: 100%; padding: 8px 15px 8px 35px; border-radius: 20px; border: none; outline: none;">
+                <span style="position: absolute; left: 12px; top: 8px; color: #8c98a4;">ðŸ”</span>
+                <input type="text" id="product_search" placeholder="F3 - TÃ¬m SP hoáº·c quÃ©t mÃ£..." style="width: 100%; padding: 8px 15px 8px 35px; border-radius: 20px; border: none; outline: none;">
             </div>
-            <button id="btn_toggle_scale" title="Bật/Tắt Cân điện tử" style="width: 36px; height: 36px; border-radius: 4px; border: 1px solid #c4cdd5; background: #f4f6f8; cursor: pointer; font-size: 18px;">⚖️</button>
+            <button id="btn_toggle_scale" title="Báº­t/Táº¯t CÃ¢n Ä‘iá»‡n tá»­" style="width: 36px; height: 36px; border-radius: 4px; border: 1px solid #c4cdd5; background: #f4f6f8; cursor: pointer; font-size: 18px;">âš–ï¸</button>
         </div>
     </div>
 
@@ -151,16 +151,16 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         <div class="pos-left" style="flex: 0 0 65%; background: #fff; display: flex; flex-direction: column; border-right: 1px solid #dfe3e8;">
             <div style="padding: 10px 20px; border-bottom: 1px solid #dfe3e8; display: flex; justify-content: space-between; align-items: center;">
                 <label style="font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="cb_separate_line" style="width: 16px; height: 16px;"> Tách dòng sản phẩm
+                    <input type="checkbox" id="cb_separate_line" style="width: 16px; height: 16px;"> TÃ¡ch dÃ²ng sáº£n pháº©m
                 </label>
-                <button onclick="addCustomProduct()" style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">+ SP tùy chỉnh (F2)</button>
+                <button onclick="addCustomProduct()" style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">+ SP tÃ¹y chá»‰nh (F2)</button>
             </div>
             <div style="display: flex; font-size: 13px; font-weight: 600; color: #637381; padding: 12px 20px; border-bottom: 1px solid #dfe3e8; background: #fafbfc;">
                 <div style="width: 30px;">#</div>
-                <div style="flex: 1;">Sản phẩm</div>
+                <div style="flex: 1;">Sáº£n pháº©m</div>
                 <div style="width: 100px; text-align: center;">SL</div>
-                <div style="width: 130px; text-align: right;">Đơn giá</div>
-                <div style="width: 130px; text-align: right;">Thành tiền</div>
+                <div style="width: 130px; text-align: right;">ÄÆ¡n giÃ¡</div>
+                <div style="width: 130px; text-align: right;">ThÃ nh tiá»n</div>
                 <div style="width: 40px;"></div>
             </div>
             <div id="cart_body" style="flex: 1; overflow-y: auto;"></div>
@@ -168,61 +168,61 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 
         <div class="pos-right" style="flex: 1; background: #fff; display: flex; flex-direction: column; padding: 20px;">
             <div id="customer_search_mode" style="display: flex; gap: 10px; margin-bottom: 15px; position: relative;">
-                <input type="text" id="customer_search" placeholder="F4 - Tìm khách hàng..." style="flex: 1; padding: 10px; border: 1px solid #c4cdd5; border-radius: 4px; outline: none;">
+                <input type="text" id="customer_search" placeholder="F4 - TÃ¬m khÃ¡ch hÃ ng..." style="flex: 1; padding: 10px; border: 1px solid #c4cdd5; border-radius: 4px; outline: none;">
                 <button onclick="document.getElementById('add_customer_modal').style.display='flex'" style="width: 38px; height: 38px; background: #fff; border: 1px solid #c4cdd5; border-radius: 4px; cursor: pointer;">+</button>
             </div>
             <div id="customer_selected_mode" style="display: none; background: #f4f6f8; padding: 12px; border-radius: 4px; border: 1px solid #dfe3e8; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="background: #0088ff; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">👤</div>
+                    <div style="background: #0088ff; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">ðŸ‘¤</div>
                     <div>
                         <div style="font-weight: 600;" id="txt_cust_name"></div>
                         <div style="font-size: 12px;" id="txt_cust_phone"></div>
                     </div>
                 </div>
-                <div onclick="removeCustomer()" style="color: #d82c0d; cursor: pointer;">🗑️</div>
+                <div onclick="removeCustomer()" style="color: #d82c0d; cursor: pointer;">ðŸ—‘ï¸</div>
             </div>
 
             <?php if (isset($settings_db['pos_use_promo_code']) && $settings_db['pos_use_promo_code'] == '1'): ?>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="text" id="promo_code_input" placeholder="Mã khuyến mại..." style="flex: 1; padding: 10px; border: 1px solid #c4cdd5; border-radius: 4px; outline: none;">
-                    <button id="btn_apply_promo" style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 0 15px; border-radius: 4px; font-weight: 600; cursor: pointer;">ÁP DỤNG</button>
+                    <input type="text" id="promo_code_input" placeholder="MÃ£ khuyáº¿n máº¡i..." style="flex: 1; padding: 10px; border: 1px solid #c4cdd5; border-radius: 4px; outline: none;">
+                    <button id="btn_apply_promo" style="background: #fff; border: 1px solid #0088ff; color: #0088ff; padding: 0 15px; border-radius: 4px; font-weight: 600; cursor: pointer;">ÃP Dá»¤NG</button>
                 </div>
                 <div id="applied_promo_tag" style="display:none; color:#108043; font-size:14px; margin-bottom:15px;">
-                    ✅ Mã: <span id="current_code_text"></span> <span style="color:#d82c0d; cursor:pointer; float:right;" onclick="removePromoCode()">[Xóa]</span>
+                    âœ… MÃ£: <span id="current_code_text"></span> <span style="color:#d82c0d; cursor:pointer; float:right;" onclick="removePromoCode()">[XÃ³a]</span>
                 </div>
             <?php endif; ?>
 
             <div style="flex: 1; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px;"><span>Tổng tiền hàng <span id="txt_total_qty" style="color:#8c98a4;">(0)</span></span><span id="txt_subtotal" style="font-weight: 500;">0</span></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #108043;"><span>Giảm giá</span><span id="txt_discount">- 0</span></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #8c98a4;"><span>Thuế VAT (10%)</span><span id="txt_tax">0</span></div>
-                <div style="display: flex; justify-content: space-between; margin-top: auto; padding-top: 15px; border-top: 1px dashed #dfe3e8; font-size: 22px; font-weight: bold; color: #0088ff;"><span>KHÁCH CẦN TRẢ</span><span id="txt_grand_total">0</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px;"><span>Tá»•ng tiá»n hÃ ng <span id="txt_total_qty" style="color:#8c98a4;">(0)</span></span><span id="txt_subtotal" style="font-weight: 500;">0</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #108043;"><span>Giáº£m giÃ¡</span><span id="txt_discount">- 0</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #8c98a4;"><span>Thuáº¿ VAT (10%)</span><span id="txt_tax">0</span></div>
+                <div style="display: flex; justify-content: space-between; margin-top: auto; padding-top: 15px; border-top: 1px dashed #dfe3e8; font-size: 22px; font-weight: bold; color: #0088ff;"><span>KHÃCH Cáº¦N TRáº¢</span><span id="txt_grand_total">0</span></div>
 
                 <?php if (!$is_two_step): ?>
                     <div style="margin-top: 15px; border-top: 1px dashed #dfe3e8; padding-top: 15px;">
                         <div class="payment-methods">
-                            <button class="pay-method-btn active" onclick="setPaymentMethod('cash', this)">Tiền mặt</button>
-                            <button class="pay-method-btn" onclick="setPaymentMethod('transfer', this)">Chuyển khoản</button>
-                            <button class="pay-method-btn" onclick="setPaymentMethod('vietqr', this)">Quét VietQR</button>
+                            <button class="pay-method-btn active" onclick="setPaymentMethod('cash', this)">Tiá»n máº·t</button>
+                            <button class="pay-method-btn" onclick="setPaymentMethod('transfer', this)">Chuyá»ƒn khoáº£n</button>
+                            <button class="pay-method-btn" onclick="setPaymentMethod('vietqr', this)">QuÃ©t VietQR</button>
                             <button class="pay-method-btn" onclick="setPaymentMethod('zalopay', this)">ZaloPay</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span style="font-weight: 600;">Khách thanh toán</span>
+                            <span style="font-weight: 600;">KhÃ¡ch thanh toÃ¡n</span>
                             <div style="width: 150px;">
                                 <input type="text" class="input-money" id="input_amount_given" value="0" onkeyup="formatCurrencyInput(this); calculateChange();">
                                 <div class="suggest-money" id="suggest_money_box"></div>
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between;"><span>Tiền thừa:</span><span id="txt_change" style="font-weight: bold; color: #d82c0d;">0</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Tiá»n thá»«a:</span><span id="txt_change" style="font-weight: bold; color: #d82c0d;">0</span></div>
                     </div>
                 <?php endif; ?>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <?php if (isset($settings_db['pos_preprint_invoice']) && $settings_db['pos_preprint_invoice'] == '1'): ?>
-                    <button class="btn-outline" style="flex: 0 0 30%; padding: 18px; border-radius: 6px; font-weight: 600; color: #0088ff; border-color: #0088ff;" onclick="printProvisional()">🖨️ In tạm tính</button>
+                    <button class="btn-outline" style="flex: 0 0 30%; padding: 18px; border-radius: 6px; font-weight: 600; color: #0088ff; border-color: #0088ff;" onclick="printProvisional()">ðŸ–¨ï¸ In táº¡m tÃ­nh</button>
                 <?php endif; ?>
-                <button class="btn-primary" id="btn_checkout" style="flex: 1; padding: 18px; border-radius: 6px; font-size: 18px;">THANH TOÁN (F9)</button>
+                <button class="btn-primary" id="btn_checkout" style="flex: 1; padding: 18px; border-radius: 6px; font-size: 18px;">THANH TOÃN (F9)</button>
             </div>
         </div>
     </div>
@@ -230,29 +230,29 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
     <?php if ($is_two_step): ?>
         <div class="modal-overlay" id="payment_modal" style="z-index: 1000;">
             <div class="modal-content" style="width: 500px;">
-                <h3>Xác nhận thanh toán</h3>
+                <h3>XÃ¡c nháº­n thanh toÃ¡n</h3>
                 <div style="background: #f4f6f8; padding: 15px; border-radius: 4px; text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 14px; color: #637381;">Khách cần trả</div>
-                    <div style="font-size: 28px; font-weight: bold; color: #0088ff;" id="modal_grand_total">0 ₫</div>
+                    <div style="font-size: 14px; color: #637381;">KhÃ¡ch cáº§n tráº£</div>
+                    <div style="font-size: 28px; font-weight: bold; color: #0088ff;" id="modal_grand_total">0 â‚«</div>
                 </div>
-                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Phương thức thanh toán</label>
+                <label style="font-weight: 600; margin-bottom: 10px; display: block;">PhÆ°Æ¡ng thá»©c thanh toÃ¡n</label>
                 <div class="payment-methods">
-                    <button class="pay-method-btn active" onclick="setPaymentMethod('cash', this)">Tiền mặt</button>
-                    <button class="pay-method-btn" onclick="setPaymentMethod('transfer', this)">Chuyển khoản</button>
-                    <button class="pay-method-btn" onclick="setPaymentMethod('qr', this)">Quét mã QR</button>
+                    <button class="pay-method-btn active" onclick="setPaymentMethod('cash', this)">Tiá»n máº·t</button>
+                    <button class="pay-method-btn" onclick="setPaymentMethod('transfer', this)">Chuyá»ƒn khoáº£n</button>
+                    <button class="pay-method-btn" onclick="setPaymentMethod('qr', this)">QuÃ©t mÃ£ QR</button>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <span style="font-weight: 600;">Khách thanh toán:</span>
+                    <span style="font-weight: 600;">KhÃ¡ch thanh toÃ¡n:</span>
                     <input type="text" class="input-money" id="input_amount_given_modal" value="0" style="width: 200px;" onkeyup="formatCurrencyInput(this); calculateChange();">
                 </div>
                 <div class="suggest-money" id="suggest_money_box_modal" style="justify-content: flex-end; margin-bottom: 15px;"></div>
                 <div style="display: flex; justify-content: space-between; font-size: 16px; margin-top: 10px;">
-                    <span>Tiền thừa trả khách:</span>
-                    <span id="txt_change_modal" style="font-weight: 700; color: #d82c0d;">0 ₫</span>
+                    <span>Tiá»n thá»«a tráº£ khÃ¡ch:</span>
+                    <span id="txt_change_modal" style="font-weight: 700; color: #d82c0d;">0 â‚«</span>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-outline" onclick="document.getElementById('payment_modal').style.display='none'">Hủy</button>
-                    <button class="btn-primary" onclick="processFinalPayment()">HOÀN TẤT (F9)</button>
+                    <button class="btn-outline" onclick="document.getElementById('payment_modal').style.display='none'">Há»§y</button>
+                    <button class="btn-primary" onclick="processFinalPayment()">HOÃ€N Táº¤T (F9)</button>
                 </div>
             </div>
         </div>
@@ -260,39 +260,39 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 
     <div class="modal-overlay" id="add_customer_modal" style="z-index: 1000;">
         <div class="modal-content">
-            <h3>Thêm khách hàng mới</h3>
-            <div style="margin-bottom: 15px;"><label>Tên khách hàng</label><input type="text" id="new_cust_name" style="width: 100%; padding: 8px; border: 1px solid #c4cdd5; border-radius: 4px;"></div>
-            <div style="margin-bottom: 15px;"><label>Số điện thoại</label><input type="text" id="new_cust_phone" style="width: 100%; padding: 8px; border: 1px solid #c4cdd5; border-radius: 4px;"></div>
+            <h3>ThÃªm khÃ¡ch hÃ ng má»›i</h3>
+            <div style="margin-bottom: 15px;"><label>TÃªn khÃ¡ch hÃ ng</label><input type="text" id="new_cust_name" style="width: 100%; padding: 8px; border: 1px solid #c4cdd5; border-radius: 4px;"></div>
+            <div style="margin-bottom: 15px;"><label>Sá»‘ Ä‘iá»‡n thoáº¡i</label><input type="text" id="new_cust_phone" style="width: 100%; padding: 8px; border: 1px solid #c4cdd5; border-radius: 4px;"></div>
             <div class="modal-actions">
-                <button class="btn-outline" onclick="document.getElementById('add_customer_modal').style.display='none'">Hủy</button>
-                <button class="btn-primary" onclick="quickAddCustomer()">Lưu khách hàng</button>
+                <button class="btn-outline" onclick="document.getElementById('add_customer_modal').style.display='none'">Há»§y</button>
+                <button class="btn-primary" onclick="quickAddCustomer()">LÆ°u khÃ¡ch hÃ ng</button>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="qr_display_modal" style="z-index: 10000;">
         <div class="modal-content" style="width: 450px; text-align: center; padding: 20px;">
-            <h3 style="color: #0088ff; margin-bottom: 5px;">MÀN HÌNH CHỜ THANH TOÁN</h3>
-            <p style="color: #637381; font-size: 14px; margin-bottom: 15px;">Mã QR có hiệu lực trong: <span id="qr_timer" style="color: #d82c0d; font-weight: bold; font-size: 16px;">05:00</span></p>
+            <h3 style="color: #0088ff; margin-bottom: 5px;">MÃ€N HÃŒNH CHá»œ THANH TOÃN</h3>
+            <p style="color: #637381; font-size: 14px; margin-bottom: 15px;">MÃ£ QR cÃ³ hiá»‡u lá»±c trong: <span id="qr_timer" style="color: #d82c0d; font-weight: bold; font-size: 16px;">05:00</span></p>
 
             <div style="background: #f4f6f8; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: inline-block; border: 1px solid #dfe3e8;">
-                <img id="vietqr_image" src="" alt="Mã QR" style="width: 250px; height: 250px; border-radius: 8px;">
+                <img id="vietqr_image" src="" alt="MÃ£ QR" style="width: 250px; height: 250px; border-radius: 8px;">
             </div>
 
-            <div style="font-size: 15px;">Khách cần trả:</div>
-            <div id="qr_amount_text" style="font-size: 28px; font-weight: bold; color: #108043; margin-bottom: 15px;">0 ₫</div>
+            <div style="font-size: 15px;">KhÃ¡ch cáº§n tráº£:</div>
+            <div id="qr_amount_text" style="font-size: 28px; font-weight: bold; color: #108043; margin-bottom: 15px;">0 â‚«</div>
 
             <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
-                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;" onclick="printOnlyQR()"><i class="fa-solid fa-qrcode"></i> In mã QR</button>
-                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;"><i class="fa-solid fa-print"></i> In đơn hàng</button>
+                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;" onclick="printOnlyQR()"><i class="fa-solid fa-qrcode"></i> In mÃ£ QR</button>
+                <button class="btn-outline" style="font-size: 12px; padding: 6px 10px;"><i class="fa-solid fa-print"></i> In Ä‘Æ¡n hÃ ng</button>
             </div>
 
-            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-bottom: 15px;" onclick="completeQRPayment()">✅ Khách đã thanh toán thành công?</button>
+            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-bottom: 15px;" onclick="completeQRPayment()">âœ… KhÃ¡ch Ä‘Ã£ thanh toÃ¡n thÃ nh cÃ´ng?</button>
 
             <div style="display: flex; justify-content: space-between; border-top: 1px solid #dfe3e8; padding-top: 15px;">
-                <button class="btn-outline" style="color: #d82c0d; border-color: #fca5a5; padding: 6px 10px;" onclick="cancelQRPayment()">Hủy đơn hàng</button>
-                <button class="btn-outline" style="padding: 6px 10px;" onclick="editOrderQR()">Sửa đơn hàng</button>
-                <button class="btn-outline" style="color: #0088ff; border-color: #0088ff; padding: 6px 10px;" onclick="changePaymentMethod()">Đổi phương thức</button>
+                <button class="btn-outline" style="color: #d82c0d; border-color: #fca5a5; padding: 6px 10px;" onclick="cancelQRPayment()">Há»§y Ä‘Æ¡n hÃ ng</button>
+                <button class="btn-outline" style="padding: 6px 10px;" onclick="editOrderQR()">Sá»­a Ä‘Æ¡n hÃ ng</button>
+                <button class="btn-outline" style="color: #0088ff; border-color: #0088ff; padding: 6px 10px;" onclick="changePaymentMethod()">Äá»•i phÆ°Æ¡ng thá»©c</button>
             </div>
         </div>
     </div>
@@ -300,14 +300,14 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
     <div class="modal-overlay" id="sync_offline_modal" style="z-index: 9999;">
         <div class="modal-content" style="width: 600px;">
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #dfe3e8; padding-bottom: 10px; margin-bottom: 15px;">
-                <h3 style="margin: 0;">Đơn chưa đồng bộ <span id="modal_unsynced_count" style="color: #d82c0d;">(0)</span></h3>
-                <button style="border: none; background: transparent; font-size: 20px; cursor: pointer;" onclick="document.getElementById('sync_offline_modal').style.display='none'">×</button>
+                <h3 style="margin: 0;">ÄÆ¡n chÆ°a Ä‘á»“ng bá»™ <span id="modal_unsynced_count" style="color: #d82c0d;">(0)</span></h3>
+                <button style="border: none; background: transparent; font-size: 20px; cursor: pointer;" onclick="document.getElementById('sync_offline_modal').style.display='none'">Ã—</button>
             </div>
-            <div style="background: #fff8ea; color: #8a6100; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px;">⚠️ Vui lòng không xóa Cache trình duyệt trước khi đồng bộ!</div>
+            <div style="background: #fff8ea; color: #8a6100; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px;">âš ï¸ Vui lÃ²ng khÃ´ng xÃ³a Cache trÃ¬nh duyá»‡t trÆ°á»›c khi Ä‘á»“ng bá»™!</div>
             <div id="offline_orders_list" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
             <div class="modal-actions" style="border-top: 1px solid #dfe3e8; padding-top: 15px;">
-                <button class="btn-outline" onclick="document.getElementById('sync_offline_modal').style.display='none'">Đóng</button>
-                <button class="btn-primary" id="btn_sync_all" style="background: #108043;" onclick="syncAllOfflineOrders()">🔄 ĐỒNG BỘ TẤT CẢ</button>
+                <button class="btn-outline" onclick="document.getElementById('sync_offline_modal').style.display='none'">ÄÃ³ng</button>
+                <button class="btn-primary" id="btn_sync_all" style="background: #108043;" onclick="syncAllOfflineOrders()">ðŸ”„ Äá»’NG Bá»˜ Táº¤T Cáº¢</button>
             </div>
         </div>
     </div>
@@ -337,19 +337,19 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         let activeTabId = 1;
         let nextTabId = 2;
 
-        // --- LOGIC OFFLINE & MẠNG ---
-        let offlineOrders = JSON.parse(localStorage.getItem('sapo_offline_orders')) || [];
+        // --- LOGIC OFFLINE & Máº NG ---
+        let offlineOrders = JSON.parse(localStorage.getItem('Há»‡ thá»‘ng_offline_orders')) || [];
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
 
         function updateNetworkStatus() {
             if (navigator.onLine) {
-                document.getElementById('wifi_icon').innerText = '📶';
+                document.getElementById('wifi_icon').innerText = 'ðŸ“¶';
                 document.getElementById('network_text').innerText = 'Online';
                 document.getElementById('network_status').style.background = 'rgba(16, 128, 67, 0.8)';
                 if (offlineOrders.length > 0) openSyncModal();
             } else {
-                document.getElementById('wifi_icon').innerText = '📵';
+                document.getElementById('wifi_icon').innerText = 'ðŸ“µ';
                 document.getElementById('network_text').innerText = 'Offline';
                 document.getElementById('network_status').style.background = 'rgba(216, 44, 13, 0.8)';
             }
@@ -363,24 +363,24 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             let listDiv = document.getElementById('offline_orders_list');
             listDiv.innerHTML = '';
             if (offlineOrders.length === 0) {
-                listDiv.innerHTML = '<div style="text-align:center; color:#8c98a4; padding:20px;">Không có đơn kẹt.</div>';
+                listDiv.innerHTML = '<div style="text-align:center; color:#8c98a4; padding:20px;">KhÃ´ng cÃ³ Ä‘Æ¡n káº¹t.</div>';
                 document.getElementById('btn_sync_all').style.display = 'none';
                 return;
             }
             document.getElementById('btn_sync_all').style.display = 'inline-block';
             offlineOrders.forEach(order => {
-                let err = order.error ? `<div style="color:#d82c0d; font-size:12px;">⚠️ ${order.error}</div>` : '';
-                listDiv.innerHTML += `<div style="border: 1px solid #dfe3e8; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; background: ${order.error ? '#fff1f0' : '#fff'};"><div><b>${order.offline_id}</b><br><span style="font-size:12px;">${order.created_at}</span>${err}</div><b style="color:#0088ff;">${formatCurrency(order.summary.grand_total)} ₫</b></div>`;
+                let err = order.error ? `<div style="color:#d82c0d; font-size:12px;">âš ï¸ ${order.error}</div>` : '';
+                listDiv.innerHTML += `<div style="border: 1px solid #dfe3e8; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; background: ${order.error ? '#fff1f0' : '#fff'};"><div><b>${order.offline_id}</b><br><span style="font-size:12px;">${order.created_at}</span>${err}</div><b style="color:#0088ff;">${formatCurrency(order.summary.grand_total)} â‚«</b></div>`;
             });
         }
 
         async function syncAllOfflineOrders() {
             if (!navigator.onLine) {
-                alert("Chưa có mạng!");
+                alert("ChÆ°a cÃ³ máº¡ng!");
                 return;
             }
             let btnSync = document.getElementById('btn_sync_all');
-            btnSync.innerText = '🔄 ĐANG ĐỒNG BỘ...';
+            btnSync.innerText = 'ðŸ”„ ÄANG Äá»’NG Bá»˜...';
             btnSync.disabled = true;
             let newOfflineOrders = [];
             let successCount = 0;
@@ -401,20 +401,20 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                         newOfflineOrders.push(order);
                     }
                 } catch (err) {
-                    order.error = "Lỗi kết nối!";
+                    order.error = "Lá»—i káº¿t ná»‘i!";
                     newOfflineOrders.push(order);
                 }
             }
             offlineOrders = newOfflineOrders;
-            localStorage.setItem('sapo_offline_orders', JSON.stringify(offlineOrders));
+            localStorage.setItem('Há»‡ thá»‘ng_offline_orders', JSON.stringify(offlineOrders));
             updateNetworkStatus();
             openSyncModal();
-            btnSync.innerText = '🔄 ĐỒNG BỘ TẤT CẢ';
+            btnSync.innerText = 'ðŸ”„ Äá»’NG Bá»˜ Táº¤T Cáº¢';
             btnSync.disabled = false;
-            alert(`Đã đồng bộ ${successCount} đơn!`);
+            alert(`ÄÃ£ Ä‘á»“ng bá»™ ${successCount} Ä‘Æ¡n!`);
         }
 
-        // --- TIỆN ÍCH TIỀN TỆ ---
+        // --- TIá»†N ÃCH TIá»€N Tá»† ---
         function formatCurrency(num) {
             return new Intl.NumberFormat('vi-VN').format(num);
         }
@@ -436,8 +436,8 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             tabsBar.innerHTML = '';
             Object.keys(ordersData).forEach(tabId => {
                 let active = (tabId == activeTabId) ? 'background:#fff; color:#0088ff; font-weight:bold;' : 'background:rgba(255,255,255,0.2); color:#fff;';
-                let closeBtn = Object.keys(ordersData).length > 1 ? `<span onclick="event.stopPropagation(); closeOrderTab(${tabId})" style="margin-left:8px; cursor:pointer;">×</span>` : '';
-                tabsBar.innerHTML += `<button onclick="switchOrderTab(${tabId})" style="border:none; padding:8px 16px; border-radius:6px 6px 0 0; cursor:pointer; font-size:13px; ${active}">📦 Đơn ${tabId} ${closeBtn}</button>`;
+                let closeBtn = Object.keys(ordersData).length > 1 ? `<span onclick="event.stopPropagation(); closeOrderTab(${tabId})" style="margin-left:8px; cursor:pointer;">Ã—</span>` : '';
+                tabsBar.innerHTML += `<button onclick="switchOrderTab(${tabId})" style="border:none; padding:8px 16px; border-radius:6px 6px 0 0; cursor:pointer; font-size:13px; ${active}">ðŸ“¦ ÄÆ¡n ${tabId} ${closeBtn}</button>`;
             });
         }
 
@@ -481,7 +481,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         }
 
         function closeOrderTab(tabId) {
-            if (confirm(`Đóng Đơn ${tabId}?`)) {
+            if (confirm(`ÄÃ³ng ÄÆ¡n ${tabId}?`)) {
                 delete ordersData[tabId];
                 if (activeTabId == tabId) activeTabId = Object.keys(ordersData)[0];
                 renderTabsBar();
@@ -489,14 +489,14 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             }
         }
 
-        // --- CÂN ĐIỆN TỬ & TÌM KIẾM SẢN PHẨM ---
+        // --- CÃ‚N ÄIá»†N Tá»¬ & TÃŒM KIáº¾M Sáº¢N PHáº¨M ---
         let isScaleMode = false;
         const SCALE_PREFIX = '21';
         document.getElementById('btn_toggle_scale').onclick = function() {
             isScaleMode = !isScaleMode;
             this.style.background = isScaleMode ? '#e5f0ff' : '#f4f6f8';
             this.style.borderColor = isScaleMode ? '#0088ff' : '#c4cdd5';
-            document.getElementById('product_search').placeholder = isScaleMode ? "Chế độ Cân: Quét mã 13 số..." : "F3 - Tìm SP hoặc quét mã...";
+            document.getElementById('product_search').placeholder = isScaleMode ? "Cháº¿ Ä‘á»™ CÃ¢n: QuÃ©t mÃ£ 13 sá»‘..." : "F3 - TÃ¬m SP hoáº·c quÃ©t mÃ£...";
             document.getElementById('product_search').focus();
         };
 
@@ -530,7 +530,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         searchInput.addEventListener('input', function() {
             let keyword = this.value.trim();
 
-            // Thuật toán quét mã cân điện tử
+            // Thuáº­t toÃ¡n quÃ©t mÃ£ cÃ¢n Ä‘iá»‡n tá»­
             if (isScaleMode && keyword.length === 13 && keyword.startsWith(SCALE_PREFIX)) {
                 let skuCode = keyword.substring(2, 7);
                 let weightKg = parseInt(keyword.substring(7, 12), 10) / 1000;
@@ -539,7 +539,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     let currentCart = ordersData[activeTabId].cart;
                     currentCart.push({
                         id: matchedProduct.id,
-                        name: matchedProduct.product_name + ' (Cân)',
+                        name: matchedProduct.product_name + ' (CÃ¢n)',
                         sku: matchedProduct.sku,
                         price: parseFloat(matchedProduct.price),
                         qty: weightKg
@@ -563,7 +563,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 results.forEach(p => {
                     let item = document.createElement('div');
                     item.style.cssText = 'padding:10px 15px; border-bottom:1px solid #f4f6f8; cursor:pointer; display:flex; justify-content:space-between;';
-                    item.innerHTML = `<div><b>${p.product_name}</b><br><span style="font-size:12px;color:#8c98a4;">${p.sku || ''}</span></div><b style="color:#0088ff;">${formatCurrency(p.price)} ₫</b>`;
+                    item.innerHTML = `<div><b>${p.product_name}</b><br><span style="font-size:12px;color:#8c98a4;">${p.sku || ''}</span></div><b style="color:#0088ff;">${formatCurrency(p.price)} â‚«</b>`;
                     item.onclick = () => {
                         addToCart(p);
                         searchInput.value = '';
@@ -575,21 +575,21 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         });
 
         function addCustomProduct() {
-            let name = prompt("Tên Dịch vụ/SP tùy chỉnh (F2):");
+            let name = prompt("TÃªn Dá»‹ch vá»¥/SP tÃ¹y chá»‰nh (F2):");
             if (!name) return;
-            let price = parseCurrency(prompt("Đơn giá (VNĐ):"));
+            let price = parseCurrency(prompt("ÄÆ¡n giÃ¡ (VNÄ):"));
             if (isNaN(price)) return;
             ordersData[activeTabId].cart.push({
                 id: 'CUSTOM_' + Date.now(),
                 name: name,
-                sku: 'DỊCH VỤ',
+                sku: 'Dá»ŠCH Vá»¤',
                 price: price,
                 qty: 1
             });
             triggerCalculation();
         }
 
-        // --- KHÁCH HÀNG ---
+        // --- KHÃCH HÃ€NG ---
         const custSearchInput = document.getElementById('customer_search');
         let custDropdown = document.createElement('div');
         custDropdown.style.cssText = 'position:absolute; width:100%; background:#fff; border:1px solid #dfe3e8; box-shadow:0 4px 8px rgba(0,0,0,0.1); max-height:250px; overflow-y:auto; display:none; z-index:999; top:45px; border-radius:4px;';
@@ -661,7 +661,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 });
         }
 
-        // --- GIỎ HÀNG & TÍNH TIỀN ---
+        // --- GIá»Ž HÃ€NG & TÃNH TIá»€N ---
         function addToCart(product) {
             let currentCart = ordersData[activeTabId].cart;
             let isSep = document.getElementById('cb_separate_line').checked;
@@ -687,7 +687,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         }
 
         function updateQty(index, newQty) {
-            let qty = parseFloat(newQty); // Dùng parseFloat cho cân điện tử
+            let qty = parseFloat(newQty); // DÃ¹ng parseFloat cho cÃ¢n Ä‘iá»‡n tá»­
             if (qty <= 0 || isNaN(qty)) ordersData[activeTabId].cart.splice(index, 1);
             else ordersData[activeTabId].cart[index].qty = qty;
             triggerCalculation();
@@ -723,10 +723,10 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 .then(res => res.json()).then(res => {
                     if (res.status === 'success') {
 
-                        // --- THÊM ĐOẠN HIỂN THỊ CẢNH BÁO MÃ GIẢM GIÁ Ở ĐÂY ---
-                        if (res.msg && res.msg.includes("không tồn tại") || res.msg && res.msg.includes("tối thiểu")) {
-                            alert('⚠️ ' + res.msg);
-                            removePromoCode(); // Tự động xóa mã lỗi khỏi UI
+                        // --- THÃŠM ÄOáº N HIá»‚N THá»Š Cáº¢NH BÃO MÃƒ GIáº¢M GIÃ á»ž ÄÃ‚Y ---
+                        if (res.msg && res.msg.includes("khÃ´ng tá»“n táº¡i") || res.msg && res.msg.includes("tá»‘i thiá»ƒu")) {
+                            alert('âš ï¸ ' + res.msg);
+                            removePromoCode(); // Tá»± Ä‘á»™ng xÃ³a mÃ£ lá»—i khá»i UI
                             return;
                         }
                         // -----------------------------------------------------
@@ -771,7 +771,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     </div>
                     <div style="width:130px; text-align:right;">${strike} ${formatCurrency(item.final_price)}</div>
                     <div style="width:130px; text-align:right; font-weight:bold; color:#0088ff;">${formatCurrency(item.line_total)}</div>
-                    <div style="width:40px; text-align:right; color:red; cursor:pointer;" onclick="updateQty(${index}, 0)">🗑️</div>
+                    <div style="width:40px; text-align:right; color:red; cursor:pointer;" onclick="updateQty(${index}, 0)">ðŸ—‘ï¸</div>
                 </div>`;
             });
             document.getElementById('txt_total_qty').innerText = `(${qtyTotal})`;
@@ -779,10 +779,10 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             document.getElementById('txt_discount').innerText = '-' + formatCurrency((summary.total_product_discount || 0) + (summary.total_order_discount || 0));
             document.getElementById('txt_tax').innerText = formatCurrency(summary.tax_amount);
             document.getElementById('txt_grand_total').innerText = formatCurrency(summary.grand_total);
-            if (document.getElementById('modal_grand_total')) document.getElementById('modal_grand_total').innerText = formatCurrency(summary.grand_total) + ' ₫';
+            if (document.getElementById('modal_grand_total')) document.getElementById('modal_grand_total').innerText = formatCurrency(summary.grand_total) + ' â‚«';
         }
 
-        // --- GỢI Ý TIỀN & PHƯƠNG THỨC THANH TOÁN ---
+        // --- Gá»¢I Ã TIá»€N & PHÆ¯Æ NG THá»¨C THANH TOÃN ---
         function calculateChange() {
             let change = ordersData[activeTabId].amountGiven - ordersData[activeTabId].summary.grand_total;
             document.querySelectorAll('[id^="txt_change"]').forEach(el => el.innerText = change > 0 ? formatCurrency(change) : '0');
@@ -812,21 +812,21 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         }
 
         function setPaymentMethod(method, btnElement) {
-            // 1. Cập nhật phương thức vào đơn hàng hiện tại
+            // 1. Cáº­p nháº­t phÆ°Æ¡ng thá»©c vÃ o Ä‘Æ¡n hÃ ng hiá»‡n táº¡i
             ordersData[activeTabId].paymentMethod = method;
 
-            // 2. Đổi màu nút bấm hiển thị trên giao diện
+            // 2. Äá»•i mÃ u nÃºt báº¥m hiá»ƒn thá»‹ trÃªn giao diá»‡n
             document.querySelectorAll('.pay-method-btn').forEach(btn => btn.classList.remove('active'));
             if (btnElement) btnElement.classList.add('active');
 
-            // 3. NẾU LÀ VIETQR HOẶC ZALOPAY -> BUNG MODAL QR LẬP TỨC KHÔNG CẦN CHỜ BẤM F9
+            // 3. Náº¾U LÃ€ VIETQR HOáº¶C ZALOPAY -> BUNG MODAL QR Láº¬P Tá»¨C KHÃ”NG Cáº¦N CHá»œ Báº¤M F9
             if (method === 'vietqr' || method === 'zalopay') {
                 let order = ordersData[activeTabId];
 
-                // Kiểm tra giỏ hàng trống
+                // Kiá»ƒm tra giá» hÃ ng trá»‘ng
                 if (order.cart.length === 0) {
-                    alert('Giỏ hàng đang trống, vui lòng chọn sản phẩm trước!');
-                    // Trả về mặc định tiền mặt
+                    alert('Giá» hÃ ng Ä‘ang trá»‘ng, vui lÃ²ng chá»n sáº£n pháº©m trÆ°á»›c!');
+                    // Tráº£ vá» máº·c Ä‘á»‹nh tiá»n máº·t
                     setPaymentMethod('cash', document.querySelector(".pay-method-btn[onclick*='cash']"));
                     return;
                 }
@@ -834,15 +834,15 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 let qrUrl = '';
 
                 if (method === 'vietqr') {
-                    // Lấy thông tin từ mảng PAYMENT_METHODS do PHP truyền xuống
+                    // Láº¥y thÃ´ng tin tá»« máº£ng PAYMENT_METHODS do PHP truyá»n xuá»‘ng
                     let selectedMethod = PAYMENT_METHODS.find(m => m.code === 'vietqr');
 
-                    // Trường hợp dự phòng nếu API fetch PAYMENT_METHODS từ DB bị chậm hoặc rỗng
+                    // TrÆ°á»ng há»£p dá»± phÃ²ng náº¿u API fetch PAYMENT_METHODS tá»« DB bá»‹ cháº­m hoáº·c rá»—ng
                     let bank = "MB";
-                    let acc = "0123456789"; // Số tài khoản dự phòng
+                    let acc = "0123456789"; // Sá»‘ tÃ i khoáº£n dá»± phÃ²ng
                     let name = "BUI VAN KHUONG";
 
-                    // Nếu có data cấu hình thật trong DB thì bốc ra dùng
+                    // Náº¿u cÃ³ data cáº¥u hÃ¬nh tháº­t trong DB thÃ¬ bá»‘c ra dÃ¹ng
                     if (selectedMethod && selectedMethod.config_data) {
                         let config = JSON.parse(selectedMethod.config_data);
                         bank = config.bank_code || "MB";
@@ -853,30 +853,30 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     let amount = order.summary.grand_total;
                     let desc = encodeURIComponent('Thanh toan don ' + activeTabId);
 
-                    // Sinh link ảnh VietQR chuẩn
+                    // Sinh link áº£nh VietQR chuáº©n
                     qrUrl = `https://img.vietqr.io/image/${bank}-${acc}-compact.png?amount=${amount}&addInfo=${desc}&accountName=${encodeURIComponent(name)}`;
                 } else {
-                    // Nếu là ZaloPay
+                    // Náº¿u lÃ  ZaloPay
                     qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ZALOPAY_ORDER_${activeTabId}_AMT_${order.summary.grand_total}`;
                 }
 
-                // Đổ dữ liệu vào Modal QR
+                // Äá»• dá»¯ liá»‡u vÃ o Modal QR
                 document.getElementById('vietqr_image').src = qrUrl;
-                document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' ₫';
+                document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' â‚«';
 
-                // Hiện Modal QR lên màn hình
+                // Hiá»‡n Modal QR lÃªn mÃ n hÃ¬nh
                 if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
                 document.getElementById('qr_display_modal').style.display = 'flex';
 
-                // Chạy đồng hồ đếm ngược 5 phút (300 giây)
+                // Cháº¡y Ä‘á»“ng há»“ Ä‘áº¿m ngÆ°á»£c 5 phÃºt (300 giÃ¢y)
                 startQRTimer(5 * 60);
             } else {
-                // Nếu chọn Tiền mặt hoặc Chuyển khoản thường thì tính lại tiền thừa
+                // Náº¿u chá»n Tiá»n máº·t hoáº·c Chuyá»ƒn khoáº£n thÆ°á»ng thÃ¬ tÃ­nh láº¡i tiá»n thá»«a
                 calculateChange();
             }
         }
 
-        // --- COUPON & THANH TOÁN ---
+        // --- COUPON & THANH TOÃN ---
         let btnApply = document.getElementById('btn_apply_promo');
         if (btnApply) btnApply.onclick = function() {
             let code = document.getElementById('promo_code_input').value.trim().toUpperCase();
@@ -893,7 +893,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 
         document.getElementById('btn_checkout').onclick = function() {
             if (ordersData[activeTabId].cart.length === 0) {
-                alert('Giỏ hàng trống!');
+                alert('Giá» hÃ ng trá»‘ng!');
                 return;
             }
             if (IS_TWO_STEP) document.getElementById('payment_modal').style.display = 'flex';
@@ -904,14 +904,14 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             let order = ordersData[activeTabId];
             let btn = document.getElementById('btn_checkout');
 
-            // Lấy cấu hình ngân hàng từ Database
+            // Láº¥y cáº¥u hÃ¬nh ngÃ¢n hÃ ng tá»« Database
             let selectedMethod = PAYMENT_METHODS.find(m => m.code === order.paymentMethod);
 
-            // NẾU CHỌN VIETQR HOẶC ZALOPAY THÌ BẬT MÀN HÌNH QR
+            // Náº¾U CHá»ŒN VIETQR HOáº¶C ZALOPAY THÃŒ Báº¬T MÃ€N HÃŒNH QR
             if ((order.paymentMethod === 'vietqr' || order.paymentMethod === 'zalopay') && document.getElementById('qr_display_modal').style.display !== 'flex') {
 
                 if (!selectedMethod || !selectedMethod.config_data) {
-                    alert("Phương thức này chưa được Cấu hình số tài khoản!");
+                    alert("PhÆ°Æ¡ng thá»©c nÃ y chÆ°a Ä‘Æ°á»£c Cáº¥u hÃ¬nh sá»‘ tÃ i khoáº£n!");
                     return;
                 }
 
@@ -919,7 +919,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 let qrUrl = '';
 
                 if (order.paymentMethod === 'vietqr') {
-                    // TỰ ĐỘNG LẤY TÀI KHOẢN MBBANK CỦA BẠN ĐỂ TẠO QR
+                    // Tá»° Äá»˜NG Láº¤Y TÃ€I KHOáº¢N MBBANK Cá»¦A Báº N Äá»‚ Táº O QR
                     let bank = config.bank_code;
                     let acc = config.account_no;
                     let name = encodeURIComponent(config.fullname);
@@ -927,22 +927,22 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     let desc = encodeURIComponent('Thanh toan don ' + activeTabId);
                     qrUrl = `https://img.vietqr.io/image/${bank}-${acc}-compact.png?amount=${amount}&addInfo=${desc}&accountName=${name}`;
                 } else {
-                    // ZaloPay (Giả lập QR Code ZaloPay)
+                    // ZaloPay (Giáº£ láº­p QR Code ZaloPay)
                     qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ZALOPAY_PAYMENT_ORDER_${activeTabId}`;
                 }
 
                 document.getElementById('vietqr_image').src = qrUrl;
-                document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' ₫';
+                document.getElementById('qr_amount_text').innerText = formatCurrency(order.summary.grand_total) + ' â‚«';
 
                 if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
                 document.getElementById('qr_display_modal').style.display = 'flex';
 
-                // Khởi động đồng hồ đếm ngược 5 phút
+                // Khá»Ÿi Ä‘á»™ng Ä‘á»“ng há»“ Ä‘áº¿m ngÆ°á»£c 5 phÃºt
                 startQRTimer(5 * 60);
                 return;
             }
 
-            // Nếu OFFLINE
+            // Náº¿u OFFLINE
             if (!navigator.onLine) {
                 offlineOrders.push({
                     offline_id: 'OFF_' + Date.now(),
@@ -953,12 +953,12 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     payment_method: order.paymentMethod,
                     amount_paid: order.amountGiven,
                     customer_id: order.customer ? order.customer.id : null,
-                    customer_name: order.customer ? order.customer.customer_name : 'Khách lẻ',
+                    customer_name: order.customer ? order.customer.customer_name : 'KhÃ¡ch láº»',
                     error: null
                 });
-                localStorage.setItem('sapo_offline_orders', JSON.stringify(offlineOrders));
+                localStorage.setItem('Há»‡ thá»‘ng_offline_orders', JSON.stringify(offlineOrders));
                 updateNetworkStatus();
-                alert(`📵 OFFLINE! Đã lưu tạm vào máy.`);
+                alert(`ðŸ“µ OFFLINE! ÄÃ£ lÆ°u táº¡m vÃ o mÃ¡y.`);
                 printProvisional();
                 if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
                 closeOrderTab(activeTabId);
@@ -967,7 +967,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 
             // Online Checkout
             if (btn) {
-                btn.innerText = 'ĐANG XỬ LÝ...';
+                btn.innerText = 'ÄANG Xá»¬ LÃ...';
                 btn.disabled = true;
             }
             fetch('index.php?action=store_order', {
@@ -987,12 +987,12 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 if (res.status === 'success') {
                     if (document.getElementById('payment_modal')) document.getElementById('payment_modal').style.display = 'none';
                     let change = order.amountGiven - order.summary.grand_total;
-                    alert(`🎉 Thành công! Tiền thừa: ${change > 0 ? formatCurrency(change) : 0} ₫`);
+                    alert(`ðŸŽ‰ ThÃ nh cÃ´ng! Tiá»n thá»«a: ${change > 0 ? formatCurrency(change) : 0} â‚«`);
                     <?php if (isset($settings_db['pos_auto_print']) && $settings_db['pos_auto_print'] == '1') echo "window.open('index.php?action=print_order&id=' + (res.order_id || ''), '_blank');"; ?>
                     closeOrderTab(activeTabId);
-                } else alert('Lỗi: ' + res.msg);
+                } else alert('Lá»—i: ' + res.msg);
                 if (btn) {
-                    btn.innerText = 'THANH TOÁN (F9)';
+                    btn.innerText = 'THANH TOÃN (F9)';
                     btn.disabled = false;
                 }
             });
@@ -1003,22 +1003,22 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             processFinalPayment();
         }
 
-        // --- IN TẠM TÍNH ---
+        // --- IN Táº M TÃNH ---
         function printProvisional() {
             let order = ordersData[activeTabId];
             if (order.cart.length === 0) {
-                alert('Giỏ hàng trống!');
+                alert('Giá» hÃ ng trá»‘ng!');
                 return;
             }
             let win = window.open('', '_blank', 'width=400,height=600');
-            let html = `<div style="font-family: monospace; width: 80mm; margin: 0 auto; text-align: center;"><h2>TẠM TÍNH (ĐƠN ${activeTabId})</h2><hr style="border:1px dashed #000;"><div style="text-align:left;font-size:13px;">`;
+            let html = `<div style="font-family: monospace; width: 80mm; margin: 0 auto; text-align: center;"><h2>Táº M TÃNH (ÄÆ N ${activeTabId})</h2><hr style="border:1px dashed #000;"><div style="text-align:left;font-size:13px;">`;
             order.cart.forEach(i => html += `<p><b>${i.name}</b><br>${i.qty} x ${formatCurrency(i.final_price)} = <b>${formatCurrency(i.line_total)}</b></p>`);
-            html += `<hr style="border:1px dashed #000;"><p style="display:flex; justify-content:space-between;"><span>TỔNG CỘNG:</span> <b>${formatCurrency(order.summary.grand_total)}</b></p></div><p><i>Chưa có giá trị thanh toán</i></p></div><script>window.onload=function(){window.print();window.close();}<\/script>`;
+            html += `<hr style="border:1px dashed #000;"><p style="display:flex; justify-content:space-between;"><span>Tá»”NG Cá»˜NG:</span> <b>${formatCurrency(order.summary.grand_total)}</b></p></div><p><i>ChÆ°a cÃ³ giÃ¡ trá»‹ thanh toÃ¡n</i></p></div><script>window.onload=function(){window.print();window.close();}<\/script>`;
             win.document.write(html);
             win.document.close();
         }
 
-        // --- SỰ KIỆN GÕ PHÍM ---
+        // --- Sá»° KIá»†N GÃ• PHÃM ---
         window.addEventListener('keydown', function(e) {
             if (e.key === 'F3') {
                 e.preventDefault();
@@ -1044,7 +1044,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
             if (!custSearchInput.contains(e.target)) custDropdown.style.display = 'none';
         });
 
-        // --- KHỞI ĐỘNG ---
+        // --- KHá»žI Äá»˜NG ---
         document.addEventListener('DOMContentLoaded', () => {
             renderTabsBar();
             renderCustomerUI();
@@ -1064,8 +1064,8 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 timerDisplay.textContent = minutes + ":" + seconds;
                 if (--timer < 0) {
                     clearInterval(qrCountdownInterval);
-                    timerDisplay.textContent = "HẾT HẠN";
-                    alert("Mã QR đã hết hạn. Vui lòng lấy lại mã!");
+                    timerDisplay.textContent = "Háº¾T Háº N";
+                    alert("MÃ£ QR Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng láº¥y láº¡i mÃ£!");
                 }
             }, 1000);
         }
@@ -1090,10 +1090,11 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         function printOnlyQR() {
             let qrSrc = document.getElementById('vietqr_image').src;
             let win = window.open('', '_blank', 'width=400,height=400');
-            win.document.write(`<div style="text-align:center;"><h3>Mã QR Thanh Toán</h3><img src="${qrSrc}" width="300"><p>Đơn hàng: ${activeTabId}</p></div><script>window.onload=function(){window.print();window.close();}<\/script>`);
+            win.document.write(`<div style="text-align:center;"><h3>MÃ£ QR Thanh ToÃ¡n</h3><img src="${qrSrc}" width="300"><p>ÄÆ¡n hÃ ng: ${activeTabId}</p></div><script>window.onload=function(){window.print();window.close();}<\/script>`);
             win.document.close();
         }
     </script>
 </body>
 
 </html>
+
