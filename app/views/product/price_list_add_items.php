@@ -145,7 +145,7 @@ $rule_color = ($price_list['adjustment_type'] == 'increase' ? '#d82c0d' : '#1080
                         $is_checked = in_array($p['id'], $existing_items) ? 'checked' : '';
                         $base_price = $p['base_price'];
 
-                        // Tự động tính toán giá mới (Làm tròn số nguyên theo tài liệu Sapo)
+                        // Tự động tính toán giá mới (Làm tròn số nguyên theo tài liệu Hệ thống)
                         $adj_val = $price_list['adjustment_value'];
                         if ($price_list['adjustment_type'] == 'increase') {
                             $custom_price = round($base_price * (1 + ($adj_val / 100)));

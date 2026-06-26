@@ -315,7 +315,7 @@
             <div class="grid-2">
                 <div class="form-group">
                     <label>Tên chi nhánh <span>*</span></label>
-                    <input type="text" name="branch_name" id="branch_name" class="form-control" required placeholder="VD: Sapo Cầu Giấy">
+                    <input type="text" name="branch_name" id="branch_name" class="form-control" required placeholder="VD: Hệ thống Cầu Giấy">
                 </div>
                 <div class="form-group">
                     <label>Mã chi nhánh</label>
@@ -563,7 +563,7 @@
         document.getElementById('modal_id').value = b.id;
         document.getElementById('branch_name').value = b.branch_name;
         document.getElementById('branch_code').value = b.branch_code;
-        document.getElementById('branch_code').readOnly = true; // Sapo ko cho sửa mã
+        document.getElementById('branch_code').readOnly = true; // Hệ thống ko cho sửa mã
 
         document.getElementById('phone').value = b.phone;
         document.getElementById('email').value = b.email;

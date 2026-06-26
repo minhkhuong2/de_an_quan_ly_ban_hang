@@ -2,7 +2,7 @@
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -10,7 +10,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 20px;
@@ -66,13 +66,13 @@
     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
 
         <div style="flex: 1 1 65%; min-width: 600px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">👤 Thông tin Nhà cung cấp</div>
+            <div class="akc-card">
+                <div class="akc-card-title">👤 Thông tin Nhà cung cấp</div>
                 <input type="text" name="supplier_name" class="form-control" placeholder="Nhập tên nhà cung cấp cần trả hàng..." required>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">📦 Chọn sản phẩm xuất trả</div>
+            <div class="akc-card">
+                <div class="akc-card-title">📦 Chọn sản phẩm xuất trả</div>
                 <div style="position: relative;">
                     <span style="position: absolute; left: 12px; top: 11px; color: #637381;">🔍</span>
                     <select id="product-select" class="form-control" style="padding-left: 40px; font-weight: 500;" onchange="addProductRow()">
@@ -107,8 +107,8 @@
         </div>
 
         <div style="flex: 1 1 30%; min-width: 300px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">📝 Thông tin bổ sung</div>
+            <div class="akc-card">
+                <div class="akc-card-title">📝 Thông tin bổ sung</div>
                 <div class="form-group">
                     <label>Chi nhánh xuất trả</label>
                     <select name="branch" class="form-control">

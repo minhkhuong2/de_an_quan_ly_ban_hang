@@ -1,14 +1,14 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -41,26 +41,26 @@
         background: #0070d2;
     }
 
-    .sapo-table {
+    .akc-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .sapo-table th,
-    .sapo-table td {
+    .akc-table th,
+    .akc-table td {
         padding: 15px 12px;
         border-bottom: 1px solid #f4f6f8;
         text-align: left;
     }
 
-    .sapo-table th {
+    .akc-table th {
         color: #637381;
         font-weight: 500;
         font-size: 14px;
         background: #fafbfc;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
@@ -75,13 +75,13 @@
     }
 </style>
 
-<div class="sapo-header-bar">
+<div class="akc-header-bar">
     <h2 style="font-size: 20px; font-weight: bold; color: #212b36;">Danh mục sản phẩm</h2>
 </div>
 
-<div class="sapo-grid">
+<div class="akc-grid">
     <div class="col-form">
-        <div class="sapo-card">
+        <div class="akc-card">
             <h3 style="font-size: 16px; margin-bottom: 15px; color: #212b36;">Thêm danh mục mới</h3>
             <form action="index.php?action=product_category" method="POST">
                 <input type="hidden" name="add_category" value="1">
@@ -102,9 +102,9 @@
     </div>
 
     <div class="col-table">
-        <div class="sapo-card" style="padding: 0; overflow: hidden;">
+        <div class="akc-card" style="padding: 0; overflow: hidden;">
             <?php if (!empty($categories)): ?>
-                <table class="sapo-table">
+                <table class="akc-table">
                     <thead>
                         <tr>
                             <th style="width: 50px;">ID</th>

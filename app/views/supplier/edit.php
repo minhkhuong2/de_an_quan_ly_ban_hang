@@ -2,7 +2,7 @@
 <?php /** @var array $supplier */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -10,7 +10,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 20px;
@@ -68,8 +68,8 @@
     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
 
         <div style="flex: 1 1 65%; min-width: 600px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">📝 Thông tin chung</div>
+            <div class="akc-card">
+                <div class="akc-card-title">📝 Thông tin chung</div>
                 <div class="form-group">
                     <label>Tên nhà cung cấp <span style="color:red;">*</span></label>
                     <input type="text" name="supplier_name" class="form-control" value="<?php echo htmlspecialchars($supplier['supplier_name']); ?>" required>
@@ -98,8 +98,8 @@
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">📍 Thông tin địa chỉ</div>
+            <div class="akc-card">
+                <div class="akc-card-title">📍 Thông tin địa chỉ</div>
                 <div class="form-group">
                     <label>Địa chỉ cụ thể</label>
                     <textarea name="address" class="form-control" rows="3"><?php echo htmlspecialchars($supplier['address']); ?></textarea>
@@ -108,8 +108,8 @@
         </div>
 
         <div style="flex: 1 1 30%; min-width: 300px;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">⚙️ Thông tin khác</div>
+            <div class="akc-card">
+                <div class="akc-card-title">⚙️ Thông tin khác</div>
                 <div class="form-group">
                     <label>Nhóm nhà cung cấp</label>
                     <select class="form-control">

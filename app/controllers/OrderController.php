@@ -125,7 +125,7 @@ class OrderController
             $branches = $stmt_branches->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             // Mảng dự phòng động từ PHP
-            $branches = [['id' => 1, 'branch_name' => 'AAKC Store - Chi nhánh 1'], ['id' => 2, 'branch_name' => 'AAKC Store - Showroom 2']];
+            $branches = [['id' => 1, 'branch_name' => 'AKC Store - Chi nhánh 1'], ['id' => 2, 'branch_name' => 'AKC Store - Showroom 2']];
         }
 
         // Ép sang JSON cho các bộ lọc tìm kiếm Javascript nhận diện nhanh
@@ -564,7 +564,7 @@ class OrderController
             // Lấy trạng thái lưu đơn từ người dùng
             $action_type = $data['action_type']; // 'draft', 'create', 'confirm', 'ship'
 
-            // --- CHUYỂN ĐỔI ACTION_TYPE THÀNH TRẠNG THÁI CHUẨN SAPO ---
+            // --- CHUYỂN ĐỔI ACTION_TYPE THÀNH TRẠNG THÁI CHUẨN AKC ---
             $order_status = 'pending';
             $shipping_status = 'pending';
 

@@ -2,7 +2,7 @@
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -10,7 +10,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 20px;
@@ -19,19 +19,19 @@
         border-bottom: 1px solid #dfe3e8;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 1 1 65%;
         min-width: 600px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 1 1 30%;
         min-width: 300px;
     }
@@ -122,10 +122,10 @@
 </div>
 
 <form action="index.php?action=add_transfer" method="POST">
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">📦 Sản phẩm chuyển kho</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">📦 Sản phẩm chuyển kho</div>
 
                 <div style="position: relative;">
                     <span style="position: absolute; left: 12px; top: 11px; color: #637381;">🔍</span>
@@ -154,9 +154,9 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">📝 Thông tin phiếu chuyển</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">📝 Thông tin phiếu chuyển</div>
 
                 <div class="form-group">
                     <label>Từ chi nhánh (Kho xuất hàng)</label>

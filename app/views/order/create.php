@@ -470,7 +470,7 @@ require_once __DIR__ . '/../layout/header.php';
 
         <div class="v3-card">
             <div class="card-header">
-                <span>7. Thông tin Hóa đơn điện tử (Sapo Invoice)</span>
+                <span>7. Thông tin Hóa đơn điện tử (Hệ thống Invoice)</span>
                 <button type="button" class="clickable-text" style="border:none; background:none; font-size:13px;" onclick="openInvoiceModal()">⚙️ Thêm/Sửa thông tin xuất hoá đơn</button>
             </div>
             <div class="card-body" id="invoice_summary_box" style="font-size:13px; color:#637381; line-height:1.6;">
@@ -652,7 +652,7 @@ require_once __DIR__ . '/../layout/header.php';
         let selectedDate = new Date(inputVal);
         let now = new Date();
         if (selectedDate > now) {
-            alert("⚠️ Lỗi nghiệp vụ Sapo: Không thể chọn ngày trong tương lai làm ngày đặt hàng!");
+            alert("⚠️ Lỗi nghiệp vụ Hệ thống: Không thể chọn ngày trong tương lai làm ngày đặt hàng!");
             document.getElementById('order_date').value = now.toISOString().slice(0, 16);
         }
     }
@@ -665,7 +665,7 @@ require_once __DIR__ . '/../layout/header.php';
         now.setHours(0, 0, 0, 0);
         selectedDate.setHours(0, 0, 0, 0);
         if (selectedDate < now) {
-            alert("⚠️ Lỗi nghiệp vụ Sapo: Không thể chọn ngày hẹn giao trong quá khứ!");
+            alert("⚠️ Lỗi nghiệp vụ Hệ thống: Không thể chọn ngày hẹn giao trong quá khứ!");
             document.getElementById('delivery_date').value = "";
         }
     }
@@ -711,7 +711,7 @@ require_once __DIR__ . '/../layout/header.php';
         document.getElementById('invoice_modal').style.display = 'flex';
     }
 
-    // Giả lập chức năng tra cứu MST tự động của Sapo
+    // Giả lập chức năng tra cứu MST tự động của Hệ thống
     function fetchCompanyInfoByMST() {
         let mst = document.getElementById('inv_mst').value.trim();
         if (mst.length < 10) {
@@ -730,7 +730,7 @@ require_once __DIR__ . '/../layout/header.php';
         let cccd = document.getElementById('inv_cccd').value.trim();
         let qhns = document.getElementById('inv_qhns').value.trim();
 
-        // Kiểm tra định dạng dữ liệu chặt chẽ theo tài liệu Sapo
+        // Kiểm tra định dạng dữ liệu chặt chẽ theo tài liệu Hệ thống
         if (email && !email.includes('@')) {
             alert("Định dạng email nhận hóa đơn không hợp lệ!");
             return;

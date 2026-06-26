@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -26,20 +26,20 @@
         margin-left: 10px;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 1;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -47,7 +47,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         overflow: hidden;
         box-sizing: border-box;
     }
@@ -84,14 +84,14 @@
 </style>
 
 <form action="index.php?action=add_category" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_category" style="text-decoration:none; color:#637381; margin-right:10px;">←</a> Thêm mới danh mục</h2>
         <div><a href="index.php?action=product_category" class="btn-cancel">Hủy</a> <button type="submit" class="btn-save">Lưu</button></div>
     </div>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Thông tin chung</h3>
                 <label>Tên danh mục <span style="color:red;">*</span></label>
                 <input type="text" name="category_name" class="form-control" required>
@@ -99,7 +99,7 @@
                 <textarea name="description" class="form-control" rows="4"></textarea>
             </div>
 
-            <div class="sapo-card">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Chọn sản phẩm</h3>
                 <label class="radio-box">
                     <input type="radio" name="selection_type" value="manual" checked onchange="toggleAutoRules()">
@@ -146,14 +146,14 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
+        <div class="akc-col-right">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Trạng thái</h3>
                 <div class="radio-box"><input type="radio" name="status" value="Hiển thị" checked> Hiển thị</div>
                 <div class="radio-box"><input type="radio" name="status" value="Ẩn"> Ẩn</div>
             </div>
 
-            <div class="sapo-card">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Sắp xếp sản phẩm</h3>
                 <select name="sort_order" class="form-control">
                     <option value="newest">Theo ngày tạo: Từ mới đến cũ</option>

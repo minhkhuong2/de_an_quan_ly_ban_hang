@@ -249,7 +249,7 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
 <body>
 
     <div class="sidebar">
-        <div class="logo"><i class="fa-solid fa-store"></i> AAKC Store</div>
+        <div class="logo"><i class="fa-solid fa-store"></i> AKC Store</div>
         <div class="menu">
             <a href="index.php?action=dashboard" class="menu-item <?php echo ($current_action == 'dashboard') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-chart-pie"></i> Tổng quan

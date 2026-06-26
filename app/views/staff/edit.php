@@ -5,7 +5,7 @@
 ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -32,7 +32,7 @@
         font-weight: 500;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -40,7 +40,7 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -119,7 +119,7 @@
 </style>
 
 <form action="index.php?action=edit_staff&id=<?php echo $staff['id']; ?>" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2><a href="index.php?action=staff_list" style="text-decoration:none; color:#637381;">←</a> Hồ sơ: <?php echo htmlspecialchars($staff['full_name'] ?? ''); ?></h2>
         <div>
             <a href="index.php?action=staff_list" class="btn-cancel">Hủy</a>
@@ -133,8 +133,8 @@
 
     <div style="display: flex; gap: 20px; align-items: flex-start;">
         <div style="flex: 0 0 68%;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">
+            <div class="akc-card">
+                <div class="akc-card-title">
                     🛡️ Phân quyền chi tiết (Quyền quản trị)
                     <div style="float: right;">
                         <button type="button" onclick="checkAll(true)" style="background:#fff; border:1px solid #c4cdd5; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Tích chọn tất cả</button>
@@ -191,8 +191,8 @@
         </div>
 
         <div style="flex: 1;">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin nhân viên</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin nhân viên</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Họ</label><input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($staff['last_name'] ?? ''); ?>"></div>
                     <div class="form-group"><label>Tên <span style="color:red;">*</span></label><input type="text" name="first_name" class="form-control" required value="<?php echo htmlspecialchars($staff['first_name'] ?? ''); ?>"></div>
@@ -216,8 +216,8 @@
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Trạng thái bảo mật</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Trạng thái bảo mật</div>
                 <div style="font-size: 14px; margin-bottom: 10px;">
                     Tình trạng tài khoản:
                     <?php if ($staff['status'] == 'Đang kích hoạt'): ?>
@@ -226,7 +226,7 @@
                         <span style="color:#cf1322; font-weight:bold;">○ Đang chờ xác nhận</span>
                     <?php endif; ?>
                 </div>
-                <p style="font-size: 12px; color: #637381; margin: 0;">(Chỉ nhân viên đã kích hoạt mới có thể đăng nhập vào hệ thống Sapo).</p>
+                <p style="font-size: 12px; color: #637381; margin: 0;">(Chỉ nhân viên đã kích hoạt mới có thể đăng nhập vào hệ thống Hệ thống).</p>
             </div>
         </div>
     </div>
@@ -238,7 +238,7 @@
         document.querySelectorAll('input[name="permissions[]"]').forEach(cb => cb.checked = status);
     }
 
-    // Hàm tự động tích các quyền mẫu theo Vai trò (Chức năng cao cấp Sapo)
+    // Hàm tự động tích các quyền mẫu theo Vai trò (Chức năng cao cấp Hệ thống)
     function autoAssignPermissions(role) {
         if (role === 'Tùy chỉnh') return; // Không can thiệp nếu chọn tùy chỉnh
 

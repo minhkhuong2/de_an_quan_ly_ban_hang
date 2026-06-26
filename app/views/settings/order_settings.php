@@ -157,7 +157,7 @@ require_once __DIR__ . '/../layout/header.php';
             <label class="workflow-box <?php echo $wf == 'standard' ? 'active' : ''; ?>" onclick="selectWorkflow(this)">
                 <input type="radio" name="order_workflow" value="standard" <?php echo $wf == 'standard' ? 'checked' : ''; ?>>
                 <div>
-                    <div class="wf-title">Quy trình Tiêu chuẩn (Retail Pro / OmniAI)</div>
+                    <div class="wf-title">Quy trình Tiêu chuẩn (Retail Pro / )</div>
                     <div class="wf-desc">Quản lý chặt chẽ từng khâu đóng gói, giao hàng để đảm bảo tính chính xác và giảm sai sót. Yêu cầu xác nhận xuất kho.</div>
                 </div>
             </label>

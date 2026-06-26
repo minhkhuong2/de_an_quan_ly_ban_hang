@@ -73,7 +73,7 @@ class ShipmentController
             $stmt->execute($ids);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Bẫy lỗi chuẩn Sapo: Khác đối tác hoặc Trạng thái chưa xong
+            // Bẫy lỗi chuẩn Hệ thống: Khác đối tác hoặc Trạng thái chưa xong
             if ($data['diff_partners'] > 1) {
                 die("<script>alert('Lỗi: Vui lòng chỉ chọn vận đơn từ CÙNG MỘT đơn vị vận chuyển để đối soát!'); history.back();</script>");
             }

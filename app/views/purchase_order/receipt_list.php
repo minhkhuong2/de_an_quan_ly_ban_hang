@@ -2,7 +2,7 @@
 <?php /** @var array $receipts */ ?>
 
 <style>
-    .sapo-filter-bar {
+    .akc-filter-bar {
         display: flex;
         gap: 10px;
         padding: 15px;
@@ -11,7 +11,7 @@
         align-items: center;
     }
 
-    .sapo-filter-bar input.search-input {
+    .akc-filter-bar input.search-input {
         flex: 1;
         padding: 8px 12px 8px 35px;
         border: 1px solid #c4cdd5;
@@ -45,7 +45,7 @@
 
 <div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; min-height: 500px;">
 
-    <form action="index.php" method="GET" class="sapo-filter-bar">
+    <form action="index.php" method="GET" class="akc-filter-bar">
         <input type="hidden" name="action" value="po_receipt_list">
 
         <div style="position: relative; flex: 1; max-width: 400px;">

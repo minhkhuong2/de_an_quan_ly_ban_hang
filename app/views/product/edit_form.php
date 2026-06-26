@@ -7,14 +7,14 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
 ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .sapo-header-bar h2 {
+    .akc-header-bar h2 {
         font-size: 20px;
         font-weight: bold;
         margin: 0;
@@ -23,13 +23,13 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
         gap: 10px;
     }
 
-    .sapo-header-bar h2 a {
+    .akc-header-bar h2 a {
         text-decoration: none;
         color: #637381;
         font-size: 18px;
     }
 
-    .sapo-btn-group button {
+    .akc-btn-group button {
         padding: 8px 16px;
         border-radius: 4px;
         font-weight: 500;
@@ -54,34 +54,34 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
         background: #0070d2;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -228,9 +228,9 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
 </style>
 
 <form action="index.php?action=edit_product&id=<?php echo $product['id'] ?? ''; ?>" method="POST" enctype="multipart/form-data" id="productForm">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2><a href="index.php?action=product_list">←</a> Chỉnh sửa: <?php echo htmlspecialchars($product['product_name'] ?? ''); ?></h2>
-        <div class="sapo-btn-group">
+        <div class="akc-btn-group">
             <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=product_list'">Hủy</button>
             <button type="submit" class="btn-save">Lưu thay đổi</button>
         </div>
@@ -239,10 +239,10 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
     <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Cập nhật sản phẩm thành công!</div><?php endif; ?>
     <?php if (isset($_GET['success_delete'])): ?><div style="background:#fff1f0; color:#cf1322; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #ffa39e; font-weight:500;">🗑️ Đã xóa phiên bản sản phẩm thành công!</div><?php endif; ?>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">1. Thông tin chung</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">1. Thông tin chung</div>
                 <div class="form-group"><label>Tên sản phẩm <span style="color:red;">*</span> 🌟</label><input type="text" id="main_product_name" name="product_name" class="form-control" value="<?php echo htmlspecialchars($product['product_name'] ?? ''); ?>" required></div>
                 <div class="row-flex">
                     <div class="form-group"><label>Mã sản phẩm / SKU</label><input type="text" id="main_sku" name="sku" class="form-control" value="<?php echo htmlspecialchars($product['sku'] ?? ''); ?>"></div>
@@ -252,8 +252,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 <div class="form-group"><label>Mô tả sản phẩm 🌟</label><textarea class="form-control" name="description" rows="5"><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea></div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">2. Thiết lập giá sản phẩm</div>
+            <div class="akc-card">
+                <div class="akc-card-title">2. Thiết lập giá sản phẩm</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Giá bán</label>
                         <div style="display: flex; position: relative;"><input type="text" id="main_price" name="base_price" class="form-control currency-input" value="<?php echo number_format($product['price'] ?? ($product['base_price'] ?? 0), 0, '', '.'); ?>" style="padding-right: 30px; font-weight: bold; color: #212b36;"><span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span></div>
@@ -268,8 +268,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 <div class="checkbox-group"><input type="checkbox" id="tax" name="apply_tax" value="1" <?php echo (isset($product['apply_tax']) && $product['apply_tax'] == 1) ? 'checked' : ''; ?>><label for="tax" style="margin:0;">Áp dụng thuế</label></div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
+            <div class="akc-card">
+                <div class="akc-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
                 <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
                 <div class="checkbox-group"><input type="checkbox" name="allow_negative" id="allow_negative"><label for="allow_negative" style="margin:0;">Cho phép bán âm</label></div>
 
@@ -305,8 +305,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 </table>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">5. Thông tin vận chuyển</div>
+            <div class="akc-card">
+                <div class="akc-card-title">5. Thông tin vận chuyển</div>
                 <div class="checkbox-group">
                     <input type="checkbox" checked name="require_shipping" id="require_shipping" onchange="document.getElementById('weight-box').style.display = this.checked ? 'block' : 'none';">
                     <label for="require_shipping" style="margin:0;">Sản phẩm yêu cầu vận chuyển</label>
@@ -326,8 +326,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
             </div>
 
             <?php if (!empty($existing_variants)): ?>
-                <div class="sapo-card">
-                    <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">📦 Các phiên bản hiện tại</div>
+                <div class="akc-card">
+                    <div class="akc-card-title" style="color: #0050b3; margin-bottom: 5px;">📦 Các phiên bản hiện tại</div>
                     <table class="variant-table">
                         <thead>
                             <tr>
@@ -356,9 +356,9 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 </div>
             <?php endif; ?>
 
-            <div class="sapo-card" id="attribute-card">
+            <div class="akc-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div class="sapo-card-title" style="margin:0;">6. Bổ sung Thuộc tính / Phiên bản mới</div>
+                    <div class="akc-card-title" style="margin:0;">6. Bổ sung Thuộc tính / Phiên bản mới</div>
                     <a href="javascript:void(0)" class="link-blue" onclick="addAttributeRow()">+ Thêm thuộc tính mới</a>
                 </div>
                 <p style="font-size: 14px; color: #637381; margin: 0; margin-bottom: 15px;" id="attr-hint">Nhập màu sắc/dung lượng mới để tự động sinh phiên bản.</p>
@@ -367,8 +367,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 </table>
             </div>
 
-            <div class="sapo-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
-                <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản mới</div>
+            <div class="akc-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
+                <div class="akc-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản mới</div>
                 <div class="bulk-edit-toolbar">
                     <strong style="font-size: 13px; color: #212b36;">Sửa nhanh hàng loạt:</strong>
                     <input type="text" id="bulk_price" class="variant-input currency-input" placeholder="Giá bán..." style="width: 100px;">
@@ -394,9 +394,9 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">3. Thêm ảnh sản phẩm</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">3. Thêm ảnh sản phẩm</div>
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
                     <div id="upload-placeholder" style="display: <?php echo !empty($product['image']) ? 'none' : 'block'; ?>;">
@@ -406,8 +406,8 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">8. Kênh bán hàng</div>
+            <div class="akc-card">
+                <div class="akc-card-title">8. Kênh bán hàng</div>
                 <div class="checkbox-group" style="align-items: flex-start;"><input type="checkbox" checked>
                     <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
                 </div>
@@ -415,12 +415,12 @@ $existing_variants = (new ProductModel($db))->getVariantsByProductId($product['i
                     <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
                 </div>
                 <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;"><input type="checkbox" checked>
-                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label></div>
+                    <div><label style="margin:0; font-weight: 500;"></label></div>
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">10. Thông tin bổ sung</div>
+            <div class="akc-card">
+                <div class="akc-card-title">10. Thông tin bổ sung</div>
                 <div class="form-group"><label>10.1 Danh mục ⓘ</label><select class="form-control" name="category">
                         <option value="">Chọn danh mục</option><?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?><option value="<?php echo htmlspecialchars($catName); ?>" <?php echo (strcasecmp(($product['category'] ?? ''), $catName) == 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($catName); ?></option><?php endforeach;
                                                                                                                                                                                                                                                                                                                                                     endif; ?>

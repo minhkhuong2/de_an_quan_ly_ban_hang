@@ -11,7 +11,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sapo OmniAI - POS Bán hàng</title>
+    <title>Hệ thống  - POS Bán hàng</title>
     <link rel="stylesheet" href="css/pos.css?v=1.2">
     <style>
         /* CSS Bổ sung cho các Modal và Tính năng mới */
@@ -338,7 +338,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
         let nextTabId = 2;
 
         // --- LOGIC OFFLINE & MẠNG ---
-        let offlineOrders = JSON.parse(localStorage.getItem('sapo_offline_orders')) || [];
+        let offlineOrders = JSON.parse(localStorage.getItem('akc_offline_orders')) || [];
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
 
@@ -406,7 +406,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                 }
             }
             offlineOrders = newOfflineOrders;
-            localStorage.setItem('sapo_offline_orders', JSON.stringify(offlineOrders));
+            localStorage.setItem('akc_offline_orders', JSON.stringify(offlineOrders));
             updateNetworkStatus();
             openSyncModal();
             btnSync.innerText = '🔄 ĐỒNG BỘ TẤT CẢ';
@@ -956,7 +956,7 @@ $is_two_step = (isset($settings_db['pos_payment_steps']) && $settings_db['pos_pa
                     customer_name: order.customer ? order.customer.customer_name : 'Khách lẻ',
                     error: null
                 });
-                localStorage.setItem('sapo_offline_orders', JSON.stringify(offlineOrders));
+                localStorage.setItem('akc_offline_orders', JSON.stringify(offlineOrders));
                 updateNetworkStatus();
                 alert(`📵 OFFLINE! Đã lưu tạm vào máy.`);
                 printProvisional();

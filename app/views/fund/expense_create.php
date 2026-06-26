@@ -232,7 +232,7 @@ require_once __DIR__ . '/../layout/header.php';
         other: []
     };
 
-    // Quy tắc Lý do chi & Nhóm chi phí khớp 100% tài liệu Sapo
+    // Quy tắc Lý do chi & Nhóm chi phí khớp 100% tài liệu Hệ thống
     const reasonConfig = {
         customer: [{
                 reason: 'Hoàn tiền trả hàng',

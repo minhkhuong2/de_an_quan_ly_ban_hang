@@ -3,7 +3,7 @@
 /** @var array $baseProducts Khai báo ẩn để mách cho VS Code biết biến này tồn tại */
 ?>
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -31,34 +31,34 @@
         margin-left: 10px;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -129,7 +129,7 @@
 </style>
 
 <form action="index.php?action=add_combo" method="POST" enctype="multipart/form-data">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_list" style="color:#637381; text-decoration:none; margin-right: 10px;">←</a> Thêm sản phẩm Combo</h2>
         <div>
             <a href="index.php?action=product_list" class="btn-cancel">Hủy</a>
@@ -137,10 +137,10 @@
         </div>
     </div>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin chung</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin chung</div>
                 <div class="form-group"><label>Tên sản phẩm *</label><input type="text" name="product_name" class="form-control" required></div>
                 <div class="row-flex">
                     <div class="form-group"><label>Mã SKU</label><input type="text" name="sku" class="form-control"></div>
@@ -150,8 +150,8 @@
                 <div class="form-group"><label>Mô tả</label><textarea class="form-control" name="description" rows="3"></textarea></div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thành phần Combo</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Thành phần Combo</div>
                 <p style="font-size: 14px; color: #637381; margin-bottom: 10px;">Số lượng thành phần không được phép lẻ hoặc nhỏ hơn 1.</p>
 
                 <table class="table-combo" id="comboTable">
@@ -184,8 +184,8 @@
                 <button type="button" onclick="addRow()" style="background: #e6f7ff; color: #0088ff; border: 1px dashed #0088ff; padding: 8px 15px; border-radius: 4px; margin-top: 15px; cursor: pointer; width: 100%;">+ Thêm sản phẩm vào combo</button>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin giá</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin giá</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Giá bán (₫)</label><input type="number" name="base_price" id="total_combo_price" class="form-control" value="0"></div>
                     <div class="form-group"><label>Giá so sánh (₫)</label><input type="number" name="compare_price" class="form-control" value="0"></div>
@@ -194,9 +194,9 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Ảnh sản phẩm Combo</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">Ảnh sản phẩm Combo</div>
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
                     <div id="upload-placeholder">
@@ -207,8 +207,8 @@
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Phân loại</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Phân loại</div>
                 <div class="form-group"><label>Danh mục</label><input type="text" name="category" class="form-control"></div>
                 <div class="form-group"><label>Nhãn hiệu</label><input type="text" name="brand" class="form-control"></div>
                 <div class="form-group"><label>Tag</label><input type="text" name="tags" class="form-control"></div>

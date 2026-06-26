@@ -305,7 +305,7 @@
         }
     }
 
-    // Nút thần thánh: Tự động điền cấu hình chuẩn Sapo
+    // Nút thần thánh: Tự động điền cấu hình chuẩn Hệ thống
     function applyPreset(type) {
         // Đảm bảo đã bật Quản lý thuế
         document.getElementById('is_tax_enabled').checked = true;

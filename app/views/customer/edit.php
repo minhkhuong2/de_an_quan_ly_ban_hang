@@ -2,14 +2,14 @@
 <?php $c = $customer ?? []; ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .sapo-btn-group button {
+    .akc-btn-group button {
         padding: 8px 16px;
         border-radius: 4px;
         font-weight: 500;
@@ -30,34 +30,34 @@
         color: #fff;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -97,9 +97,9 @@
 </style>
 
 <form action="index.php?action=edit_customer&id=<?php echo $c['id']; ?>" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin:0;"><a href="index.php?action=customer_list" style="text-decoration:none; color:#637381;">←</a> Sửa: <?php echo htmlspecialchars(trim(($c['last_name'] ?? '') . ' ' . ($c['first_name'] ?? ''))); ?></h2>
-        <div class="sapo-btn-group">
+        <div class="akc-btn-group">
             <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=customer_list'">Hủy</button>
             <button type="submit" class="btn-save">Lưu thay đổi</button>
         </div>
@@ -107,10 +107,10 @@
 
     <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067; font-weight:500;">✅ Lưu khách hàng thành công!</div><?php endif; ?>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin cơ bản</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin cơ bản</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Mã KH</label><input type="text" name="customer_code" class="form-control" value="<?php echo htmlspecialchars($c['customer_code'] ?? ''); ?>"></div>
                 </div>
@@ -124,8 +124,8 @@
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Địa chỉ giao hàng</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Địa chỉ giao hàng</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Tỉnh/Thành phố</label><input type="text" name="province" class="form-control" value="<?php echo htmlspecialchars($c['province'] ?? ''); ?>"></div>
                     <div class="form-group"><label>Quận/Huyện</label><input type="text" name="district" class="form-control" value="<?php echo htmlspecialchars($c['district'] ?? ''); ?>"></div>
@@ -134,7 +134,7 @@
                 <div class="form-group"><label>Địa chỉ cụ thể</label><input type="text" name="address" class="form-control" value="<?php echo htmlspecialchars($c['address'] ?? ''); ?>"></div>
             </div>
 
-            <div class="sapo-card">
+            <div class="akc-card">
                 <?php $hasInvoice = !empty($c['tax_code']) || !empty($c['company_name']); ?>
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <input type="checkbox" id="has_invoice" style="width:16px; height:16px;" onchange="toggleInvoice()" <?php echo $hasInvoice ? 'checked' : ''; ?>>
@@ -152,9 +152,9 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Khác</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">Khác</div>
                 <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 8px;">
                     <input type="checkbox" name="accept_marketing" value="1" style="margin-top: 3px;" <?php echo ($c['accept_marketing'] ?? 0) ? 'checked' : ''; ?>>
                     <span style="font-size: 14px; color: #212b36;">Khách hàng muốn nhận thông tin tiếp thị, quảng cáo</span>

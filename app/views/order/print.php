@@ -142,7 +142,7 @@
         <div class="text-center" style="margin-top: 25px; font-style: italic;">
             <p>Cảm ơn quý khách và hẹn gặp lại!</p>
             <p>***</p>
-            <p style="font-size: 10px; margin-top: 10px;">Cung cấp bởi Sapo OmniAI</p>
+            <p style="font-size: 10px; margin-top: 10px;">Cung cấp bởi Hệ thống </p>
         </div>
     </div>
 

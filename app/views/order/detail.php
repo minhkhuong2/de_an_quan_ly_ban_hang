@@ -6,7 +6,7 @@ require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <style>
-    /* CSS CHUẨN SAPO OMNIAI V3 */
+    /* CSS CHUẨN AKC OMNIAI V3 */
     .v3-header {
         display: flex;
         justify-content: space-between;

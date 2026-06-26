@@ -60,7 +60,7 @@ class ExpenseController
             $branch_id = intval($_POST['branch_id']);
             $transaction_date = $_POST['transaction_date'];
 
-            // Xử lý Cơ chế Tự sinh mã phiếu chi chuẩn Sapo (Nếu để trống)
+            // Xử lý Cơ chế Tự sinh mã phiếu chi chuẩn Hệ thống (Nếu để trống)
             $expense_code = trim($_POST['expense_code']);
             if (empty($expense_code)) {
                 $expense_code = 'PC' . date('YmdHis') . rand(10, 99);
@@ -156,7 +156,7 @@ class ExpenseController
         require_once __DIR__ . '/../views/fund/expense_detail.php';
     }
 
-    // 5. CẬP NHẬT PHIẾU CHI (Khóa cứng theo luật Sapo)
+    // 5. CẬP NHẬT PHIẾU CHI (Khóa cứng theo luật Hệ thống)
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -3,7 +3,7 @@
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -11,24 +11,24 @@
         margin-bottom: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
         color: #212b36;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
     }
 
@@ -98,16 +98,16 @@
 </div>
 
 <form action="index.php?action=add_purchase" method="POST">
-    <div class="sapo-grid">
+    <div class="akc-grid">
         <!-- CỘT TRÁI -->
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Nhà cung cấp</div>
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">Nhà cung cấp</div>
                 <input type="text" name="supplier_name" class="form-control" placeholder="Tìm nhà cung cấp hoặc thêm mới...">
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin sản phẩm</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin sản phẩm</div>
                 <div style="position: relative;">
                     <span style="position: absolute; left: 10px; top: 10px; color: #637381;">🔍</span>
                     <select id="product-select" class="form-control" style="padding-left: 35px;" onchange="addProductRow()">
@@ -143,9 +143,9 @@
         </div>
 
         <!-- CỘT PHẢI -->
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin đơn nhập</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin đơn nhập</div>
                 <div class="form-group">
                     <label>Chi nhánh nhập</label>
                     <select name="branch" class="form-control">

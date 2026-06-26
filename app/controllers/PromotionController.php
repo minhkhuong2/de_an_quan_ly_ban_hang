@@ -153,7 +153,7 @@ class PromotionController
             $db = (new Database())->getConnection();
             $promoModel = new PromotionModel($db);
 
-            // OmniAI V3 dùng từ "Tiếp tục" và "Ngừng"
+            //  V3 dùng từ "Tiếp tục" và "Ngừng"
             $action = $_POST['action'];
             if ($action === 'Tiếp tục') $action = 'Đang áp dụng';
             if ($action === 'Ngừng') $action = 'Ngừng áp dụng';
@@ -208,7 +208,7 @@ class PromotionController
             $usage_limit = isset($_POST['unlimited_usage']) ? null : (int)$_POST['usage_limit'];
             $once_per_customer = isset($_POST['once_per_customer']) ? 1 : 0;
 
-            // KIỂM TRA TRẠNG THÁI THEO LUẬT SAPO V3
+            // KIỂM TRA TRẠNG THÁI THEO LUẬT AKC V3
             if ($promo['status'] === 'Chưa áp dụng' || $promo['status'] === 'Ngừng áp dụng') {
                 $promo_name = $_POST['promo_name'] ?? '';
                 $d_value = (float)str_replace(['.', ','], '', $_POST['discount_value'] ?? 0);
@@ -340,7 +340,7 @@ class PromotionController
         require_once __DIR__ . '/../views/promotion/settings.php';
     }
     /**
-     * THUẬT TOÁN TÍNH TIỀN CHUẨN SAPO OMNIAI V3 (BẢN CHỐNG LỖ CỘNG DỒN)
+     * THUẬT TOÁN TÍNH TIỀN CHUẨN AKC OMNIAI V3 (BẢN CHỐNG LỖ CỘNG DỒN)
      */
     public function calculateCartTotal($cart_items, $applied_promos, $original_shipping_fee)
     {
@@ -369,7 +369,7 @@ class PromotionController
                         $current_promo_discount = min($promo['discount_value'], $price_p1);
                     }
 
-                    // SAPO RULE: So sánh xem khuyến mại này có tốt hơn khuyến mại trước đó không
+                    // AKC RULE: So sánh xem khuyến mại này có tốt hơn khuyến mại trước đó không
                     if ($current_promo_discount > $best_discount_for_this_item) {
                         $best_discount_for_this_item = $current_promo_discount;
                     }
@@ -430,7 +430,7 @@ class PromotionController
         $subtotal_after_products = array_sum(array_column($cart_items, 'line_total'));
 
         // =========================================================================
-        // BƯỚC 3: GIẢM GIÁ ĐƠN HÀNG (Sapo cho phép áp dụng NHIỀU chương trình cùng lúc)
+        // BƯỚC 3: GIẢM GIÁ ĐƠN HÀNG (Hệ thống cho phép áp dụng NHIỀU chương trình cùng lúc)
         // =========================================================================
         foreach ($applied_promos as $promo) {
             if ($promo['promo_type'] == 'discount_order') {
@@ -464,7 +464,7 @@ class PromotionController
                     $max_ship_discount = !empty($promo['max_discount_amount']) ? $promo['max_discount_amount'] : $original_shipping_fee;
                     $current_shipping_discount = min($original_shipping_fee, $max_ship_discount);
 
-                    // SAPO RULE: Chỉ lấy mã Freeship có lợi nhất
+                    // AKC RULE: Chỉ lấy mã Freeship có lợi nhất
                     if ($current_shipping_discount > $best_shipping_discount) {
                         $best_shipping_discount = $current_shipping_discount;
                     }

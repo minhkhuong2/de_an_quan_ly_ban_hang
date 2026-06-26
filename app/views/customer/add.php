@@ -1,14 +1,14 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .sapo-btn-group button {
+    .akc-btn-group button {
         padding: 8px 16px;
         border-radius: 4px;
         font-weight: 500;
@@ -29,34 +29,34 @@
         color: #fff;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -96,18 +96,18 @@
 </style>
 
 <form action="index.php?action=add_customer" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin:0;"><a href="index.php?action=customer_list" style="text-decoration:none; color:#637381;">←</a> Thêm mới khách hàng</h2>
-        <div class="sapo-btn-group">
+        <div class="akc-btn-group">
             <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=customer_list'">Hủy</button>
             <button type="submit" class="btn-save">Lưu khách hàng</button>
         </div>
     </div>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin cơ bản</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin cơ bản</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Họ</label><input type="text" name="last_name" class="form-control" placeholder="Nhập họ..."></div>
                     <div class="form-group"><label>Tên <span style="color:red;">*</span></label><input type="text" name="first_name" class="form-control" required placeholder="Nhập tên..."></div>
@@ -118,8 +118,8 @@
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">Địa chỉ giao hàng</div>
+            <div class="akc-card">
+                <div class="akc-card-title">Địa chỉ giao hàng</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Tỉnh/Thành phố</label><input type="text" name="province" class="form-control" placeholder="VD: Hà Nội"></div>
                     <div class="form-group"><label>Quận/Huyện</label><input type="text" name="district" class="form-control"></div>
@@ -128,7 +128,7 @@
                 <div class="form-group"><label>Địa chỉ cụ thể</label><input type="text" name="address" class="form-control" placeholder="Số nhà, ngõ, đường..."></div>
             </div>
 
-            <div class="sapo-card">
+            <div class="akc-card">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <input type="checkbox" id="has_invoice" style="width:16px; height:16px;" onchange="toggleInvoice()">
                     <label for="has_invoice" style="font-weight: bold; margin:0; font-size: 16px; cursor:pointer;">Khách có thông tin xuất hóa đơn</label>
@@ -145,9 +145,9 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Khác</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">Khác</div>
                 <div style="margin-bottom: 15px; display: flex; align-items: flex-start; gap: 8px;">
                     <input type="checkbox" name="accept_marketing" value="1" style="margin-top: 3px;">
                     <span style="font-size: 14px; color: #212b36;">Khách hàng muốn nhận thông tin tiếp thị, quảng cáo</span>

@@ -3,7 +3,7 @@
 /** @var array $baseProducts Khai báo ẩn để mách cho VS Code biết biến này tồn tại */
 ?>
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -31,34 +31,34 @@
         margin-left: 10px;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -100,7 +100,7 @@
 </style>
 
 <form action="index.php?action=add_conversion" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_list" style="color:#637381; text-decoration:none; margin-right: 10px;">←</a> Thêm phiên bản quy đổi</h2>
         <div>
             <a href="index.php?action=product_list" class="btn-cancel">Hủy</a>
@@ -108,10 +108,10 @@
         </div>
     </div>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin quy đổi</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin quy đổi</div>
 
                 <div class="form-group">
                     <label>Chọn phiên bản gốc (Sản phẩm mẹ) <span style="color:red;">*</span></label>
@@ -139,9 +139,9 @@
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">Thông tin bán hàng</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">Thông tin bán hàng</div>
 
                 <div class="form-group">
                     <label>Mã SKU</label>
@@ -164,7 +164,7 @@
 </form>
 
 <script>
-    // Phép thuật: Tự động tính giá bán gợi ý giống y hệt tính năng của Sapo
+    // Phép thuật: Tự động tính giá bán gợi ý giống y hệt tính năng của Hệ thống
     function calculatePrice() {
         let selectBox = document.getElementById("parent_id");
         let qtyInput = document.getElementById("conversion_qty").value;

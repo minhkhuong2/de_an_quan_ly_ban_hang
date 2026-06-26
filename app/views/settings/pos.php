@@ -72,7 +72,7 @@
         flex: 0 0 auto;
     }
 
-    /* NÚT GẠT (TOGGLE SWITCH) CHUẨN IOS/SAPO */
+    /* NÚT GẠT (TOGGLE SWITCH) CHUẨN IOS/AKC */
     .switch {
         position: relative;
         display: inline-block;
@@ -177,7 +177,7 @@
                 'pos_auto_promotions' => ['Áp dụng khuyến mại tự động', 'Hệ thống tự động quét và trừ tiền các chương trình KM hợp lệ.'],
                 'pos_use_promo_code' => ['Sử dụng mã khuyến mại (Coupon)', 'Hiển thị ô nhập mã giảm giá trên màn hình POS.'],
                 'pos_shift_management' => ['Quản lý ca làm việc', 'Theo dõi thông tin, doanh thu của từng ca làm việc.'],
-                'pos_sapo_qr' => ['Kết nối hiển thị Sapo QR', 'Hiển thị mã QR VietQR để khách quét thanh toán nhanh.']
+                'pos_akc_qr' => ['Kết nối hiển thị Hệ thống QR', 'Hiển thị mã QR VietQR để khách quét thanh toán nhanh.']
             ];
 
             foreach ($block1_toggles as $key => $info):

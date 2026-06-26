@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php /** @var array $categories */ ?>
 <style>
-    .sapo-filter-bar {
+    .akc-filter-bar {
         display: flex;
         gap: 10px;
         padding: 15px;
@@ -9,7 +9,7 @@
         background: #fff;
     }
 
-    .sapo-filter-bar input {
+    .akc-filter-bar input {
         flex: 1;
         padding: 8px 12px;
         border: 1px solid #c4cdd5;
@@ -18,8 +18,8 @@
         font-size: 14px;
     }
 
-    .sapo-filter-bar select,
-    .sapo-filter-bar button {
+    .akc-filter-bar select,
+    .akc-filter-bar button {
         padding: 8px 12px;
         border: 1px solid #c4cdd5;
         background: #fff;
@@ -28,13 +28,13 @@
         font-size: 14px;
     }
 
-    .sapo-table {
+    .akc-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .sapo-table th,
-    .sapo-table td {
+    .akc-table th,
+    .akc-table td {
         padding: 15px 12px;
         border-bottom: 1px solid #f4f6f8;
         text-align: left;
@@ -42,7 +42,7 @@
         vertical-align: middle;
     }
 
-    .sapo-table th {
+    .akc-table th {
         color: #637381;
         font-weight: 500;
         background: #fafbfc;
@@ -54,7 +54,7 @@
         text-align: center !important;
     }
 
-    .sapo-table input[type="checkbox"] {
+    .akc-table input[type="checkbox"] {
         width: 16px;
         height: 16px;
         cursor: pointer;
@@ -77,12 +77,12 @@
         border-color: #91d5ff;
     }
 
-    .sapo-dropdown {
+    .akc-dropdown {
         position: relative;
         display: inline-block;
     }
 
-    .sapo-dropdown-content {
+    .akc-dropdown-content {
         display: none;
         position: absolute;
         background-color: #fff;
@@ -96,7 +96,7 @@
         margin-top: 5px;
     }
 
-    .sapo-dropdown-content::before {
+    .akc-dropdown-content::before {
         content: "";
         position: absolute;
         top: -10px;
@@ -106,11 +106,11 @@
         background: transparent;
     }
 
-    .sapo-dropdown:hover .sapo-dropdown-content {
+    .akc-dropdown:hover .akc-dropdown-content {
         display: block;
     }
 
-    .sapo-dropdown-content a {
+    .akc-dropdown-content a {
         color: #212b36;
         padding: 10px 15px;
         text-decoration: none;
@@ -120,7 +120,7 @@
         cursor: pointer;
     }
 
-    .sapo-dropdown-content a:hover {
+    .akc-dropdown-content a:hover {
         background-color: #f4f6f8;
         color: #0088ff;
     }
@@ -145,7 +145,7 @@
 
 <div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; overflow: visible; min-height: 400px;">
 
-    <form action="index.php" method="GET" class="sapo-filter-bar">
+    <form action="index.php" method="GET" class="akc-filter-bar">
         <input type="hidden" name="action" value="product_category">
 
         <div style="position: relative; flex: 1;">
@@ -169,7 +169,7 @@
     </form>
 
     <?php if (!empty($categories)): ?>
-        <table class="sapo-table">
+        <table class="akc-table">
             <thead>
                 <tr id="normal-header">
                     <th class="col-cb"><input type="checkbox" onclick="toggleAll(this)"></th>
@@ -183,9 +183,9 @@
                     <th colspan="3" style="color: #212b36; font-weight: normal; overflow: visible;">
                         Đã chọn <strong id="selected-count">1</strong> danh mục
 
-                        <div class="sapo-dropdown" style="margin-left: 20px;">
+                        <div class="akc-dropdown" style="margin-left: 20px;">
                             <button class="action-btn">Chọn thao tác ▼</button>
-                            <div class="sapo-dropdown-content">
+                            <div class="akc-dropdown-content">
                                 <a>🌐 Hiển thị trên kênh</a>
                                 <a>🚫 Ẩn trên kênh</a>
                                 <div style="height: 1px; background: #dfe3e8; margin: 5px 0;"></div>

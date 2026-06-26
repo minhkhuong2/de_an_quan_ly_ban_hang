@@ -187,7 +187,7 @@
         <tr>
             <th style="width:40px; text-align:center;"><input type="checkbox" id="check_all" onclick="toggleCheckAll()"></th>
             <th>Mã Vận Đơn</th>
-            <th>Mã Đơn Sapo / Khách hàng</th>
+            <th>Mã Đơn Hệ thống / Khách hàng</th>
             <th>Đối tác</th>
             <th>Trạng thái Giao / Đối soát</th>
             <th style="text-align:right;">Tiền COD</th>

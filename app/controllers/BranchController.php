@@ -53,7 +53,7 @@ class BranchController
             }
 
             if ($id > 0) {
-                // UPDATE (Lưu ý: Không cho sửa branch_code theo tài liệu Sapo)
+                // UPDATE (Lưu ý: Không cho sửa branch_code theo tài liệu Hệ thống)
                 $stmt = $db->prepare("UPDATE branches SET branch_name=?, phone=?, email=?, country=?, province=?, district=?, ward=?, address_detail=?, is_new_address_format=?, has_inventory=?, is_default=?, is_pickup_location=? WHERE id=?");
                 $stmt->execute([$branch_name, $phone, $email, $country, $province, $district, $ward, $address_detail, $is_new_address_format, $has_inventory, $is_default, $is_pickup_location, $id]);
             } else {

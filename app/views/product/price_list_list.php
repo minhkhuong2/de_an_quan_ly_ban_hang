@@ -83,7 +83,7 @@ require_once __DIR__ . '/../layout/header.php';
         border-color: #0088ff;
     }
 
-    /* Nhãn lọc Sapo */
+    /* Nhãn lọc Hệ thống */
     .v3-filter-tag {
         background: #e5f0ff;
         color: #0088ff;

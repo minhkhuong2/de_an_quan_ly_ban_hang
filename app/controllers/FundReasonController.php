@@ -50,7 +50,7 @@ class FundReasonController
         header("Location: index.php?action=fund_reasons&success_del=1&tab=$tab");
         exit;
     }
-    // 4. API/XỬ LÝ CẬP NHẬT LÝ DO THU CHI (Luật Sapo: Sửa không giới hạn tên, chặn xóa nếu là hệ thống)
+    // 4. API/XỬ LÝ CẬP NHẬT LÝ DO THU CHI (Luật Hệ thống: Sửa không giới hạn tên, chặn xóa nếu là hệ thống)
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

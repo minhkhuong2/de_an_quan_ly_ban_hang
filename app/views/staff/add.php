@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -33,7 +33,7 @@
     <h2 style="font-size: 20px; font-weight: bold;"><a href="index.php?action=staff_list" style="text-decoration:none; color:#637381;">←</a> Thêm mới nhân viên</h2>
 </div>
 
-<form action="index.php?action=add_staff" method="POST" class="sapo-card">
+<form action="index.php?action=add_staff" method="POST" class="akc-card">
     <div style="display: flex; gap:15px;">
         <div class="form-group" style="flex:1;"><label>Họ</label><input type="text" name="last_name" class="form-control" placeholder="Họ nhân viên"></div>
         <div class="form-group" style="flex:1;"><label>Tên <span style="color:red;">*</span></label><input type="text" name="first_name" class="form-control" placeholder="Tên nhân viên" required></div>

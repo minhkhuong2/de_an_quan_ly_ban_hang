@@ -2,7 +2,7 @@
 <?php /** @var array $inventoryList */ ?>
 
 <style>
-    .sapo-filter-bar {
+    .akc-filter-bar {
         display: flex;
         gap: 10px;
         padding: 15px;
@@ -11,7 +11,7 @@
         align-items: center;
     }
 
-    .sapo-filter-bar input.search-input {
+    .akc-filter-bar input.search-input {
         flex: 1;
         padding: 8px 12px 8px 35px;
         border: 1px solid #c4cdd5;
@@ -37,13 +37,13 @@
         background: #f4f6f8;
     }
 
-    .sapo-table {
+    .akc-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .sapo-table th,
-    .sapo-table td {
+    .akc-table th,
+    .akc-table td {
         padding: 12px 10px;
         border-bottom: 1px solid #f4f6f8;
         text-align: left;
@@ -51,7 +51,7 @@
         vertical-align: middle;
     }
 
-    .sapo-table th {
+    .akc-table th {
         color: #637381;
         font-weight: 500;
         background: #fafbfc;
@@ -87,7 +87,7 @@
         padding: 15px;
     }
 
-    .sapo-tabs {
+    .akc-tabs {
         display: flex;
         gap: 20px;
         border-bottom: 1px solid #dfe3e8;
@@ -96,7 +96,7 @@
         border-radius: 8px 8px 0 0;
     }
 
-    .sapo-tab {
+    .akc-tab {
         padding: 15px 0;
         color: #637381;
         cursor: pointer;
@@ -105,7 +105,7 @@
         border-bottom: 2px solid transparent;
     }
 
-    .sapo-tab.active {
+    .akc-tab.active {
         color: #0088ff;
         border-bottom: 2px solid #0088ff;
     }
@@ -120,13 +120,13 @@
 
 <div class="card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 0; min-height: 500px;">
 
-    <div class="sapo-tabs">
-        <div class="sapo-tab active">Tất cả phiên bản sản phẩm</div>
-        <div class="sapo-tab">Sắp hết hàng</div>
-        <div class="sapo-tab">Vượt định mức</div>
+    <div class="akc-tabs">
+        <div class="akc-tab active">Tất cả phiên bản sản phẩm</div>
+        <div class="akc-tab">Sắp hết hàng</div>
+        <div class="akc-tab">Vượt định mức</div>
     </div>
 
-    <form action="index.php" method="GET" class="sapo-filter-bar">
+    <form action="index.php" method="GET" class="akc-filter-bar">
         <input type="hidden" name="action" value="inventory_list">
 
         <div style="position: relative; flex: 1; max-width: 400px;">
@@ -161,7 +161,7 @@
     </form>
 
     <?php if (!empty($inventoryList)): ?>
-        <table class="sapo-table">
+        <table class="akc-table">
             <thead>
                 <tr>
                     <th class="col-img">Ảnh</th>

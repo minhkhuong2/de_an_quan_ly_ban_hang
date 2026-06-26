@@ -2,7 +2,7 @@
 <?php /** @var array $allProducts */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -58,7 +58,7 @@
 <form action="index.php?action=add_inventory_check" method="POST">
     <div style="display: flex; gap: 20px;">
         <div style="flex: 0 0 70%;">
-            <div class="sapo-card">
+            <div class="akc-card">
                 <div style="font-weight: bold; margin-bottom: 15px;">Sản phẩm cần kiểm</div>
 
                 <div style="position: relative;">
@@ -90,7 +90,7 @@
         </div>
 
         <div style="flex: 0 0 calc(30% - 20px);">
-            <div class="sapo-card">
+            <div class="akc-card">
                 <div style="font-weight: bold; margin-bottom: 15px;">Thông tin phiếu</div>
                 <div style="margin-bottom: 15px;">
                     <label style="color: #637381; font-size: 13px;">Chi nhánh</label>

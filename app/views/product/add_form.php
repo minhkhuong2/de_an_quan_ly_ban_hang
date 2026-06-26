@@ -7,14 +7,14 @@ require_once __DIR__ . '/../layout/header.php';
 ?>
 
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .sapo-header-bar h2 {
+    .akc-header-bar h2 {
         font-size: 20px;
         font-weight: bold;
         margin: 0;
@@ -23,13 +23,13 @@ require_once __DIR__ . '/../layout/header.php';
         gap: 10px;
     }
 
-    .sapo-header-bar h2 a {
+    .akc-header-bar h2 a {
         text-decoration: none;
         color: #637381;
         font-size: 18px;
     }
 
-    .sapo-btn-group button {
+    .akc-btn-group button {
         padding: 8px 16px;
         border-radius: 4px;
         font-weight: 500;
@@ -54,34 +54,34 @@ require_once __DIR__ . '/../layout/header.php';
         background: #0070d2;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
         align-items: flex-start;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 0 0 calc(32% - 20px);
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -227,18 +227,18 @@ require_once __DIR__ . '/../layout/header.php';
 </style>
 
 <form action="index.php?action=add_product" method="POST" enctype="multipart/form-data" id="productForm">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2><a href="index.php?action=product_list">←</a> Thêm mới sản phẩm</h2>
-        <div class="sapo-btn-group">
+        <div class="akc-btn-group">
             <button type="button" class="btn-cancel" onclick="window.location.href='index.php?action=product_list'">Hủy</button>
             <button type="submit" class="btn-save">Lưu sản phẩm</button>
         </div>
     </div>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
-                <div class="sapo-card-title">1. Thông tin chung</div>
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
+                <div class="akc-card-title">1. Thông tin chung</div>
                 <div class="form-group"><label>Tên sản phẩm <span style="color:red;">*</span> 🌟</label><input type="text" id="main_product_name" name="product_name" class="form-control" placeholder="Nhập tên sản phẩm..." required></div>
                 <div class="row-flex">
                     <div class="form-group"><label>Mã sản phẩm / SKU</label><input type="text" id="main_sku" name="sku" class="form-control" placeholder="Để trống hệ thống tự tạo"></div>
@@ -248,8 +248,8 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="form-group"><label>Mô tả sản phẩm 🌟</label><textarea class="form-control" name="description" rows="5" placeholder="Nhập thông tin chi tiết về sản phẩm..."></textarea></div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">2. Thiết lập giá sản phẩm</div>
+            <div class="akc-card">
+                <div class="akc-card-title">2. Thiết lập giá sản phẩm</div>
                 <div class="row-flex">
                     <div class="form-group"><label>Giá bán</label>
                         <div style="display: flex; position: relative;"><input type="text" id="main_price" name="base_price" class="form-control currency-input" value="0" style="padding-right: 30px; font-weight: bold; color: #212b36;"><span style="position: absolute; right: 10px; top: 10px; color: #637381;">₫</span></div>
@@ -264,8 +264,8 @@ require_once __DIR__ . '/../layout/header.php';
                 <div class="checkbox-group"><input type="checkbox" id="tax" name="apply_tax" value="1"><label for="tax" style="margin:0;">Áp dụng thuế</label></div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
+            <div class="akc-card">
+                <div class="akc-card-title">4. Thông tin kho hàng (Phân bổ theo chi nhánh)</div>
                 <div class="checkbox-group"><input type="checkbox" checked disabled><label style="margin:0;">Quản lý số lượng tồn kho (Theo mã IMEI)</label></div>
                 <div class="checkbox-group"><input type="checkbox" name="allow_negative" id="allow_negative"><label for="allow_negative" style="margin:0;">Cho phép bán âm</label></div>
 
@@ -301,8 +301,8 @@ require_once __DIR__ . '/../layout/header.php';
                 </table>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">5. Thông tin vận chuyển</div>
+            <div class="akc-card">
+                <div class="akc-card-title">5. Thông tin vận chuyển</div>
                 <div class="checkbox-group">
                     <input type="checkbox" checked name="require_shipping" id="require_shipping" onchange="document.getElementById('weight-box').style.display = this.checked ? 'block' : 'none';">
                     <label for="require_shipping" style="margin:0;">Sản phẩm yêu cầu vận chuyển</label>
@@ -321,9 +321,9 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
             </div>
 
-            <div class="sapo-card" id="attribute-card">
+            <div class="akc-card" id="attribute-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div class="sapo-card-title" style="margin:0;">6. Quản lý Phiên bản sản phẩm</div>
+                    <div class="akc-card-title" style="margin:0;">6. Quản lý Phiên bản sản phẩm</div>
                     <a href="javascript:void(0)" class="link-blue" onclick="addAttributeRow()">+ Thêm thuộc tính</a>
                 </div>
                 <p style="font-size: 14px; color: #637381; margin: 0; margin-bottom: 15px;" id="attr-hint">Thêm các thuộc tính như Màu sắc, Kích thước (Tối đa 3 thuộc tính).</p>
@@ -332,8 +332,8 @@ require_once __DIR__ . '/../layout/header.php';
                 </table>
             </div>
 
-            <div class="sapo-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
-                <div class="sapo-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản</div>
+            <div class="akc-card" id="variants-card" style="display: none; border: 1px solid #91d5ff; background: #e6f7ff;">
+                <div class="akc-card-title" style="color: #0050b3; margin-bottom: 5px;">🚀 Danh sách phiên bản</div>
                 <p style="font-size: 13px; color: #637381; margin-bottom: 15px;">Chỉnh sửa hàng loạt thông tin cho các phiên bản bên dưới:</p>
 
                 <div class="bulk-edit-toolbar">
@@ -363,9 +363,9 @@ require_once __DIR__ . '/../layout/header.php';
 
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
-                <div class="sapo-card-title">3. Thêm ảnh sản phẩm</div>
+        <div class="akc-col-right">
+            <div class="akc-card">
+                <div class="akc-card-title">3. Thêm ảnh sản phẩm</div>
                 <div class="upload-box" onclick="document.getElementById('file-upload').click()">
                     <input type="file" id="file-upload" name="image" style="display: none;" accept="image/*" onchange="previewImage(event)">
                     <div id="upload-placeholder">
@@ -375,8 +375,8 @@ require_once __DIR__ . '/../layout/header.php';
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">8. Kênh bán hàng</div>
+            <div class="akc-card">
+                <div class="akc-card-title">8. Kênh bán hàng</div>
                 <div class="checkbox-group" style="align-items: flex-start;"><input type="checkbox" checked>
                     <div><label style="margin:0; font-weight: 500;">Website</label><br><a href="#" class="link-blue" style="font-size: 13px;">Đặt lịch hiển thị</a></div>
                 </div>
@@ -384,12 +384,12 @@ require_once __DIR__ . '/../layout/header.php';
                     <div><label style="margin:0; font-weight: 500;">POS</label><br><a href="#" class="link-blue" style="font-size: 13px;">Áp dụng bảng giá POS</a></div>
                 </div>
                 <div class="checkbox-group" style="align-items: flex-start; margin-top: 15px;"><input type="checkbox" checked>
-                    <div><label style="margin:0; font-weight: 500;">Chat OmniAI</label></div>
+                    <div><label style="margin:0; font-weight: 500;"></label></div>
                 </div>
             </div>
 
-            <div class="sapo-card">
-                <div class="sapo-card-title">10. Thông tin bổ sung</div>
+            <div class="akc-card">
+                <div class="akc-card-title">10. Thông tin bổ sung</div>
                 <div class="form-group"><label>10.1 Danh mục</label><select class="form-control" name="category">
                         <option value="">Chọn danh mục</option><?php if (!empty($dynamic_categories)): foreach ($dynamic_categories as $catName): ?><option value="<?php echo htmlspecialchars($catName); ?>"><?php echo htmlspecialchars($catName); ?></option><?php endforeach;
                                                                                                                                                                                                                                                         endif; ?>

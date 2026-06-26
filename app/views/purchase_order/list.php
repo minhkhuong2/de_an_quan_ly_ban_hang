@@ -2,7 +2,7 @@
 <?php /** @var array $orders */ ?>
 
 <style>
-    /* CSS CHUẨN SAPO V3 */
+    /* CSS CHUẨN AKC V3 */
     .v3-header {
         display: flex;
         justify-content: space-between;

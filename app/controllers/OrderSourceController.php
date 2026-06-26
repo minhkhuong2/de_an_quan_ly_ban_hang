@@ -18,7 +18,7 @@ class OrderSourceController
         $stmt = $this->db->query("SELECT * FROM order_sources ORDER BY sort_order ASC, id DESC");
         $all_sources = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Đếm giới hạn (Mục 1 tài liệu Sapo)
+        // Đếm giới hạn (Mục 1 tài liệu Hệ thống)
         $total_created = count($all_sources);
 
         // Tách làm 2 mảng theo trạng thái tiếng Việt của Khương

@@ -144,7 +144,7 @@ require_once __DIR__ . '/../layout/header.php';
         </div>
 
         <div class="v3-card">
-            <div class="card-header">2.2. Thông tin bổ sung & Cập nhật (Quy tắc Sapo)</div>
+            <div class="card-header">2.2. Thông tin bổ sung & Cập nhật (Quy tắc Hệ thống)</div>
             <div class="card-body">
 
                 <div class="form-group">
@@ -174,7 +174,7 @@ require_once __DIR__ . '/../layout/header.php';
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
-                        <p style="font-size:12px; color:#0088ff; margin-top:4px;">✨ Sapo khuyên dùng: Bạn được bổ sung thông tin do lúc tạo đang để trống.</p>
+                        <p style="font-size:12px; color:#0088ff; margin-top:4px;">✨ Hệ thống khuyên dùng: Bạn được bổ sung thông tin do lúc tạo đang để trống.</p>
                     <?php endif; ?>
                 </div>
 

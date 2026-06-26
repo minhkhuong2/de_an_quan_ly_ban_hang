@@ -70,7 +70,7 @@ class FundTransferController
         }
     }
 
-    // 2. TRANG XEM CHI TIẾT & CHỈNH SỬA PHIẾU CHUYỂN QUỸ (Mục 2 & 3 tài liệu Sapo)
+    // 2. TRANG XEM CHI TIẾT & CHỈNH SỬA PHIẾU CHUYỂN QUỸ (Mục 2 & 3 tài liệu Hệ thống)
     public function detail()
     {
         $id = $_GET['id'] ?? 0;
@@ -95,7 +95,7 @@ class FundTransferController
         require_once __DIR__ . '/../views/fund/transfer_detail.php';
     }
 
-    // 3. XỬ LÝ CẬP NHẬT PHIẾU CHUYỂN QUỸ (ÁP DỤNG ĐÚNG RÀNG BUỘC KHÓA CỦA SAPO)
+    // 3. XỬ LÝ CẬP NHẬT PHIẾU CHUYỂN QUỸ (ÁP DỤNG ĐÚNG RÀNG BUỘC KHÓA CỦA AKC)
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -112,13 +112,13 @@ class FundTransferController
                 die("Yêu cầu không hợp lệ.");
             }
 
-            // Quy tắc Sapo: Nếu to_id cũ bằng 0 (chưa nhập) -> Cho phép cập nhật. Ngược lại -> Giữ nguyên dữ liệu cũ.
+            // Quy tắc Hệ thống: Nếu to_id cũ bằng 0 (chưa nhập) -> Cho phép cập nhật. Ngược lại -> Giữ nguyên dữ liệu cũ.
             $to_id = $old['to_id'];
             if ($old['to_id'] == 0 && isset($_POST['to_id_update'])) {
                 $to_id = $_POST['to_id_update'];
             }
 
-            // Quy tắc Sapo: Nếu ngày cũ đang NULL -> Cho phép điền ngày vào sổ. Ngược lại -> Giữ nguyên.
+            // Quy tắc Hệ thống: Nếu ngày cũ đang NULL -> Cho phép điền ngày vào sổ. Ngược lại -> Giữ nguyên.
             $transaction_date = $old['transaction_date'];
             if (empty($old['transaction_date']) && !empty($_POST['transaction_date_update'])) {
                 $transaction_date = $_POST['transaction_date_update'];
@@ -132,7 +132,7 @@ class FundTransferController
             exit;
         }
     }
-    // API: XÓA PHIẾU CHUYỂN QUỸ ĐƠN LẺ (Mục 1 tài liệu Sapo)
+    // API: XÓA PHIẾU CHUYỂN QUỸ ĐƠN LẺ (Mục 1 tài liệu Hệ thống)
     public function delete_single()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -152,7 +152,7 @@ class FundTransferController
         }
     }
 
-    // API: XÓA PHIẾU CHUYỂN QUỸ HÀNG LOẠT (Mục 2 tài liệu Sapo)
+    // API: XÓA PHIẾU CHUYỂN QUỸ HÀNG LOẠT (Mục 2 tài liệu Hệ thống)
     public function delete_bulk()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

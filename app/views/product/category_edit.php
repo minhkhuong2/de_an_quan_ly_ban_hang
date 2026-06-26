@@ -3,7 +3,7 @@ require_once __DIR__ . '/../layout/header.php';
 $category = $category ?? [];
 ?>
 <style>
-    .sapo-header-bar {
+    .akc-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -29,20 +29,20 @@ $category = $category ?? [];
         margin-left: 10px;
     }
 
-    .sapo-grid {
+    .akc-grid {
         display: flex;
         gap: 20px;
     }
 
-    .sapo-col-left {
+    .akc-col-left {
         flex: 0 0 68%;
     }
 
-    .sapo-col-right {
+    .akc-col-right {
         flex: 1;
     }
 
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -50,7 +50,7 @@ $category = $category ?? [];
         margin-bottom: 20px;
     }
 
-    .sapo-card {
+    .akc-card {
         overflow: hidden;
         box-sizing: border-box;
     }
@@ -87,7 +87,7 @@ $category = $category ?? [];
 </style>
 
 <form action="" method="POST">
-    <div class="sapo-header-bar">
+    <div class="akc-header-bar">
         <h2 style="font-size: 20px; margin: 0; color: #212b36;"><a href="index.php?action=product_category" style="text-decoration:none; color:#637381; margin-right:10px;">←</a> <?php echo htmlspecialchars($category['category_name'] ?? ''); ?></h2>
         <div><a href="index.php?action=product_category" class="btn-cancel">Hủy</a> <button type="submit" class="btn-save">Lưu thay đổi</button></div>
     </div>
@@ -95,15 +95,15 @@ $category = $category ?? [];
     <?php if (isset($_GET['success'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Tạo danh mục thành công!</div><?php endif; ?>
     <?php if (isset($_GET['updated'])): ?><div style="background:#eafff0; color:#108043; padding:15px; border-radius:6px; margin-bottom:20px; border:1px solid #33d067;">✅ Cập nhật danh mục thành công!</div><?php endif; ?>
 
-    <div class="sapo-grid">
-        <div class="sapo-col-left">
-            <div class="sapo-card">
+    <div class="akc-grid">
+        <div class="akc-col-left">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Thông tin chung</h3>
                 <label>Tên danh mục *</label> <input type="text" name="category_name" class="form-control" value="<?php echo htmlspecialchars($category['category_name'] ?? ''); ?>" required>
                 <label>Mô tả</label> <textarea name="description" class="form-control" rows="4"><?php echo htmlspecialchars($category['description'] ?? ''); ?></textarea>
             </div>
 
-            <div class="sapo-card">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Chọn sản phẩm</h3>
                 <label class="radio-box">
                     <input type="radio" name="selection_type" value="manual" onchange="toggleAutoRules()" <?php echo (($category['selection_type'] ?? 'manual') == 'manual') ? 'checked' : ''; ?>> <strong>Thêm sản phẩm thủ công</strong>
@@ -165,13 +165,13 @@ $category = $category ?? [];
             </div>
         </div>
 
-        <div class="sapo-col-right">
-            <div class="sapo-card">
+        <div class="akc-col-right">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Trạng thái</h3>
                 <div class="radio-box"><input type="radio" name="status" value="Hiển thị" <?php echo (($category['status'] ?? 'Hiển thị') == 'Hiển thị') ? 'checked' : ''; ?>> Hiển thị</div>
                 <div class="radio-box"><input type="radio" name="status" value="Ẩn" <?php echo (($category['status'] ?? '') == 'Ẩn') ? 'checked' : ''; ?>> Ẩn</div>
             </div>
-            <div class="sapo-card">
+            <div class="akc-card">
                 <h3 style="font-size: 16px; margin-bottom: 15px;">Sắp xếp sản phẩm</h3>
                 <select name="sort_order" class="form-control">
                     <option value="newest" <?php echo (($category['sort_order'] ?? 'newest') == 'newest') ? 'selected' : ''; ?>>Theo ngày tạo: Từ mới đến cũ</option>

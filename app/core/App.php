@@ -202,7 +202,7 @@ class App
         'bulk_order_actions'    => ['OrderController', 'bulk_actions'],
         'export_orders'         => ['OrderController', 'export_orders'],
 
-        // --- Xử lý Đơn hàng (Tiêu chuẩn Sapo Omni) ---
+        // --- Xử lý Đơn hàng (Tiêu chuẩn Hệ thống ) ---
         'order_processing'          => ['OrderProcessingController', 'index'],
         'order_processing_confirm'  => ['OrderProcessingController', 'confirm_bulk'],
         'order_processing_pack'     => ['OrderProcessingController', 'request_pack_bulk'],

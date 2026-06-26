@@ -2,7 +2,7 @@
 <?php /** @var array $settings */ ?>
 
 <style>
-    .sapo-card {
+    .akc-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -11,7 +11,7 @@
         margin: 0 auto 20px auto;
     }
 
-    .sapo-card-title {
+    .akc-card-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 20px;
@@ -74,8 +74,8 @@
         </div>
     <?php endif; ?>
 
-    <div class="sapo-card">
-        <div class="sapo-card-title">1. Trạng thái Khuyến mại chung</div>
+    <div class="akc-card">
+        <div class="akc-card-title">1. Trạng thái Khuyến mại chung</div>
         <label class="switch-box">
             <input type="checkbox" name="promo_global_status" value="1" <?php echo ($settings['promo_global_status'] ?? '1') == '1' ? 'checked' : ''; ?>>
             <div>
@@ -85,8 +85,8 @@
         </label>
     </div>
 
-    <div class="sapo-card">
-        <div class="sapo-card-title">2. Cơ chế cộng dồn Khuyến mại</div>
+    <div class="akc-card">
+        <div class="akc-card-title">2. Cơ chế cộng dồn Khuyến mại</div>
 
         <label class="switch-box">
             <input type="radio" name="promo_stacking" value="single" onchange="toggleCalcMethod()" <?php echo ($settings['promo_stacking'] ?? 'single') == 'single' ? 'checked' : ''; ?>>
@@ -140,8 +140,8 @@
         </div>
     </div>
 
-    <div class="sapo-card">
-        <div class="sapo-card-title">3. Quản lý Mã giảm giá (Coupon)</div>
+    <div class="akc-card">
+        <div class="akc-card-title">3. Quản lý Mã giảm giá (Coupon)</div>
         <label class="switch-box">
             <input type="checkbox" name="promo_coupon_enabled" value="1" <?php echo ($settings['promo_coupon_enabled'] ?? '1') == '1' ? 'checked' : ''; ?>>
             <div>
