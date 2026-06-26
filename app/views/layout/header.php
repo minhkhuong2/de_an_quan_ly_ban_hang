@@ -363,10 +363,11 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </div>
 
             <div class="menu-item has-submenu">
-                <a href="javascript:void(0)" class="menu-link">
+                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['order_list', 'create_order', 'order_processing'])) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
                 </a>
                 <ul class="submenu">
+                    <li><a href="index.php?action=order_processing" <?php echo ($current_action == 'order_processing') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-box-open" style="font-size: 10px; margin-right: 5px;"></i> Xử lý đơn hàng</a></li>
                     <li><a href="index.php?action=order_list" <?php echo ($current_action == 'order_list') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách đơn hàng</a></li>
                     <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
                 </ul>

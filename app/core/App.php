@@ -202,6 +202,14 @@ class App
         'bulk_order_actions'    => ['OrderController', 'bulk_actions'],
         'export_orders'         => ['OrderController', 'export_orders'],
 
+        // --- Xử lý Đơn hàng (Tiêu chuẩn Sapo Omni) ---
+        'order_processing'          => ['OrderProcessingController', 'index'],
+        'order_processing_confirm'  => ['OrderProcessingController', 'confirm_bulk'],
+        'order_processing_pack'     => ['OrderProcessingController', 'request_pack_bulk'],
+        'order_processing_packed'   => ['OrderProcessingController', 'mark_packed_bulk'],
+        'order_processing_handover' => ['OrderProcessingController', 'handover_bulk'],
+        'order_processing_print'    => ['OrderProcessingController', 'print_docs'],
+
         // --- Quản lý Vận Đơn ---
         'shipment_list'         => ['ShipmentController', 'index'],
         'update_shipment_status' => ['ShipmentController', 'update_status_bulk'],
