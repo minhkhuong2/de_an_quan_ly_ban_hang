@@ -177,23 +177,37 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
 
         .sidebar .submenu {
             list-style: none;
-            padding-left: 45px;
+            padding-left: 25px;
             width: 100%;
             margin-top: 4px;
         }
 
         .sidebar .submenu li a {
-            display: block;
-            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
             color: #9ca3af;
             text-decoration: none;
             font-size: 13.5px;
-            transition: 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar .submenu li a i {
+            width: 15px;
+            text-align: center;
         }
 
         .sidebar .submenu li a:hover {
-            color: #60a5fa;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
             transform: translateX(4px);
+        }
+
+        .sidebar .submenu li a.active {
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.1);
         }
 
         /* Khung nội dung chính */
@@ -266,8 +280,8 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                 <i class="fa-solid fa-folder-tree"></i> Danh mục
             </a>
 
-            <a href="index.php?action=product_price" <?php echo ($current_action == 'product_price' || $current_action == 'add_price_list' || $current_action == 'price_list_detail') ? 'style="color:#60a5fa;"' : ''; ?>>
-                <i class="fa-solid fa-tags" style="font-size: 10px; margin-right: 5px;"></i> Bảng giá
+            <a href="index.php?action=product_price" class="menu-item <?php echo ($current_action == 'product_price' || $current_action == 'add_price_list' || $current_action == 'price_list_detail') ? 'active' : ''; ?>">
+                <i class="fa-solid fa-tags"></i> Bảng giá
             </a>
 
             <div class="menu-heading">Quản lý Kho</div>
@@ -300,8 +314,8 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <i class="fa-solid fa-users"></i> Khách hàng
                 </a>
                 <ul class="submenu">
-                    <li><a href="index.php?action=customer_list" <?php echo ($current_action == 'customer_list') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách khách hàng</a></li>
-                    <li><a href="index.php?action=customer_groups" <?php echo (in_array($current_action, ['customer_groups', 'create_customer_group', 'customer_group_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-users-rectangle" style="font-size: 10px; margin-right: 5px;"></i> Nhóm khách hàng</a></li>
+                    <li><a href="index.php?action=customer_list" <?php echo ($current_action == 'customer_list') ? 'class="active"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách khách hàng</a></li>
+                    <li><a href="index.php?action=customer_groups" <?php echo (in_array($current_action, ['customer_groups', 'create_customer_group', 'customer_group_detail'])) ? 'class="active"' : ''; ?>><i class="fa-solid fa-users-rectangle" style="font-size: 10px; margin-right: 5px;"></i> Nhóm khách hàng</a></li>
                 </ul>
             </div>
 
@@ -320,32 +334,32 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                 </a>
                 <ul class="submenu">
                     <li>
-                        <a href="index.php?action=expense_list" <?php echo (in_array($current_action, ['expense_list', 'expense_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=expense_list" <?php echo (in_array($current_action, ['expense_list', 'expense_detail'])) ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-list" style="font-size: 10px; margin-right: 5px;"></i> Danh sách phiếu chi
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?action=create_receipt" <?php echo ($current_action == 'create_receipt') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=create_receipt" <?php echo ($current_action == 'create_receipt') ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-arrow-down" style="font-size: 10px; margin-right: 5px;"></i> Tạo Phiếu thu (Thu nợ)
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?action=create_expense" <?php echo ($current_action == 'create_expense') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=create_expense" <?php echo ($current_action == 'create_expense') ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-arrow-up" style="font-size: 10px; margin-right: 5px;"></i> Tạo Phiếu chi (Chi nợ)
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?action=fund_transfers" <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=fund_transfers" <?php echo (in_array($current_action, ['fund_transfers', 'create_fund_transfer', 'fund_transfer_detail'])) ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-money-bill-transfer" style="font-size: 10px; margin-right: 5px;"></i> Phiếu chuyển quỹ nội bộ
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?action=receipt_list" <?php echo (in_array($current_action, ['receipt_list', 'receipt_detail'])) ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=receipt_list" <?php echo (in_array($current_action, ['receipt_list', 'receipt_detail'])) ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-list-ol" style="font-size: 10px; margin-right: 5px;"></i> Danh sách phiếu thu
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?action=fund_reasons" <?php echo ($current_action == 'fund_reasons') ? 'style="color:#60a5fa;"' : ''; ?>>
+                        <a href="index.php?action=fund_reasons" <?php echo ($current_action == 'fund_reasons') ? 'class="active"' : ''; ?>>
                             <i class="fa-solid fa-list-check" style="font-size: 10px; margin-right: 5px;"></i> Lý do thu chi
                         </a>
                     </li>
@@ -367,9 +381,9 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
                     <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
                 </a>
                 <ul class="submenu">
-                    <li><a href="index.php?action=order_processing" <?php echo ($current_action == 'order_processing') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-box-open" style="font-size: 10px; margin-right: 5px;"></i> Xử lý đơn hàng</a></li>
-                    <li><a href="index.php?action=order_list" <?php echo ($current_action == 'order_list') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách đơn hàng</a></li>
-                    <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'style="color:#60a5fa;"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
+                    <li><a href="index.php?action=order_processing" <?php echo ($current_action == 'order_processing') ? 'class="active"' : ''; ?>><i class="fa-solid fa-box-open" style="font-size: 10px; margin-right: 5px;"></i> Xử lý đơn hàng</a></li>
+                    <li><a href="index.php?action=order_list" <?php echo ($current_action == 'order_list') ? 'class="active"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách đơn hàng</a></li>
+                    <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'class="active"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
                 </ul>
             </div>
             <div class="menu-heading" style="margin-top: 15px;">Vận Chuyển</div>
@@ -383,27 +397,27 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </a>
             <ul class="submenu">
                 <li>
-                    <a href="index.php?action=store_settings" <?php echo ($current_action == 'store_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                    <a href="index.php?action=store_settings" <?php echo ($current_action == 'store_settings') ? 'class="active"' : ''; ?>>
                         <i class="fa-solid fa-store" style="font-size: 10px; margin-right: 5px;"></i> Thiết lập cửa hàng
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                    <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'class="active"' : ''; ?>>
                         <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'style="color:#60a5fa;"' : ''; ?>>
+                    <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'class="active"' : ''; ?>>
                         <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'style="color:#60a5fa;"' : ''; ?>>
+                    <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'class="active"' : ''; ?>>
                         <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
                     </a>
                 </li>
                 <li>
-                    <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'style="color:#60a5fa;"' : ''; ?>>
+                    <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'class="active"' : ''; ?>>
                         <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
                     </a>
                 </li>

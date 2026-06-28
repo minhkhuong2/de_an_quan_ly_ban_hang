@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 25, 2026 lúc 09:16 PM
+-- Thời gian đã tạo: Th6 26, 2026 lúc 08:24 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -395,17 +395,21 @@ CREATE TABLE `orders` (
   `packing_status` varchar(50) DEFAULT 'pending' COMMENT 'pending, packing, packed',
   `assigned_staff_id` int(11) DEFAULT NULL COMMENT 'ID Nhân viên phụ trách',
   `tags` varchar(255) DEFAULT NULL COMMENT 'Các tag cách nhau dấu phẩy (VD: V.I.P, Gấp)',
-  `has_e_invoice` tinyint(1) DEFAULT 0 COMMENT '1: Đã xuất Hóa đơn điện tử'
+  `has_e_invoice` tinyint(1) DEFAULT 0 COMMENT '1: Đã xuất Hóa đơn điện tử',
+  `printed_delivery` tinyint(1) DEFAULT 0,
+  `printed_picking_order` tinyint(1) DEFAULT 0,
+  `printed_picking_product` tinyint(1) DEFAULT 0,
+  `packer_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `customer_name`, `phone`, `address`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`, `is_archived`, `packing_status`, `assigned_staff_id`, `tags`, `has_e_invoice`) VALUES
-(1, 'DH001', 1, NULL, NULL, NULL, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'delivering', 'pos', 0, 'packing', NULL, NULL, 0),
-(2, 'DH002', 1, NULL, NULL, NULL, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'pending', 'pos', 0, 'packing', NULL, NULL, 0),
-(3, 'DH003', 1, NULL, NULL, NULL, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos', 0, 'pending', NULL, NULL, 0);
+INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `customer_name`, `phone`, `address`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`, `is_archived`, `packing_status`, `assigned_staff_id`, `tags`, `has_e_invoice`, `printed_delivery`, `printed_picking_order`, `printed_picking_product`, `packer_id`) VALUES
+(1, 'DH001', 1, NULL, NULL, NULL, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'delivering', 'pos', 0, 'packing', NULL, NULL, 0, 0, 0, 0, NULL),
+(2, 'DH002', 1, NULL, NULL, NULL, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'pending', 'pos', 0, 'packing', NULL, NULL, 0, 0, 0, 0, NULL),
+(3, 'DH003', 1, NULL, NULL, NULL, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -1690,3 +1694,37 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Bảng lưu trữ nguồn đơn hàng
+CREATE TABLE IF NOT EXISTS `order_sources` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `source_name` varchar(255) NOT NULL,
+  `category_name` varchar(255) NOT NULL,
+  `source_type` varchar(50) NOT NULL DEFAULT 'Tùy chỉnh',
+  `status` varchar(50) NOT NULL DEFAULT 'Đang sử dụng',
+  `logo_url` text NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 99,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `order_sources` (`id`, `source_name`, `category_name`, `source_type`, `status`, `sort_order`) VALUES
+(1, 'Facebook', 'Mạng xã hội, Livestream', 'Mặc định', 'Đang sử dụng', 1),
+(2, 'Shopee', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', 2),
+(3, 'Website', 'Website', 'Mặc định', 'Đang sử dụng', 3),
+(4, 'POS', 'Bán tại cửa hàng, Hotline', 'Mặc định', 'Đang sử dụng', 4),
+(5, 'TikTok Shop', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', 5);
+
+-- Bảng cấu hình hệ thống
+CREATE TABLE IF NOT EXISTS `system_settings` (
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text NULL,
+  PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `system_settings` (`setting_key`, `setting_value`) VALUES
+('order_workflow', 'standard'),
+('allow_negative_sale_warning', '1'),
+('auto_archive_order', '0'),
+('auto_delete_transaction', '1'),
+('reminder_email_hours', '1'),
+('advanced_wave_picking', '{\"scan_shelf\":0,\"scan_item_pick\":0,\"scan_item_pack\":0,\"strict_wave\":0}');

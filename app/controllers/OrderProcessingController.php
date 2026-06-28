@@ -18,9 +18,11 @@ class OrderProcessingController
         // 3. Xây dựng câu truy vấn cơ bản
         $query = "SELECT o.*, 
                          CONCAT(c.last_name, ' ', c.first_name) AS customer_name,
-                         c.phone AS customer_phone
+                         c.phone AS customer_phone,
+                         u.full_name AS packer_name
                   FROM orders o 
                   LEFT JOIN customers c ON o.customer_id = c.id 
+                  LEFT JOIN users u ON o.packer_id = u.id
                   WHERE 1=1";
 
         // Áp dụng bộ lọc Từ khóa
@@ -67,6 +69,36 @@ class OrderProcessingController
 
         $stmt = $db->query($query);
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Sắp xếp kiện hàng nâng cao
+        if (isset($_GET['sort']) && in_array($_GET['sort'], ['package_asc', 'package_desc'])) {
+            $stmt_items_count = $db->query("SELECT order_id, COUNT(DISTINCT product_id) as sku_count, SUM(qty) as total_qty FROM order_items GROUP BY order_id");
+            $item_counts = [];
+            while($row = $stmt_items_count->fetch(PDO::FETCH_ASSOC)) {
+                $item_counts[$row['order_id']] = $row;
+            }
+            $sort_type = $_GET['sort'];
+            usort($orders, function($a, $b) use ($item_counts, $sort_type) {
+                $ac = $item_counts[$a['id']] ?? ['sku_count' => 0, 'total_qty' => 0];
+                $bc = $item_counts[$b['id']] ?? ['sku_count' => 0, 'total_qty' => 0];
+                
+                if ($sort_type == 'package_asc') {
+                    // Từ A đến Z: 1 SKU trước, qty tăng dần
+                    if ($ac['sku_count'] == 1 && $bc['sku_count'] > 1) return -1;
+                    if ($ac['sku_count'] > 1 && $bc['sku_count'] == 1) return 1;
+                    return $ac['total_qty'] <=> $bc['total_qty'];
+                } else {
+                    // Từ Z đến A: Nhiều SKU trước, sau đó 1 SKU (qty giảm dần)
+                    if ($ac['sku_count'] > 1 && $bc['sku_count'] == 1) return -1;
+                    if ($ac['sku_count'] == 1 && $bc['sku_count'] > 1) return 1;
+                    return $bc['total_qty'] <=> $ac['total_qty'];
+                }
+            });
+        }
+
+        // Lấy danh sách nhân viên để gán người đóng gói
+        $stmt_users = $db->query("SELECT id, username, full_name FROM users");
+        $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 
         // Đếm số lượng cho các tab
         $counts = [
@@ -213,7 +245,7 @@ class OrderProcessingController
     public function print_docs()
     {
         $ids = $_GET['ids'] ?? '';
-        $type = $_GET['type'] ?? 'shipping'; // shipping hoặc picking
+        $type = $_GET['type'] ?? 'delivery'; // delivery, picking_order, picking_product
         
         if (empty($ids)) {
             die("Vui lòng chọn ít nhất 1 đơn hàng để in.");
@@ -224,6 +256,18 @@ class OrderProcessingController
         
         $db = (new Database())->getConnection();
         $inQuery = implode(',', array_fill(0, count($id_array), '?'));
+        
+        // Đánh dấu đã in tự động
+        if ($type === 'delivery') {
+            $stmt_mark = $db->prepare("UPDATE orders SET printed_delivery = 1 WHERE id IN ($inQuery)");
+            $stmt_mark->execute($id_array);
+        } elseif ($type === 'picking_order') {
+            $stmt_mark = $db->prepare("UPDATE orders SET printed_picking_order = 1 WHERE id IN ($inQuery)");
+            $stmt_mark->execute($id_array);
+        } elseif ($type === 'picking_product') {
+            $stmt_mark = $db->prepare("UPDATE orders SET printed_picking_product = 1 WHERE id IN ($inQuery)");
+            $stmt_mark->execute($id_array);
+        }
         
         // Lấy thông tin đơn hàng
         $query = "SELECT o.*, 
@@ -254,5 +298,57 @@ class OrderProcessingController
         $store = $stmt_store->fetch(PDO::FETCH_ASSOC);
 
         require_once __DIR__ . '/../views/order_processing/print.php';
+    }
+
+    // Xử lý các thao tác nâng cao (Đánh dấu in, nhân viên đóng gói)
+    public function advanced_action()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['order_ids'])) {
+            $ids = explode(',', $_POST['order_ids']);
+            $db = (new Database())->getConnection();
+            $type = $_GET['type'] ?? '';
+            
+            $ids = array_filter($ids);
+            if (empty($ids) || empty($type)) {
+                header("Location: index.php?action=order_processing");
+                exit;
+            }
+
+            $inQuery = implode(',', array_fill(0, count($ids), '?'));
+            $msg = "";
+
+            if ($type === 'mark_print_delivery_yes') {
+                $stmt = $db->prepare("UPDATE orders SET printed_delivery = 1 WHERE id IN ($inQuery)");
+                $stmt->execute($ids);
+                $msg = "Đã đánh dấu ĐÃ IN phiếu giao hàng.";
+            } elseif ($type === 'mark_print_delivery_no') {
+                $stmt = $db->prepare("UPDATE orders SET printed_delivery = 0 WHERE id IN ($inQuery)");
+                $stmt->execute($ids);
+                $msg = "Đã đánh dấu CHƯA IN phiếu giao hàng.";
+            } elseif ($type === 'mark_print_picking_yes') {
+                $stmt = $db->prepare("UPDATE orders SET printed_picking_order = 1, printed_picking_product = 1 WHERE id IN ($inQuery)");
+                $stmt->execute($ids);
+                $msg = "Đã đánh dấu ĐÃ IN phiếu nhặt hàng.";
+            } elseif ($type === 'mark_print_picking_no') {
+                $stmt = $db->prepare("UPDATE orders SET printed_picking_order = 0, printed_picking_product = 0 WHERE id IN ($inQuery)");
+                $stmt->execute($ids);
+                $msg = "Đã đánh dấu CHƯA IN phiếu nhặt hàng.";
+            } elseif ($type === 'remove_packer') {
+                $stmt = $db->prepare("UPDATE orders SET packer_id = NULL WHERE id IN ($inQuery)");
+                $stmt->execute($ids);
+                $msg = "Đã xóa nhân viên đóng gói khỏi các kiện hàng.";
+            } elseif ($type === 'add_packer') {
+                $packer_id = $_POST['packer_id'] ?? null;
+                if ($packer_id) {
+                    $params = array_merge([$packer_id], $ids);
+                    $stmt = $db->prepare("UPDATE orders SET packer_id = ? WHERE id IN ($inQuery)");
+                    $stmt->execute($params);
+                    $msg = "Đã phân công nhân viên đóng gói thành công.";
+                }
+            }
+
+            header("Location: index.php?action=order_processing&success=" . urlencode($msg));
+            exit;
+        }
     }
 }

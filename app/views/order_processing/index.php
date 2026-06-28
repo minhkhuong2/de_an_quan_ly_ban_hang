@@ -219,6 +219,13 @@
                 <option value="tiktok" <?php echo $channel_filter == 'tiktok' ? 'selected' : ''; ?>>TikTok Shop</option>
                 <option value="pos" <?php echo $channel_filter == 'pos' ? 'selected' : ''; ?>>Bán tại quầy (POS)</option>
             </select>
+
+            <select name="sort" onchange="this.form.submit()" style="margin-left: 10px;">
+                <option value="default" <?php echo (!isset($_GET['sort']) || $_GET['sort'] == 'default') ? 'selected' : ''; ?>>Sắp xếp: Mặc định</option>
+                <option value="package_asc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'package_asc') ? 'selected' : ''; ?>>Kiện hàng: Từ A đến Z</option>
+                <option value="package_desc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'package_desc') ? 'selected' : ''; ?>>Kiện hàng: Từ Z đến A</option>
+            </select>
+            
             <button type="submit" class="btn-outline">Lọc</button>
         </div>
     </div>
@@ -228,7 +235,7 @@
 <div class="bulk-actions" id="bulkActionsPanel">
     <span style="font-size:14px; color:#212b36;">Đã chọn <strong id="selectedCount">0</strong> đơn hàng</span>
     
-    <form id="bulkForm" method="POST" style="display:flex; gap:10px;">
+    <form id="bulkForm" method="POST" style="display:flex; gap:10px; align-items: center;">
         <input type="hidden" name="order_ids" id="bulkOrderIds">
         
         <?php if ($tab == 'pending_confirm'): ?>
@@ -236,11 +243,28 @@
         <?php elseif ($tab == 'pending_process'): ?>
             <button type="button" class="btn-primary" onclick="submitBulk('order_processing_pack')">Yêu cầu đóng gói</button>
         <?php elseif ($tab == 'packing'): ?>
-            <button type="button" class="btn-outline" style="color:#0088ff; border-color:#0088ff;" onclick="printDocs('shipping')"><i class="fa-solid fa-print"></i> In phiếu giao hàng</button>
+            <select id="printTypeSelect" class="btn-outline" style="border-color:#0088ff; color:#0088ff; outline:none; background:#fff;">
+                <option value="">-- Chọn loại phiếu in --</option>
+                <option value="delivery">🖨️ In phiếu giao hàng</option>
+                <option value="picking_order">🖨️ In phiếu nhặt hàng theo đơn</option>
+                <option value="picking_product">🖨️ In phiếu nhặt hàng theo sản phẩm</option>
+            </select>
+            <button type="button" class="btn-outline" style="color:#0088ff; border-color:#0088ff;" onclick="printSelectedDocs()">Thực hiện In</button>
             <button type="button" class="btn-primary" onclick="submitBulk('order_processing_packed')">Xác nhận đã đóng gói</button>
         <?php elseif ($tab == 'handover'): ?>
             <button type="button" class="btn-primary" onclick="submitBulk('order_processing_handover')">Bàn giao cho ĐVVC</button>
         <?php endif; ?>
+
+        <!-- Thao tác khác -->
+        <select id="otherActionSelect" class="btn-outline" onchange="handleOtherAction(this.value)" style="margin-left: 10px;">
+            <option value="">-- Thao tác khác --</option>
+            <option value="mark_print_delivery_yes">Đánh dấu: Đã in phiếu giao hàng</option>
+            <option value="mark_print_delivery_no">Đánh dấu: Chưa in phiếu giao hàng</option>
+            <option value="mark_print_picking_yes">Đánh dấu: Đã in phiếu nhặt hàng</option>
+            <option value="mark_print_picking_no">Đánh dấu: Chưa in phiếu nhặt hàng</option>
+            <option value="add_packer">Thêm nhân viên đóng gói</option>
+            <option value="remove_packer">Xóa nhân viên đóng gói</option>
+        </select>
     </form>
 </div>
 
@@ -253,7 +277,8 @@
                 <th>Mã đơn</th>
                 <th>Kênh bán</th>
                 <th>Khách hàng</th>
-                <th>Trạng thái</th>
+                <th>Trạng thái & In ấn</th>
+                <th>Đóng gói</th>
                 <th style="text-align: right;">Tổng tiền</th>
             </tr>
         </thead>
@@ -298,6 +323,22 @@
                                 <span style="color:#637381; background:#f4f6f8; padding:2px 6px; border-radius:4px; font-size:12px;">Đã bàn giao</span>
                             <?php else: ?>
                                 <span><?php echo $o['shipping_status']; ?></span>
+                            <?php endif; ?>
+
+                            <div style="margin-top: 8px; font-size: 11px;">
+                                <?php if($o['printed_delivery']): ?>
+                                    <span style="color:#108043; border: 1px solid #108043; padding:1px 4px; border-radius:3px;">✓ Đã in giao hàng</span>
+                                <?php endif; ?>
+                                <?php if($o['printed_picking_order'] || $o['printed_picking_product']): ?>
+                                    <span style="color:#0088ff; border: 1px solid #0088ff; padding:1px 4px; border-radius:3px;">✓ Đã in nhặt hàng</span>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            <?php if ($o['packer_name']): ?>
+                                <div style="font-size: 12px; font-weight: 500; color: #212b36;">👤 <?php echo htmlspecialchars($o['packer_name']); ?></div>
+                            <?php else: ?>
+                                <span style="font-size: 12px; color: #919eab;">Chưa có</span>
                             <?php endif; ?>
                         </td>
                         <td style="text-align: right; font-weight: 600;">
@@ -368,6 +409,69 @@
         }
         window.open(`index.php?action=order_processing_print&type=${type}&ids=${ids}`, '_blank');
     }
+
+    function printSelectedDocs() {
+        const type = document.getElementById('printTypeSelect').value;
+        if (!type) {
+            alert('Vui lòng chọn loại phiếu cần in.');
+            return;
+        }
+        printDocs(type);
+    }
+
+    function handleOtherAction(action) {
+        if (!action) return;
+        const ids = getSelectedIds();
+        if (ids === '') {
+            alert('Vui lòng chọn ít nhất 1 đơn hàng.');
+            document.getElementById('otherActionSelect').value = '';
+            return;
+        }
+
+        if (action === 'add_packer') {
+            document.getElementById('packerModal').style.display = 'block';
+            document.getElementById('otherActionSelect').value = '';
+            return;
+        }
+
+        if(!confirm("Bạn có chắc chắn muốn thực hiện thao tác này cho các đơn đã chọn?")) {
+            document.getElementById('otherActionSelect').value = '';
+            return;
+        }
+        
+        const form = document.getElementById('bulkForm');
+        document.getElementById('bulkOrderIds').value = ids;
+        form.action = 'index.php?action=order_processing_advanced_action&type=' + action;
+        form.submit();
+    }
 </script>
+
+<!-- MODAL THÊM NHÂN VIÊN ĐÓNG GÓI -->
+<div id="packerModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:400px; border-radius:8px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.15); position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+        <h3 style="margin-top:0;">👤 Phân công nhân viên đóng gói</h3>
+        <p style="font-size:13px; color:#637381;">Chọn nhân viên chịu trách nhiệm đóng gói cho các kiện hàng đã chọn.</p>
+        
+        <form method="POST" action="index.php?action=order_processing_advanced_action&type=add_packer">
+            <input type="hidden" name="order_ids" id="packerOrderIds">
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:600; display:block; margin-bottom:5px;">Nhân viên:</label>
+                <select name="packer_id" class="form-control" style="width:100%; padding:8px; border:1px solid #c4cdd5; border-radius:4px;" required>
+                    <option value="">-- Chọn nhân viên --</option>
+                    <?php if (isset($users) && is_array($users)): ?>
+                        <?php foreach($users as $u): ?>
+                            <option value="<?php echo $u['id']; ?>"><?php echo htmlspecialchars($u['full_name']); ?> (<?php echo htmlspecialchars($u['username']); ?>)</option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+            
+            <div style="text-align:right;">
+                <button type="button" class="btn-outline" onclick="document.getElementById('packerModal').style.display='none'">Hủy</button>
+                <button type="submit" class="btn-primary" onclick="document.getElementById('packerOrderIds').value = getSelectedIds();">Xác nhận</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

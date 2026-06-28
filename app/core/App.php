@@ -209,6 +209,7 @@ class App
         'order_processing_packed'   => ['OrderProcessingController', 'mark_packed_bulk'],
         'order_processing_handover' => ['OrderProcessingController', 'handover_bulk'],
         'order_processing_print'    => ['OrderProcessingController', 'print_docs'],
+        'order_processing_advanced_action' => ['OrderProcessingController', 'advanced_action'],
 
         // --- Quản lý Vận Đơn ---
         'shipment_list'         => ['ShipmentController', 'index'],

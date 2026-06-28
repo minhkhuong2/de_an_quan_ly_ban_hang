@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>In Phiếu <?php echo $type == 'shipping' ? 'Giao Hàng' : 'Nhặt Hàng'; ?></title>
+    <title>In Phiếu <?php echo $type == 'delivery' ? 'Giao Hàng' : ($type == 'picking_product' ? 'Nhặt Hàng (Sản phẩm)' : 'Nhặt Hàng (Đơn)'); ?></title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,7 +82,70 @@
         <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #0088ff; color: #fff; border: none; cursor: pointer; border-radius: 4px;">🖨️ IN NGAY</button>
     </div>
 
-    <?php foreach ($orders as $o): ?>
+    <?php if ($type == 'picking_product'): ?>
+        <div class="page">
+            <div class="header">
+                <div class="store-info">
+                    <h2><?php echo htmlspecialchars($store['store_name'] ?? 'Cửa hàng mặc định'); ?></h2>
+                    <p>Ngày in: <?php echo date('d/m/Y H:i'); ?></p>
+                </div>
+            </div>
+
+            <div class="doc-title">
+                <h1>PHIẾU NHẶT HÀNG TỔNG HỢP THEO SẢN PHẨM</h1>
+                <p>Tổng số đơn: <?php echo count($orders); ?></p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>SKU / Mã SP</th>
+                        <th style="width: 100px; text-align: center;">Tổng số lượng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        $aggregated = [];
+                        foreach ($all_items as $item) {
+                            $sku = $item['sku'] ?: 'Chưa có SKU';
+                            if (!isset($aggregated[$sku])) {
+                                $aggregated[$sku] = [
+                                    'name' => $item['product_name'],
+                                    'sku' => $sku,
+                                    'qty' => 0
+                                ];
+                            }
+                            $aggregated[$sku]['qty'] += $item['qty'];
+                        }
+                        
+                        $stt = 1;
+                        foreach ($aggregated as $sku => $data):
+                    ?>
+                    <tr>
+                        <td style="text-align: center;"><?php echo $stt++; ?></td>
+                        <td><?php echo htmlspecialchars($data['name']); ?></td>
+                        <td><?php echo htmlspecialchars($sku); ?></td>
+                        <td style="text-align: center; font-size: 18px;"><b><?php echo $data['qty']; ?></b></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 50px; display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <b>Người lập phiếu</b><br>
+                    <i style="font-size: 12px; color: #666;">(Ký, ghi rõ họ tên)</i>
+                </div>
+                <div>
+                    <b>Nhân viên nhặt hàng</b><br>
+                    <i style="font-size: 12px; color: #666;">(Ký, ghi rõ họ tên)</i>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <?php foreach ($orders as $o): ?>
         <div class="page">
             <div class="header">
                 <div class="store-info">
@@ -97,7 +160,7 @@
             </div>
 
             <div class="doc-title">
-                <h1><?php echo $type == 'shipping' ? 'PHIẾU GIAO HÀNG' : 'PHIẾU NHẶT HÀNG'; ?></h1>
+                <h1><?php echo $type == 'delivery' ? 'PHIẾU GIAO HÀNG' : 'PHIẾU NHẶT HÀNG (THEO ĐƠN)'; ?></h1>
             </div>
 
             <div class="info-grid">
@@ -121,7 +184,7 @@
                         <th>Tên sản phẩm</th>
                         <th>SKU / Mã SP</th>
                         <th style="width: 80px; text-align: center;">Số lượng</th>
-                        <?php if ($type == 'shipping'): ?>
+                        <?php if ($type == 'delivery'): ?>
                         <th style="text-align: right;">Đơn giá</th>
                         <th style="text-align: right;">Thành tiền</th>
                         <?php endif; ?>
@@ -141,7 +204,7 @@
                             <td><?php echo htmlspecialchars($item['product_name'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($item['sku'] ?? ''); ?></td>
                             <td style="text-align: center;"><b><?php echo $item['qty'] ?? 1; ?></b></td>
-                            <?php if ($type == 'shipping'): ?>
+                            <?php if ($type == 'delivery'): ?>
                             <td style="text-align: right;"><?php echo number_format($item['final_price'] ?? 0, 0, '', '.'); ?>đ</td>
                             <td style="text-align: right;"><?php echo number_format($item['line_total'] ?? 0, 0, '', '.'); ?>đ</td>
                             <?php endif; ?>
@@ -151,7 +214,7 @@
                 </tbody>
             </table>
 
-            <?php if ($type == 'shipping'): ?>
+            <?php if ($type == 'delivery'): ?>
             <div class="totals">
                 <div class="totals-row">
                     <span>Tổng tiền hàng:</span>
@@ -187,6 +250,7 @@
                 </div>
             </div>
         </div>
-    <?php endforeach; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </body>
 </html>
