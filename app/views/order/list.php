@@ -250,6 +250,7 @@
                 <label><input type="checkbox" checked onchange="toggleCol('col_customer')"> Khách hàng</label>
                 <label><input type="checkbox" checked onchange="toggleCol('col_branch')"> Chi nhánh</label>
                 <label><input type="checkbox" checked onchange="toggleCol('col_pay')"> Thanh toán</label>
+                <label><input type="checkbox" checked onchange="toggleCol('col_invoice')"> Hóa đơn ĐT</label>
             </div>
         </div>
     </div>
@@ -281,6 +282,14 @@
                 <option value="order_code">Mã đơn hàng</option>
             </select>
             <input type="text" name="keyword" value="<?php echo htmlspecialchars($keyword ?? ''); ?>" placeholder="Nhập mã đơn...">
+            <select name="invoice_status" style="border-left: 1px solid #c4cdd5; background: #fff;">
+                <option value="">-- Trạng thái HĐĐT --</option>
+                <option value="not_requested" <?php echo (($invoice_status ?? '') == 'not_requested') ? 'selected' : ''; ?>>Chưa có yêu cầu</option>
+                <option value="requested" <?php echo (($invoice_status ?? '') == 'requested') ? 'selected' : ''; ?>>Đã yêu cầu</option>
+                <option value="pending_issue" <?php echo (($invoice_status ?? '') == 'pending_issue') ? 'selected' : ''; ?>>Chờ phát hành</option>
+                <option value="issued" <?php echo (($invoice_status ?? '') == 'issued') ? 'selected' : ''; ?>>Đã phát hành</option>
+                <option value="failed" <?php echo (($invoice_status ?? '') == 'failed') ? 'selected' : ''; ?>>Phát hành thất bại</option>
+            </select>
         </div>
         <button type="submit" class="btn-outline"><i class="fa-solid fa-magnifying-glass"></i> Lọc</button>
         <button type="button" class="btn-outline" style="color:#0088ff; border-color:#b3d4ff; background:#e5f0ff;" onclick="document.getElementById('save_filter_modal').style.display='flex'">
@@ -299,7 +308,7 @@
         <div style="position:relative;">
             <button class="btn-outline" onclick="toggleMoreActions()">Thao tác khác ▼</button>
             <div id="more_actions_menu" style="position:absolute; top:35px; left:0; background:#fff; border:1px solid #dfe3e8; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:none; flex-direction:column; z-index:100; min-width:220px;">
-                <a href="javascript:void(0)" onclick="openEInvoiceModal()" style="padding:10px 15px; text-decoration:none; color:#c41d7f; border-bottom:1px solid #dfe3e8; background:#fff0f6; font-weight:bold;">🧾 Phát hành Hóa đơn VAT</a>
+                <a href="javascript:void(0)" onclick="openBulkInvoiceModal()" style="padding:10px 15px; text-decoration:none; color:#c41d7f; border-bottom:1px solid #dfe3e8; background:#fff0f6; font-weight:bold;">🧾 Tạo hóa đơn điện tử hàng loạt</a>
                 <a href="javascript:void(0)" onclick="printBulkOrders()" style="padding:10px 15px; text-decoration:none; color:#212b36; border-bottom:1px solid #dfe3e8;">🖨️ In đơn hàng</a>
                 <a href="javascript:void(0)" onclick="submitBulkAction('archive')" style="padding:10px 15px; text-decoration:none; color:#212b36; border-bottom:1px solid #dfe3e8;">🗃️ Lưu trữ đơn hàng</a>
                 <a href="javascript:void(0)" onclick="openAssignStaffModal()" style="padding:10px 15px; text-decoration:none; color:#212b36; border-bottom:1px solid #dfe3e8;">👤 Phân công nhân viên</a>
@@ -326,6 +335,7 @@
             <th class="col_customer">Khách hàng</th>
             <th class="col_branch">Chi nhánh</th>
             <th class="col_pay">Thanh toán</th>
+            <th class="col_invoice">Hóa đơn ĐT</th>
             <th>Trạng thái</th>
             <th style="text-align: right;">Tổng tiền</th>
         </tr>
@@ -337,15 +347,13 @@
             </tr>
         <?php else: ?>
             <?php foreach ($orders as $o): ?>
-                <tr class="clickable">
+                <?php $rowStyle = (!empty($o['is_archived']) && $o['is_archived'] == 1) ? 'opacity: 0.5; background: #fdfdfd;' : ''; ?>
+                <tr class="clickable" style="<?php echo $rowStyle; ?>">
                     <td style="text-align:center;" onclick="event.stopPropagation();">
                         <input type="checkbox" class="row-checkbox" value="<?php echo $o['id']; ?>" data-status="<?php echo $o['order_status'] ?? ''; ?>" onclick="updateBulkBar()">
                     </td>
                     <td onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
-                        <b style="color: #0088ff;"><?php echo htmlspecialchars($o['order_code']); ?></b><br>
-                        <?php if (($o['has_e_invoice'] ?? 0) == 1): ?>
-                            <span class="badge badge-vat">🧾 Đã xuất VAT</span>
-                        <?php endif; ?>
+                        <b style="color: #0088ff;"><?php echo htmlspecialchars($o['order_code']); ?></b>
                     </td>
                     <td class="col_date" style="color: #637381; font-size:13px;" onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
                         <?php echo date('d/m/Y H:i', strtotime($o['created_at'])); ?>
@@ -358,6 +366,16 @@
                     </td>
                     <td class="col_pay" onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
                         <?php echo (($o['payment_status'] ?? '') == 'paid') ? '<span class="badge badge-paid">Đã thanh toán</span>' : '<span class="badge badge-pending">Chưa thanh toán</span>'; ?>
+                    </td>
+                    <td class="col_invoice" onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
+                        <?php
+                            $inv_st = $o['invoice_status'] ?? 'not_requested';
+                            if ($inv_st == 'not_requested') echo '<span class="badge" style="background:#f4f6f8; color:#637381;">Chưa có yêu cầu</span>';
+                            elseif ($inv_st == 'requested') echo '<span class="badge" style="background:#e5f0ff; color:#0056b3;">Đã yêu cầu</span>';
+                            elseif ($inv_st == 'pending_issue') echo '<span class="badge" style="background:#fff8ea; color:#8a6100;">Chờ phát hành</span>';
+                            elseif ($inv_st == 'issued') echo '<span class="badge badge-vat">✅ Đã phát hành</span>';
+                            elseif ($inv_st == 'failed') echo '<span class="badge" style="background:#ffe4e4; color:#d82c0d;">Thất bại</span>';
+                        ?>
                     </td>
                     <td onclick="window.location='index.php?action=view_order&id=<?php echo $o['id']; ?>'">
                         <?php
@@ -392,7 +410,7 @@
 
         <div style="display:flex; justify-content:flex-end; gap:10px;">
             <button class="btn-outline" onclick="document.getElementById('einvoice_modal').style.display='none'">Hủy</button>
-            <button class="btn-primary" style="background:#c41d7f;" onclick="confirmEInvoices()">Ký số & Phát hành</button>
+            <button class="btn-primary" style="background:#c41d7f;" onclick="submitBulkInvoice()">Ký số & Phát hành hàng loạt</button>
         </div>
     </div>
 </div>
@@ -432,6 +450,36 @@
     </div>
 </div>
 <script>
+    function openBulkInvoiceModal() {
+        let count = document.querySelectorAll('.row-checkbox:checked').length;
+        if (count === 0) return;
+        document.getElementById('einvoice_modal').style.display = 'flex';
+        document.getElementById('more_actions_menu').style.display = 'none';
+    }
+
+    function submitBulkInvoice() {
+        let checkboxes = document.querySelectorAll('.row-checkbox:checked');
+        let ids = [];
+        checkboxes.forEach(cb => ids.push(cb.value));
+
+        if (ids.length === 0) return;
+
+        fetch('index.php?action=bulk_issue_invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
     function toggleColumnSettings() {
         let box = document.getElementById('col_settings');
         box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
@@ -485,6 +533,17 @@
         document.getElementById('hidden_invoice_symbol').value = document.getElementById('input_invoice_symbol').value;
         document.getElementById('frm_bulk_action').submit();
     }
+
+    function printBulkOrders() {
+        let ids = getSelectedIds();
+        if (!ids) {
+            alert("Vui lòng chọn ít nhất một đơn hàng để in.");
+            return;
+        }
+        window.open('index.php?action=print_orders&ids=' + ids, '_blank');
+        document.getElementById('more_actions_menu').style.display = 'none';
+    }
+
     // Hàm mở Modal Xuất File
     function openExportModal() {
         let ids = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value).join(',');

@@ -1,113 +1,208 @@
 <?php
-// Đường dẫn: app/controllers/ShipmentController.php
-require_once __DIR__ . '/../../config/database.php';
 
 class ShipmentController
 {
-    // 1. DANH SÁCH VẬN ĐƠN (CÓ BỘ LỌC)
-    public function index()
+    public function list()
     {
         $db = (new Database())->getConnection();
 
-        // Nhận tham số Lọc
-        $status_filter = $_GET['status'] ?? 'all';
-        $recon_filter = $_GET['recon_status'] ?? 'all';
+        $active_tab = $_GET['tab'] ?? 'all';
         $keyword = trim($_GET['keyword'] ?? '');
+        $status_filter = $_GET['status'] ?? [];
+        $branch_filter = $_GET['branch'] ?? [];
+        $recon_filter = $_GET['recon'] ?? [];
 
-        $query = "
-            SELECT s.*, o.order_code, o.customer_name, o.phone, b.branch_name 
-            FROM shipments s
-            JOIN orders o ON s.order_id = o.id
-            JOIN branches b ON s.branch_id = b.id
-            WHERE 1=1
-        ";
+        $query = "SELECT o.id, o.order_code, o.waybill_code, o.shipping_partner_name, o.shipping_status, 
+                         o.reconciliation_status, o.cod_partner, o.shipping_fee_partner, 
+                         o.created_at, o.delivery_date, b.branch_name, o.grand_total,
+                         CONCAT(c.last_name, ' ', c.first_name) AS customer_name, c.phone
+                  FROM orders o
+                  LEFT JOIN customers c ON o.customer_id = c.id
+                  LEFT JOIN branches b ON o.branch_id = b.id
+                  WHERE o.waybill_code IS NOT NULL AND o.waybill_code != ''";
 
-        if ($status_filter !== 'all') $query .= " AND s.status = '$status_filter'";
-        if ($recon_filter !== 'all') $query .= " AND s.recon_status = '$recon_filter'";
-        if ($keyword !== '') {
-            $query .= " AND (s.tracking_code LIKE '%$keyword%' OR o.order_code LIKE '%$keyword%' OR o.customer_name LIKE '%$keyword%')";
+        $params = [];
+
+        // Tab lọc nhanh
+        if ($active_tab == 'shipping') {
+            $query .= " AND o.shipping_status = 'shipping'";
+        } elseif ($active_tab == 'rescheduling') {
+            $query .= " AND o.shipping_status = 'rescheduling'";
+        } elseif ($active_tab == 'returning') {
+            $query .= " AND o.shipping_status = 'returning'";
         }
 
-        $query .= " ORDER BY s.created_at DESC";
-        $stmt = $db->query($query);
+        // Tìm kiếm từ khóa
+        if ($keyword !== '') {
+            $query .= " AND (o.order_code LIKE ? OR o.waybill_code LIKE ? OR c.phone LIKE ? OR c.first_name LIKE ? OR c.last_name LIKE ?)";
+            $params[] = "%$keyword%";
+            $params[] = "%$keyword%";
+            $params[] = "%$keyword%";
+            $params[] = "%$keyword%";
+            $params[] = "%$keyword%";
+        }
+
+        // Lọc trạng thái
+        if (!empty($status_filter)) {
+            $in = implode(',', array_fill(0, count($status_filter), '?'));
+            $query .= " AND o.shipping_status IN ($in)";
+            $params = array_merge($params, $status_filter);
+        }
+
+        // Lọc chi nhánh
+        if (!empty($branch_filter)) {
+            $in = implode(',', array_fill(0, count($branch_filter), '?'));
+            $query .= " AND b.branch_name IN ($in)";
+            $params = array_merge($params, $branch_filter);
+        }
+
+        // Lọc trạng thái đối soát
+        if (!empty($recon_filter)) {
+            $in = implode(',', array_fill(0, count($recon_filter), '?'));
+            $query .= " AND o.reconciliation_status IN ($in)";
+            $params = array_merge($params, $recon_filter);
+        }
+
+        $query .= " ORDER BY o.created_at DESC";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
         $shipments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Lấy danh sách chi nhánh phục vụ Dropdown Đối soát
-        $branches = $db->query("SELECT id, branch_name FROM branches WHERE status = 'active'")->fetchAll(PDO::FETCH_ASSOC);
+        // Lấy danh sách chi nhánh để hiển thị ở bộ lọc
+        $stmt_branches = $db->query("SELECT branch_name FROM branches");
+        $branches = $stmt_branches ? $stmt_branches->fetchAll(PDO::FETCH_ASSOC) : [];
 
-        require_once __DIR__ . '/../views/shipping/shipment_list.php';
+        require_once __DIR__ . '/../views/shipment/list.php';
     }
 
-    // 2. ĐỔI TRẠNG THÁI VẬN ĐƠN HÀNG LOẠT
-    public function update_status_bulk()
+    public function change_status()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $ids = explode(',', $_POST['shipment_ids']);
-            $new_status = $_POST['new_status'];
+        $data = json_decode(file_get_contents("php://input"), true);
+        $ids = $data['ids'] ?? [];
+        $new_status = $data['status'] ?? '';
 
+        if (empty($ids) || !$new_status) {
+            echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ']);
+            return;
+        }
+
+        try {
             $db = (new Database())->getConnection();
-            $stmt = $db->prepare("UPDATE shipments SET status = ? WHERE id = ?");
-            foreach ($ids as $id) {
-                if (intval($id) > 0) $stmt->execute([$new_status, intval($id)]);
-            }
+            $in = implode(',', array_fill(0, count($ids), '?'));
+            
+            $sql = "UPDATE orders SET shipping_status = ? WHERE id IN ($in)";
+            $params = array_merge([$new_status], $ids);
+            
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
 
-            header("Location: index.php?action=shipment_list&success_status=1");
-            exit;
+            echo json_encode(['success' => true, 'message' => 'Cập nhật trạng thái thành công']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
         }
     }
 
-    // 3. ĐỐI SOÁT VẬN CHUYỂN HÀNG LOẠT (Thu tiền COD về Kế toán)
-    public function reconcile_bulk()
+    public function reconcile()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $ids = explode(',', $_POST['recon_shipment_ids']);
-            $branch_id = intval($_POST['recon_branch_id']);
-            $note = trim($_POST['recon_note']);
-            $recon_code = 'DS' . date('YmdHis');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $ids = $data['ids'] ?? [];
+        $note = $data['note'] ?? '';
 
+        if (empty($ids)) {
+            echo json_encode(['success' => false, 'message' => 'Chưa chọn vận đơn nào']);
+            return;
+        }
+
+        try {
             $db = (new Database())->getConnection();
-
-            // Bước 3.1: Gom thông tin các vận đơn để tính toán
-            $placeholders = str_repeat('?,', count($ids) - 1) . '?';
-            $stmt = $db->prepare("SELECT partner_code, SUM(cod_amount) as sum_cod, SUM(shipping_fee) as sum_fee, COUNT(DISTINCT partner_code) as diff_partners FROM shipments WHERE id IN ($placeholders) AND recon_status = 'unreconciled' AND status IN ('delivered', 'returned')");
+            $in = implode(',', array_fill(0, count($ids), '?'));
+            
+            // Validate: Cùng đối tác, Trạng thái (Đã giao/Đã hoàn), Chưa đối soát
+            $stmt = $db->prepare("SELECT id, shipping_partner_name, shipping_status, reconciliation_status FROM orders WHERE id IN ($in)");
             $stmt->execute($ids);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Bẫy lỗi chuẩn Hệ thống: Khác đối tác hoặc Trạng thái chưa xong
-            if ($data['diff_partners'] > 1) {
-                die("<script>alert('Lỗi: Vui lòng chỉ chọn vận đơn từ CÙNG MỘT đơn vị vận chuyển để đối soát!'); history.back();</script>");
+            $partner = null;
+            foreach ($orders as $o) {
+                if ($o['reconciliation_status'] != 'Chưa đối soát') {
+                    echo json_encode(['success' => false, 'message' => 'Tồn tại đơn hàng đã được đối soát. Vui lòng kiểm tra lại.']);
+                    return;
+                }
+                if (!in_array($o['shipping_status'], ['delivered', 'returned'])) {
+                    echo json_encode(['success' => false, 'message' => 'Đơn hàng không hợp lệ. Chỉ đối soát các đơn Đã giao hàng hoặc Đã hoàn hàng.']);
+                    return;
+                }
+                if ($partner === null) {
+                    $partner = $o['shipping_partner_name'];
+                } elseif ($partner !== $o['shipping_partner_name']) {
+                    echo json_encode(['success' => false, 'message' => 'Vui lòng chọn vận đơn từ CÙNG MỘT đơn vị vận chuyển để đối soát.']);
+                    return;
+                }
             }
-            if ($data['sum_cod'] === null) {
-                die("<script>alert('Lỗi: Không có đơn nào hợp lệ! Chỉ đối soát đơn Đã giao/Hoàn và Chưa đối soát.'); history.back();</script>");
-            }
 
-            $total_received = floatval($data['sum_cod']) - floatval($data['sum_fee']);
+            // Thực hiện đối soát
+            $sql = "UPDATE orders SET reconciliation_status = 'Đã đối soát' WHERE id IN ($in)";
+            $stmt = $db->prepare($sql);
+            $stmt->execute($ids);
 
-            try {
-                $db->beginTransaction();
-
-                // 1. Tạo Phiếu Đối soát
-                $stmt_recon = $db->prepare("INSERT INTO shipping_reconciliations (recon_code, partner_code, branch_id, total_cod, total_fee, total_received, note) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt_recon->execute([$recon_code, $data['partner_code'], $branch_id, $data['sum_cod'], $data['sum_fee'], $total_received, $note]);
-                $recon_id = $db->lastInsertId();
-
-                // 2. Đánh dấu Vận đơn đã đối soát
-                $stmt_update = $db->prepare("UPDATE shipments SET recon_status = 'reconciled', recon_id = ? WHERE id IN ($placeholders)");
-                $params = array_merge([$recon_id], $ids);
-                $stmt_update->execute($params);
-
-                // 3. Tự động sinh 1 PHIẾU THU vào Sổ quỹ Kế toán
-                $reason = "Thu tiền đối soát COD từ " . strtoupper($data['partner_code']) . " (Mã: $recon_code)";
-                $stmt_fund = $db->prepare("INSERT INTO receipts (receipt_code, branch_id, receipt_reason, payer_name, amount, payment_method) VALUES (?, ?, ?, ?, ?, 'bank')");
-                $stmt_fund->execute([$recon_code, $branch_id, $reason, strtoupper($data['partner_code']), $total_received]);
-
-                $db->commit();
-                header("Location: index.php?action=shipment_list&success_recon=1");
-            } catch (Exception $e) {
-                $db->rollBack();
-                die("Lỗi hệ thống: " . $e->getMessage());
-            }
-            exit;
+            echo json_encode(['success' => true, 'message' => 'Tạo phiếu đối soát thành công!']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
         }
+    }
+
+    public function cancel_shipment()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $order_id = $data['order_id'] ?? 0;
+
+        if (!$order_id) {
+            echo json_encode(['success' => false, 'message' => 'Mã đơn hàng không hợp lệ']);
+            return;
+        }
+
+        try {
+            $db = (new Database())->getConnection();
+            $sql = "UPDATE orders SET shipping_status = 'cancelled' WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$order_id]);
+
+            echo json_encode(['success' => true, 'message' => 'Hủy giao hàng thành công!']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+        }
+    }
+
+    public function print_shipping()
+    {
+        $ids = isset($_GET['ids']) ? explode(',', $_GET['ids']) : [];
+        if (empty($ids)) die("Không có dữ liệu");
+        
+        $db = (new Database())->getConnection();
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        
+        $stmt = $db->prepare("SELECT o.*, CONCAT(c.last_name, ' ', c.first_name) AS customer_name, c.phone, c.address 
+                              FROM orders o LEFT JOIN customers c ON o.customer_id = c.id WHERE o.id IN ($in)");
+        $stmt->execute($ids);
+        $shipments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        require_once __DIR__ . '/../views/shipment/print_shipping.php';
+    }
+
+    public function print_handover()
+    {
+        $ids = isset($_GET['ids']) ? explode(',', $_GET['ids']) : [];
+        if (empty($ids)) die("Không có dữ liệu");
+        
+        $db = (new Database())->getConnection();
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        
+        $stmt = $db->prepare("SELECT o.*, CONCAT(c.last_name, ' ', c.first_name) AS customer_name, c.phone, c.address 
+                              FROM orders o LEFT JOIN customers c ON o.customer_id = c.id WHERE o.id IN ($in)");
+        $stmt->execute($ids);
+        $shipments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        require_once __DIR__ . '/../views/shipment/print_handover.php';
     }
 }

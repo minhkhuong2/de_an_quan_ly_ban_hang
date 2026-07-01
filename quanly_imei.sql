@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 26, 2026 lúc 08:24 PM
+-- Thời gian đã tạo: Th7 01, 2026 lúc 09:17 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -76,7 +76,7 @@ CREATE TABLE `branches` (
 
 INSERT INTO `branches` (`id`, `branch_code`, `branch_name`, `phone`, `email`, `country`, `province`, `district`, `ward`, `address_detail`, `is_new_address_format`, `has_inventory`, `is_default`, `is_pickup_location`, `routing_priority`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'CN001', 'Chi nhánh Trung tâm (VNPost)', '0988111222', NULL, 'Vietnam', 'Hà Nội', 'Cầu Giấy', 'Dịch Vọng', 'Tầng 6 Tòa nhà Ladeco', 0, 1, 1, 1, 0, 'active', '2026-06-24 16:38:20', '2026-06-24 16:38:20'),
-(2, 'CN002', 'Chi nhánh Grab Express', '0988333444', NULL, 'Vietnam', 'Hà Nội', NULL, 'Dịch Vọng', 'Tầng 1 Tòa nhà Ladeco', 1, 0, 0, 0, 0, 'inactive', '2026-06-24 16:38:20', '2026-06-24 16:38:20');
+(2, 'CN002', 'Chi nhánh Grab Express', '0988333444', NULL, 'Vietnam', 'Hà Nội', NULL, 'Dịch Vọng', 'Tầng 1 Tòa nhà Ladeco', 1, 0, 0, 0, 0, 'active', '2026-06-24 16:38:20', '2026-07-01 11:04:49');
 
 -- --------------------------------------------------------
 
@@ -144,7 +144,8 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id`, `customer_code`, `last_name`, `first_name`, `phone`, `email`, `accept_marketing`, `province`, `district`, `ward`, `address`, `tax_code`, `company_name`, `invoice_address`, `invoice_email`, `notes`, `tags`, `debt`, `created_at`) VALUES
 (1, 'KH0001', 'Bùi Văn', 'Khương', '0987654321', '', 0, 'Hà Nội', 'Thượng Tín', 'Xã Nhị Khê', '', '', '', '', '', '', '', 900000.00, '2026-06-06 23:23:37'),
-(2, 'KH0002', ' Nguyễn Sơn', 'Trường', '0867473783', 'sontruong2005@gmail.com', 1, 'Ninh Bình', 'Hải Hậu', 'Hải Anh', 'Số 23', '', '', '', '', '', '', 0.00, '2026-06-14 22:37:42');
+(2, 'KH0002', ' Nguyễn Sơn', 'Trường', '0867473783', 'sontruong2005@gmail.com', 1, 'Ninh Bình', 'Hải Hậu', 'Hải Anh', 'Số 23', '', '', '', '', '', '', 0.00, '2026-06-14 22:37:42'),
+(999, 'KH0003', 'Khách Hàng', 'Test', '0123456789', '', 1, '', '', '', 'Hà Nội', '', '', '', '', '', '', 0.00, '2026-06-27 01:48:21');
 
 -- --------------------------------------------------------
 
@@ -291,6 +292,38 @@ INSERT INTO `fund_transfers` (`id`, `transfer_code`, `from_type`, `from_id`, `to
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `handover_items`
+--
+
+CREATE TABLE `handover_items` (
+  `id` int(11) NOT NULL,
+  `handover_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `package_code` varchar(50) DEFAULT NULL,
+  `waybill_code` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `handover_records`
+--
+
+CREATE TABLE `handover_records` (
+  `id` int(11) NOT NULL,
+  `record_code` varchar(50) NOT NULL,
+  `branch_id` int(11) DEFAULT NULL,
+  `shipping_partner_id` int(11) DEFAULT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending',
+  `tags` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `inventory_checks`
 --
 
@@ -399,17 +432,65 @@ CREATE TABLE `orders` (
   `printed_delivery` tinyint(1) DEFAULT 0,
   `printed_picking_order` tinyint(1) DEFAULT 0,
   `printed_picking_product` tinyint(1) DEFAULT 0,
-  `packer_id` int(11) DEFAULT NULL
+  `packer_id` int(11) DEFAULT NULL,
+  `main_note` text DEFAULT NULL,
+  `delivery_date` datetime DEFAULT NULL,
+  `packaging_staff_id` int(11) DEFAULT NULL,
+  `package_status` varchar(50) DEFAULT 'pending',
+  `package_code` varchar(50) DEFAULT NULL,
+  `waybill_code` varchar(50) DEFAULT NULL,
+  `draft_status` varchar(20) DEFAULT NULL,
+  `email_status` enum('unsent','sent','scheduled') DEFAULT 'unsent',
+  `email_sent_at` datetime DEFAULT NULL,
+  `recovery_url` varchar(255) DEFAULT NULL,
+  `invoice_status` enum('not_requested','requested','pending_issue','issued','failed') DEFAULT 'not_requested',
+  `invoice_tax_code` varchar(50) DEFAULT NULL,
+  `invoice_company_name` varchar(255) DEFAULT NULL,
+  `invoice_address` varchar(255) DEFAULT NULL,
+  `invoice_buyer_name` varchar(255) DEFAULT NULL,
+  `invoice_phone` varchar(20) DEFAULT NULL,
+  `invoice_email` varchar(255) DEFAULT NULL,
+  `invoice_no_receipt` tinyint(1) DEFAULT 0,
+  `invoice_date` datetime DEFAULT NULL,
+  `invoice_symbol` varchar(50) DEFAULT NULL,
+  `invoice_number` varchar(50) DEFAULT NULL,
+  `invoice_cqt_code` varchar(100) DEFAULT NULL,
+  `invoice_lookup_code` varchar(100) DEFAULT NULL,
+  `reconciliation_status` enum('Chưa đối soát','Đang đối soát','Đã đối soát') DEFAULT 'Chưa đối soát',
+  `cod_partner` decimal(15,2) DEFAULT 0.00,
+  `shipping_fee_partner` decimal(15,2) DEFAULT 0.00,
+  `shipping_partner_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `customer_name`, `phone`, `address`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`, `is_archived`, `packing_status`, `assigned_staff_id`, `tags`, `has_e_invoice`, `printed_delivery`, `printed_picking_order`, `printed_picking_product`, `packer_id`) VALUES
-(1, 'DH001', 1, NULL, NULL, NULL, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'delivering', 'pos', 0, 'packing', NULL, NULL, 0, 0, 0, 0, NULL),
-(2, 'DH002', 1, NULL, NULL, NULL, 0.00, 300000.00, 0.00, 'unpaid', '2026-01-05 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'pending', 'pos', 0, 'packing', NULL, NULL, 0, 0, 0, 0, NULL),
-(3, 'DH003', 1, NULL, NULL, NULL, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL);
+INSERT INTO `orders` (`id`, `order_code`, `customer_id`, `customer_name`, `phone`, `address`, `subtotal`, `total_amount`, `paid_amount`, `payment_status`, `created_at`, `total_product_discount`, `total_order_discount`, `original_shipping_fee`, `total_shipping_discount`, `tax_amount`, `grand_total`, `amount_paid`, `payment_method`, `order_status`, `shipping_status`, `sales_channel`, `is_archived`, `packing_status`, `assigned_staff_id`, `tags`, `has_e_invoice`, `printed_delivery`, `printed_picking_order`, `printed_picking_product`, `packer_id`, `main_note`, `delivery_date`, `packaging_staff_id`, `package_status`, `package_code`, `waybill_code`, `draft_status`, `email_status`, `email_sent_at`, `recovery_url`, `invoice_status`, `invoice_tax_code`, `invoice_company_name`, `invoice_address`, `invoice_buyer_name`, `invoice_phone`, `invoice_email`, `invoice_no_receipt`, `invoice_date`, `invoice_symbol`, `invoice_number`, `invoice_cqt_code`, `invoice_lookup_code`, `reconciliation_status`, `cod_partner`, `shipping_fee_partner`, `shipping_partner_name`) VALUES
+(1, 'DH001', 1, NULL, NULL, NULL, 0.00, 200000.00, 0.00, 'unpaid', '2026-01-01 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'processing', 'shipping', 'pos', 0, 'packing', NULL, NULL, 0, 0, 1, 1, NULL, NULL, NULL, NULL, 'pending', NULL, 'GHN8586264', NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 30000.00, 'Giao Hàng Nhanh'),
+(3, 'DH003', 1, NULL, NULL, NULL, 0.00, 100000.00, 0.00, 'unpaid', '2026-01-10 10:00:00', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cash', 'pending', 'pending', 'pos', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, NULL, NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 0.00, NULL),
+(5, 'ORD-TEST-001', 999, NULL, NULL, NULL, 500000.00, 0.00, 0.00, 'unpaid', '2026-06-27 01:48:21', 0.00, 0.00, 0.00, 0.00, 0.00, 500000.00, 0.00, 'cash', 'completed', 'shipping', 'Website', 0, 'pending', NULL, NULL, 0, 1, 0, 0, NULL, 'TEST LẠI ', NULL, NULL, 'pending', NULL, 'VT7858753', NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 500000.00, 30000.00, 'Viettel Post'),
+(6, 'ORD-TEST-002', 999, NULL, NULL, NULL, 1500000.00, 0.00, 0.00, 'unpaid', '2026-06-27 01:48:21', 0.00, 0.00, 0.00, 0.00, 0.00, 1500000.00, 0.00, 'cash', 'confirmed', 'pending', 'Website', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, NULL, NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 0.00, NULL),
+(7, 'ORD-TEST-003', 999, NULL, NULL, NULL, 2000000.00, 0.00, 0.00, 'unpaid', '2026-06-27 01:48:21', 0.00, 0.00, 0.00, 0.00, 0.00, 2000000.00, 0.00, 'cash', 'confirmed', 'returning', 'pos', 0, 'pending', NULL, NULL, 0, 1, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, 'GHN7288585', NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 2000000.00, 30000.00, 'Giao Hàng Nhanh'),
+(10, 'ABANDON-101', 1, 'Khách Vãng Lai', NULL, NULL, 0.00, 500000.00, 0.00, 'unpaid', '2026-07-01 23:49:22', 0.00, 0.00, 0.00, 0.00, 0.00, 500000.00, 0.00, 'cash', 'incomplete', 'pending', 'pos', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, NULL, NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 0.00, NULL),
+(11, 'ABANDON-102', 1, 'Khách Vãng Lai', NULL, NULL, 0.00, 1200000.00, 0.00, 'unpaid', '2026-07-01 01:49:22', 0.00, 0.00, 0.00, 0.00, 0.00, 1200000.00, 0.00, 'cash', 'incomplete', 'pending', 'pos', 0, 'pending', NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, NULL, NULL, 'sent', '2026-07-01 02:49:22', NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 0.00, NULL),
+(12, 'ABANDON-103', 1, 'Khách Vãng Lai', NULL, NULL, 0.00, 150000.00, 0.00, 'unpaid', '2026-06-27 01:49:22', 0.00, 0.00, 0.00, 0.00, 0.00, 150000.00, 0.00, 'cash', 'incomplete', 'pending', 'pos', 1, 'pending', NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, 'pending', NULL, NULL, NULL, 'unsent', NULL, NULL, 'not_requested', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, 'Chưa đối soát', 0.00, 0.00, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `order_exchange_items`
+--
+
+CREATE TABLE `order_exchange_items` (
+  `id` int(11) NOT NULL,
+  `return_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `qty` int(11) DEFAULT 0,
+  `price` decimal(15,2) DEFAULT 0.00,
+  `discount` decimal(15,2) DEFAULT 0.00,
+  `line_total` decimal(15,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -429,7 +510,62 @@ CREATE TABLE `order_items` (
   `manual_discount` decimal(15,2) DEFAULT 0.00,
   `final_price` decimal(15,2) DEFAULT 0.00,
   `line_total` decimal(15,2) DEFAULT 0.00,
-  `is_gift` tinyint(1) DEFAULT 0
+  `is_gift` tinyint(1) DEFAULT 0,
+  `note` varchar(255) DEFAULT NULL,
+  `returned_qty` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `sku`, `qty`, `original_price`, `promo_discount`, `manual_discount`, `final_price`, `line_total`, `is_gift`, `note`, `returned_qty`) VALUES
+(1, 5, 6, 'iPhone 15 Pro Max 256GB', 'IP15PM-256', 1, 29000000.00, 0.00, 0.00, 29000000.00, 29000000.00, 0, NULL, 0),
+(2, 6, 6, 'iPhone 15 Pro Max 256GB', 'IP15PM-256', 2, 29000000.00, 0.00, 0.00, 29000000.00, 58000000.00, 0, NULL, 0),
+(3, 6, 7, 'Samsung Galaxy S24 Ultra', 'S24U-512', 2, 31990000.00, 0.00, 0.00, 31990000.00, 63980000.00, 0, NULL, 0),
+(4, 6, 8, 'Apple Watch Series 9', 'AW-S9-41', 2, 9500000.00, 0.00, 0.00, 9500000.00, 19000000.00, 0, NULL, 0),
+(5, 7, 7, 'Samsung Galaxy S24 Ultra', 'S24U-512', 1, 31990000.00, 0.00, 0.00, 31990000.00, 31990000.00, 0, NULL, 0),
+(6, 10, 1, 'Sản phẩm 1', NULL, 2, 0.00, 0.00, 0.00, 250000.00, 500000.00, 0, NULL, 0),
+(7, 11, 2, 'Sản phẩm 2', NULL, 1, 0.00, 0.00, 0.00, 1200000.00, 1200000.00, 0, NULL, 0),
+(8, 12, 3, 'Sản phẩm 3', NULL, 1, 0.00, 0.00, 0.00, 150000.00, 150000.00, 0, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `order_returns`
+--
+
+CREATE TABLE `order_returns` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `return_code` varchar(50) NOT NULL,
+  `branch_id` int(11) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
+  `total_return_value` decimal(15,2) DEFAULT 0.00,
+  `total_exchange_value` decimal(15,2) DEFAULT 0.00,
+  `refund_amount` decimal(15,2) DEFAULT 0.00,
+  `receive_status` enum('pending','received') DEFAULT 'pending',
+  `refund_status` enum('pending','refunded') DEFAULT 'pending',
+  `is_archived` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `note` text DEFAULT NULL,
+  `reason` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `order_return_items`
+--
+
+CREATE TABLE `order_return_items` (
+  `id` int(11) NOT NULL,
+  `return_id` int(11) NOT NULL,
+  `order_item_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `qty_returned` int(11) DEFAULT 0,
+  `return_price` decimal(15,2) DEFAULT 0.00,
+  `line_total` decimal(15,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -577,7 +713,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `parent_id`, `product_type`, `conversion_qty`, `product_name`, `brand`, `base_price`, `created_at`, `sku`, `barcode`, `unit`, `stock`, `available`, `trading`, `incoming`, `description`, `image`, `compare_price`, `cost_price`, `apply_tax`, `category`, `tags`, `dang_ve_kho`) VALUES
-(6, NULL, 'Thường', 1, 'iPhone 15 Pro Max 256GB', 'Apple', 29000000.00, '2026-05-25 17:27:33', 'IP15PM-256', NULL, 'Cái', 15, 15, 0, 0, NULL, NULL, 34990000, NULL, 0, 'Điện thoại di động', NULL, 0),
+(6, NULL, 'Thường', 1, 'iPhone 15 Pro Max 256GB', 'Apple', 29000000.00, '2026-05-25 17:27:33', 'IP15PM-256', NULL, 'Cái', 14, 15, 0, 0, NULL, NULL, 34990000, NULL, 0, 'Điện thoại di động', NULL, 0),
 (7, NULL, 'Thường', 1, 'Samsung Galaxy S24 Ultra', 'Samsung', 31990000.00, '2026-05-25 17:27:33', 'S24U-512', NULL, 'Cái', 10, 10, 0, 0, NULL, NULL, 0, NULL, 0, 'Điện thoại di động', NULL, 5),
 (8, NULL, 'Thường', 1, 'Apple Watch Series 9', 'Apple', 9500000.00, '2026-05-25 17:27:33', 'AW-S9-41', NULL, 'Chiếc', 6, 8, 0, 0, NULL, NULL, 10500000, NULL, 0, 'Đồng hồ thông minh', NULL, 0),
 (9, NULL, 'Thường', 1, 'Cáp sạc nhanh 20W Type-C', 'Khác', 250000.00, '2026-05-25 17:27:33', 'CAP-20W-TC', NULL, 'Sợi', 49, 50, 0, 0, NULL, NULL, 0, NULL, 0, 'Phụ kiện chính hãng', NULL, 0),
@@ -1216,6 +1352,20 @@ ALTER TABLE `fund_transfers`
   ADD UNIQUE KEY `transfer_code` (`transfer_code`);
 
 --
+-- Chỉ mục cho bảng `handover_items`
+--
+ALTER TABLE `handover_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `handover_id` (`handover_id`);
+
+--
+-- Chỉ mục cho bảng `handover_records`
+--
+ALTER TABLE `handover_records`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `record_code` (`record_code`);
+
+--
 -- Chỉ mục cho bảng `inventory_checks`
 --
 ALTER TABLE `inventory_checks`
@@ -1247,9 +1397,27 @@ ALTER TABLE `orders`
   ADD UNIQUE KEY `order_code` (`order_code`);
 
 --
+-- Chỉ mục cho bảng `order_exchange_items`
+--
+ALTER TABLE `order_exchange_items`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `order_items`
 --
 ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `order_returns`
+--
+ALTER TABLE `order_returns`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `order_return_items`
+--
+ALTER TABLE `order_return_items`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1455,7 +1623,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000;
 
 --
 -- AUTO_INCREMENT cho bảng `customer_debt_history`
@@ -1488,6 +1656,18 @@ ALTER TABLE `fund_transfers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT cho bảng `handover_items`
+--
+ALTER TABLE `handover_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `handover_records`
+--
+ALTER TABLE `handover_records`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `inventory_checks`
 --
 ALTER TABLE `inventory_checks`
@@ -1515,12 +1695,30 @@ ALTER TABLE `inventory_transfer_details`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT cho bảng `order_exchange_items`
+--
+ALTER TABLE `order_exchange_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT cho bảng `order_returns`
+--
+ALTER TABLE `order_returns`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `order_return_items`
+--
+ALTER TABLE `order_return_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -1678,6 +1876,12 @@ ALTER TABLE `users`
 --
 
 --
+-- Ràng buộc cho bảng `handover_items`
+--
+ALTER TABLE `handover_items`
+  ADD CONSTRAINT `handover_items_ibfk_1` FOREIGN KEY (`handover_id`) REFERENCES `handover_records` (`id`) ON DELETE CASCADE;
+
+--
 -- Ràng buộc cho bảng `product_combo_details`
 --
 ALTER TABLE `product_combo_details`
@@ -1694,37 +1898,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
--- Bảng lưu trữ nguồn đơn hàng
-CREATE TABLE IF NOT EXISTS `order_sources` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `source_name` varchar(255) NOT NULL,
-  `category_name` varchar(255) NOT NULL,
-  `source_type` varchar(50) NOT NULL DEFAULT 'Tùy chỉnh',
-  `status` varchar(50) NOT NULL DEFAULT 'Đang sử dụng',
-  `logo_url` text NULL,
-  `sort_order` int(11) NOT NULL DEFAULT 99,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT IGNORE INTO `order_sources` (`id`, `source_name`, `category_name`, `source_type`, `status`, `sort_order`) VALUES
-(1, 'Facebook', 'Mạng xã hội, Livestream', 'Mặc định', 'Đang sử dụng', 1),
-(2, 'Shopee', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', 2),
-(3, 'Website', 'Website', 'Mặc định', 'Đang sử dụng', 3),
-(4, 'POS', 'Bán tại cửa hàng, Hotline', 'Mặc định', 'Đang sử dụng', 4),
-(5, 'TikTok Shop', 'Sàn TMĐT', 'Mặc định', 'Đang sử dụng', 5);
-
--- Bảng cấu hình hệ thống
-CREATE TABLE IF NOT EXISTS `system_settings` (
-  `setting_key` varchar(100) NOT NULL,
-  `setting_value` text NULL,
-  PRIMARY KEY (`setting_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT IGNORE INTO `system_settings` (`setting_key`, `setting_value`) VALUES
-('order_workflow', 'standard'),
-('allow_negative_sale_warning', '1'),
-('auto_archive_order', '0'),
-('auto_delete_transaction', '1'),
-('reminder_email_hours', '1'),
-('advanced_wave_picking', '{\"scan_shelf\":0,\"scan_item_pick\":0,\"scan_item_pack\":0,\"strict_wave\":0}');

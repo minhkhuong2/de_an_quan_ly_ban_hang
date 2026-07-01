@@ -135,6 +135,14 @@ class App
         'warranty'         => ['ImeiController', 'warranty'],
         'returnItem'       => ['ImeiController', 'returnItem'],
         'search'           => ['ImeiController', 'search'],
+        // Quản lý Biên bản bàn giao (Handover)
+        'handover_list'    => ['HandoverController', 'index'],
+        'create_handover'  => ['HandoverController', 'create'],
+        'store_handover'   => ['HandoverController', 'store'],
+        'handover_detail'  => ['HandoverController', 'detail'],
+        'delete_handover'  => ['HandoverController', 'delete'],
+        'confirm_handover' => ['HandoverController', 'confirm'],
+
         // Quản lý Nhân viên
         'staff_list'      => ['StaffController', 'list'],
         'add_staff'       => ['StaffController', 'add'],
@@ -188,13 +196,27 @@ class App
         // --- Quản lý Đơn hàng (Online) ---
         'order_list'       => ['OrderController', 'list'],
         'create_order'     => ['OrderController', 'create'],
+        
+        // --- Quản lý Đơn hàng nháp ---
+        'draft_list'       => ['DraftOrderController', 'index'],
+        'copy_draft'       => ['DraftOrderController', 'copy'],
+        'delete_draft'     => ['DraftOrderController', 'delete_bulk'],
+        'update_draft_tags'=> ['DraftOrderController', 'update_tags'],
+
+        'edit_order'       => ['OrderController', 'edit'],
+        'update_order'     => ['OrderController', 'update_order'],
+        'confirm_order'    => ['OrderController', 'confirm_order'],
         'calculate_api'    => ['OrderController', 'calculate_api'],
         'store_order'      => ['OrderController', 'store'],
         'view_order'       => ['OrderController', 'view'],
-        'print_order'      => ['OrderController', 'print'],
+        'print_order'      => ['OrderController', 'print_order'],
+        'print_orders'     => ['OrderController', 'print_orders'],
         'update_order_ship'  => ['OrderController', 'update_shipping'],
         'collect_order_pay'  => ['OrderController', 'collect_payment'],
-        'cancel_order'       => ['OrderController', 'cancel'],
+        'cancel_order'       => ['OrderController', 'cancel_order'],
+        'archive_order'      => ['OrderController', 'archive_order'],
+        'delete_order'       => ['OrderController', 'delete_order'],
+        'update_order_meta'  => ['OrderController', 'update_order_meta'],
         'quick_add_customer' => ['OrderController', 'quick_add_customer'],
         'store_online_order' => ['OrderController', 'store_online_order'],
         'save_order_filter'     => ['OrderController', 'save_filter'],
@@ -212,9 +234,12 @@ class App
         'order_processing_advanced_action' => ['OrderProcessingController', 'advanced_action'],
 
         // --- Quản lý Vận Đơn ---
-        'shipment_list'         => ['ShipmentController', 'index'],
-        'update_shipment_status' => ['ShipmentController', 'update_status_bulk'],
-        'reconcile_shipments'   => ['ShipmentController', 'reconcile_bulk'],
+        'shipment_list'         => ['ShipmentController', 'list'],
+        'update_shipment_status' => ['ShipmentController', 'change_status'],
+        'reconcile_shipments'   => ['ShipmentController', 'reconcile'],
+        'cancel_shipment'       => ['ShipmentController', 'cancel_shipment'],
+        'print_shipping'        => ['ShipmentController', 'print_shipping'],
+        'print_handover_slip'   => ['ShipmentController', 'print_handover'],
 
         // Cấu hình Phương thức thanh toán
         'payment_methods'           => ['PaymentMethodController', 'index'],
@@ -229,8 +254,32 @@ class App
         // --- POS Bán hàng ---
         'pos' => ['OrderController', 'pos'],
         'scan_imei'        => ['OrderController', 'scanImei'],
-        'checkout'         => ['OrderController', 'checkout']
+        'checkout'         => ['OrderController', 'checkout'],
 
+        // --- Đổi/Trả hàng ---
+        'return_order_list' => ['ReturnOrderController', 'index'],
+        'create_return'     => ['ReturnOrderController', 'create'],
+        'store_return'      => ['ReturnOrderController', 'store'],
+        'return_detail'     => ['ReturnOrderController', 'detail'],
+        'receive_return'    => ['ReturnOrderController', 'receive_items'],
+        'refund_return'     => ['ReturnOrderController', 'refund'],
+        'cancel_return'     => ['ReturnOrderController', 'cancel'],
+
+        // --- Đơn chưa hoàn tất ---
+        'incomplete_list'   => ['IncompleteOrderController', 'index'],
+        'incomplete_detail' => ['IncompleteOrderController', 'detail'],
+        'incomplete_send_email' => ['IncompleteOrderController', 'send_email'],
+        'incomplete_bulk'   => ['IncompleteOrderController', 'bulk_action'],
+        'incomplete_export' => ['IncompleteOrderController', 'export'],
+        
+        // --- Hóa đơn điện tử ---
+        'invoice_list'      => ['EInvoiceController', 'index'],
+        'request_invoice'   => ['EInvoiceController', 'request_invoice'],
+        'issue_invoice'     => ['EInvoiceController', 'issue_invoice'],
+        'bulk_issue_invoice'=> ['EInvoiceController', 'bulk_issue'],
+
+        // --- Cấu hình ---
+        'checkout_settings' => ['SettingsController', 'checkout']
     ];
 
     public function __construct()

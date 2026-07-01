@@ -2,10 +2,11 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>In Đơn Hàng - <?php echo htmlspecialchars($order['order_code'] ?? $order['id']); ?></title>
+    <title>In Hàng Loạt Đơn Hàng</title>
     <style>
         body { font-family: 'Arial', sans-serif; font-size: 13px; line-height: 1.4; color: #000; margin: 0; padding: 0; }
-        .print-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .print-container { max-width: 800px; margin: 0 auto; padding: 20px; page-break-after: always; }
+        .print-container:last-child { page-break-after: auto; }
         h1 { text-align: center; font-size: 20px; text-transform: uppercase; margin-bottom: 5px; }
         .text-center { text-align: center; }
         .order-info { margin-top: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #000; padding-bottom: 10px; }
@@ -13,18 +14,19 @@
         th, td { border: 1px solid #000; padding: 6px 8px; text-align: left; }
         th { text-align: center; background: #f0f0f0; }
         .text-right { text-align: right; }
-        .text-center { text-align: center; }
         .totals-table { width: 50%; float: right; margin-top: 10px; border: none; }
         .totals-table td { border: none; padding: 4px 8px; }
         .footer { margin-top: 150px; text-align: center; font-size: 12px; clear: both; }
         
         @media print {
-            body { margin: 0; padding: 10px; }
-            .print-container { padding: 0; width: 100%; }
+            body { margin: 0; padding: 0; }
+            .print-container { padding: 10px; width: 100%; height: 100%; box-sizing: border-box; }
         }
     </style>
 </head>
 <body onload="window.print()">
+    <?php foreach ($orders as $order): ?>
+    <?php $items = $order['items'] ?? []; ?>
     <div class="print-container">
         <h1>HÓA ĐƠN BÁN HÀNG</h1>
         <div class="text-center">Ngày: <?php echo date('d/m/Y H:i'); ?></div>
@@ -96,5 +98,6 @@
             <p><strong>Xin cảm ơn quý khách! Hẹn gặp lại!</strong></p>
         </div>
     </div>
+    <?php endforeach; ?>
 </body>
 </html>

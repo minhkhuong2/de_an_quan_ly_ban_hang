@@ -342,7 +342,11 @@ require_once __DIR__ . '/../layout/header.php';
 </style>
 
 <div class="v3-header">
-    <div class="v3-title"><a href="index.php?action=order_list">←</a> Tạo đơn hàng mới (Online)</div>
+    <?php if(isset($_GET['copy']) && $_GET['copy'] == 1): ?>
+        <div class="v3-title"><a href="index.php?action=order_list">←</a> Tạo đơn hàng (Sao chép từ <?php echo htmlspecialchars($order['order_code']); ?>)</div>
+    <?php else: ?>
+        <div class="v3-title"><a href="index.php?action=view_order&id=<?php echo $order['id']; ?>">←</a> Chỉnh sửa đơn hàng <?php echo htmlspecialchars($order['order_code']); ?></div>
+    <?php endif; ?>
 </div>
 
 <div class="layout-grid">
@@ -664,13 +668,47 @@ require_once __DIR__ . '/../layout/header.php';
     const CUSTOMERS = <?php echo isset($customers_json) ? $customers_json : '[]'; ?>;
 
     let cart = [];
+    <?php if (isset($order_items)): ?>
+        <?php foreach ($order_items as $item): ?>
+            cart.push({
+                id: <?php echo $item['product_id']; ?>,
+                sku: '<?php echo $item['sku']; ?>',
+                product_name: '<?php echo addslashes($item['product_name']); ?>',
+                price: <?php echo $item['original_price']; ?>,
+                final_price: <?php echo $item['final_price']; ?>,
+                qty: <?php echo $item['qty']; ?>,
+                line_total: <?php echo $item['line_total']; ?>,
+                stock: 100 // dummy stock
+            });
+        <?php endforeach; ?>
+    <?php endif; ?>
+
     let tagsList = [];
     let selectedCustomer = null;
+    <?php if (!empty($order['customer_id'])): ?>
+        selectedCustomer = {
+            id: <?php echo $order['customer_id']; ?>,
+            customer_name: '<?php echo addslashes($order['customer_name']); ?>',
+            phone: '<?php echo $order['phone']; ?>'
+        };
+        // wait for DOM to load to render
+        window.addEventListener('DOMContentLoaded', () => {
+            selectCustomer(selectedCustomer.id, selectedCustomer.customer_name, selectedCustomer.phone);
+        });
+    <?php endif; ?>
+    
     let invoiceData = null; // Lưu cụm thông tin VAT hóa đơn điện tử
 
     let currentShippingMode = 'carrier'; // carrier, self, delivered, later
-    let orderShippingFee = 0; // Giá trị ship động công và tổng tiền khách trả
-    let orderDiscountValue = 0; // Giá trị mã giảm giá
+    let orderShippingFee = <?php echo $order['original_shipping_fee'] ?? 0; ?>; 
+    let orderDiscountValue = <?php echo $order['total_order_discount'] ?? 0; ?>; 
+    
+    window.addEventListener('DOMContentLoaded', () => {
+        if(cart.length > 0) {
+            renderCart();
+            calculateOrderTotals();
+        }
+    });
 
     function formatMoney(num) {
         return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
@@ -1008,19 +1046,41 @@ require_once __DIR__ . '/../layout/header.php';
     // =====================================
     function renderActionButtons() {
         let container = document.getElementById('action_buttons_container');
+        const urlParams = new URLSearchParams(window.location.search);
+        const isCopyMode = urlParams.get('copy') == '1';
 
         if (currentShippingMode === 'later') {
-            // Nếu là "Giao hàng sau" -> Gợi ý 1, 2, 3
-            container.innerHTML = `
-                <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('draft')">Lưu nháp</button>
-                <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px; color:#0088ff; border-color:#0088ff;" onclick="handleOrderSubmit('create')">Tạo đơn hàng</button>
-                <button class="btn-primary" style="flex: 1.2; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('confirm')">Tạo & Xác nhận</button>
-            `;
+            if (isCopyMode) {
+                container.innerHTML = `
+                    <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('draft')">Lưu nháp</button>
+                    <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px; color:#0088ff; border-color:#0088ff;" onclick="handleOrderSubmit('create')">Tạo đơn hàng</button>
+                    <button class="btn-primary" style="flex: 1.2; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('confirm')">Tạo & Xác nhận</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <?php if(isset($order['draft_status']) && $order['draft_status'] == 'open'): ?>
+                        <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('draft')">Lưu nháp</button>
+                        <button class="btn-outline" style="flex: 1; padding: 10px; font-size:13px; color:#0088ff; border-color:#0088ff;" onclick="handleOrderSubmit('create')">Tạo đơn hàng</button>
+                        <button class="btn-primary" style="flex: 1.2; padding: 10px; font-size:13px;" onclick="handleOrderSubmit('confirm')">Tạo & Xác nhận</button>
+                    <?php else: ?>
+                        <button class="btn-primary" style="padding: 10px 25px;" onclick="handleOrderSubmit('confirm')">Lưu cập nhật</button>
+                    <?php endif; ?>
+                `;
+            }
         } else {
-            // Nếu có giao hàng luôn -> Gợi ý 4
-            container.innerHTML = `
-                <button class="btn-primary" style="width: 100%; padding: 12px; font-size:15px;" onclick="handleOrderSubmit('ship')">🚀 Tạo đơn và Giao hàng</button>
-            `;
+            if (isCopyMode) {
+                container.innerHTML = `
+                    <button class="btn-primary" style="width: 100%; padding: 12px; font-size:15px;" onclick="handleOrderSubmit('ship')">🚀 Tạo đơn và Giao hàng</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <?php if(isset($order['draft_status']) && $order['draft_status'] == 'open'): ?>
+                        <button class="btn-primary" style="width: 100%; padding: 12px; font-size:15px;" onclick="handleOrderSubmit('ship')">🚀 Tạo đơn và Giao hàng</button>
+                    <?php else: ?>
+                        <button class="btn-primary" style="width: 100%; padding: 12px; font-size:15px;" onclick="handleOrderSubmit('confirm')">Lưu cập nhật</button>
+                    <?php endif; ?>
+                `;
+            }
         }
     }
 
@@ -1060,6 +1120,7 @@ require_once __DIR__ . '/../layout/header.php';
 
         // ĐÓNG GÓI PAYLOAD DỮ LIỆU
         let payload = {
+            order_id: <?php echo $order['id']; ?>,
             action_type: actionType, // 'draft', 'create', 'confirm', 'ship'
             cart_items: cart,
             customer_id: selectedCustomer ? selectedCustomer.id : null,
@@ -1072,21 +1133,34 @@ require_once __DIR__ . '/../layout/header.php';
             invoice_details: invoiceData,
             shipping_mode: currentShippingMode,
             shipping_fee: orderShippingFee,
-            payment_status: document.querySelector('input[name="payment_status"]:checked').value,
+            payment_status: document.querySelector('input[name="payment_status"]:checked')?.value || 'unpaid',
             payment_method: document.getElementById('order_payment_method').value,
             main_note: document.getElementById('order_main_note').value.trim(),
             summary: {
                 subtotal: parseFloat(document.getElementById('sum_subtotal').innerText.replace(/[^\d]/g, '')),
-                tax: parseFloat(document.getElementById('sum_tax').innerText.replace(/[^\d]/g, '')),
-                discount: orderDiscountValue,
+                tax_amount: parseFloat(document.getElementById('sum_tax').innerText.replace(/[^\d]/g, '')),
+                total_order_discount: orderDiscountValue,
                 grand_total: parseFloat(document.getElementById('sum_final').innerText.replace(/[^\d]/g, ''))
             }
         };
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const isCopy = urlParams.get('copy') == '1';
+        const cancelOld = urlParams.get('cancel_old') == '1';
+        if (isCopy) {
+            payload.is_copy = 1;
+            if (cancelOld) {
+                payload.cancel_old_id = <?php echo $order['id']; ?>;
+            }
+            delete payload.order_id;
+        }
+
         // Gửi lên Server (Ví dụ: Fetch API)
         console.log("Dữ liệu gửi lên Backend:", payload);
 
-        fetch('index.php?action=store_online_order', {
+        let actionUrl = 'index.php?action=' + (isCopy ? 'store_online_order' : 'update_order');
+
+        fetch(actionUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1097,12 +1171,13 @@ require_once __DIR__ . '/../layout/header.php';
             .then(res => {
                 if (res.status === 'success') {
                     alert(res.msg);
-                    window.location.href = 'index.php?action=order_list'; // Chuyển về danh sách
+                    window.location.href = res.new_order_id ? ('index.php?action=view_order&id=' + res.new_order_id) : 'index.php?action=view_order&id=<?php echo $order['id']; ?>'; // Chuyển về chi tiết
+
                 } else {
                     alert("Lỗi: " + res.msg);
                 }
             }).catch(err => {
-                alert("Đã gom dữ liệu thành công! (Mở Console F12 để xem JSON).\nChờ Backend code hàm store_online_order để lưu DB.");
+                alert("Lỗi hệ thống: " + err);
             });
     }
     // =====================================

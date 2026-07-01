@@ -377,51 +377,65 @@ $user_session = isset($_SESSION['user']) ? $_SESSION['user'] : ['role' => 'Nhân
             </div>
 
             <div class="menu-item has-submenu">
-                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['order_list', 'create_order', 'order_processing'])) ? 'active' : ''; ?>">
+                <a href="javascript:void(0)" class="menu-link <?php echo (in_array($current_action, ['order_list', 'create_order', 'order_processing', 'handover_list'])) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
                 </a>
                 <ul class="submenu">
                     <li><a href="index.php?action=order_processing" <?php echo ($current_action == 'order_processing') ? 'class="active"' : ''; ?>><i class="fa-solid fa-box-open" style="font-size: 10px; margin-right: 5px;"></i> Xử lý đơn hàng</a></li>
                     <li><a href="index.php?action=order_list" <?php echo ($current_action == 'order_list') ? 'class="active"' : ''; ?>><i class="fa-solid fa-list-ul" style="font-size: 10px; margin-right: 5px;"></i> Danh sách đơn hàng</a></li>
+                    <li><a href="index.php?action=incomplete_list" <?php echo ($current_action == 'incomplete_list' || $current_action == 'incomplete_detail') ? 'class="active"' : ''; ?>><i class="fa-solid fa-cart-arrow-down" style="font-size: 10px; margin-right: 5px;"></i> Đơn chưa hoàn tất</a></li>
+                    <li><a href="index.php?action=draft_list" <?php echo ($current_action == 'draft_list') ? 'class="active"' : ''; ?>><i class="fa-solid fa-file-invoice" style="font-size: 10px; margin-right: 5px;"></i> Đơn hàng nháp</a></li>
+                    <li><a href="index.php?action=return_order_list" <?php echo ($current_action == 'return_order_list' || $current_action == 'return_detail') ? 'class="active"' : ''; ?>><i class="fa-solid fa-rotate-left" style="font-size: 10px; margin-right: 5px;"></i> Khách trả hàng</a></li>
                     <li><a href="index.php?action=create_order" <?php echo ($current_action == 'create_order') ? 'class="active"' : ''; ?>><i class="fa-solid fa-plus" style="font-size: 10px; margin-right: 5px;"></i> Tạo đơn hàng (Online)</a></li>
+                    <li><a href="index.php?action=handover_list" <?php echo (in_array($current_action, ['handover_list', 'create_handover', 'handover_detail'])) ? 'class="active"' : ''; ?>><i class="fa-solid fa-clipboard-list" style="font-size: 10px; margin-right: 5px;"></i> Biên bản bàn giao</a></li>
                 </ul>
             </div>
-            <div class="menu-heading" style="margin-top: 15px;">Vận Chuyển</div>
+            <div class="menu-heading" style="margin-top: 15px;">Kế toán & Vận chuyển</div>
+            <a href="index.php?action=invoice_list" class="menu-item <?php echo ($current_action == 'invoice_list') ? 'active' : ''; ?>">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Quản lý Hóa đơn
+            </a>
             <a href="index.php?action=shipment_list" class="menu-item <?php echo ($current_action == 'shipment_list') ? 'active' : ''; ?>">
                 <i class="fa-solid fa-truck"></i> Quản lý Vận đơn
             </a>
 
             <div class="menu-heading" style="margin-top: 15px;">Hệ thống</div>
-            <a href="index.php?action=settings_hub" class="menu-item <?php echo (in_array($current_action, ['settings_hub', 'store_settings', 'pos_settings', 'payment_methods', 'order_sources', 'order_settings'])) ? 'active' : ''; ?>">
-                <i class="fa-solid fa-gear"></i> Cấu hình hệ thống
-            </a>
-            <ul class="submenu">
-                <li>
-                    <a href="index.php?action=store_settings" <?php echo ($current_action == 'store_settings') ? 'class="active"' : ''; ?>>
-                        <i class="fa-solid fa-store" style="font-size: 10px; margin-right: 5px;"></i> Thiết lập cửa hàng
-                    </a>
-                </li>
-                <li>
-                    <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'class="active"' : ''; ?>>
-                        <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
-                    </a>
-                </li>
-                <li>
-                    <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'class="active"' : ''; ?>>
-                        <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
-                    </a>
-                </li>
-                <li>
-                    <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'class="active"' : ''; ?>>
-                        <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
-                    </a>
-                </li>
-                <li>
-                    <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'class="active"' : ''; ?>>
-                        <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
-                    </a>
-                </li>
-            </ul>
+            <div class="menu-item has-submenu">
+                <a href="index.php?action=settings_hub" class="menu-link <?php echo (in_array($current_action, ['settings_hub', 'store_settings', 'pos_settings', 'payment_methods', 'order_sources', 'order_settings'])) ? 'active' : ''; ?>">
+                    <i class="fa-solid fa-gear"></i> Cấu hình hệ thống
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a href="index.php?action=store_settings" <?php echo ($current_action == 'store_settings') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-store" style="font-size: 10px; margin-right: 5px;"></i> Thiết lập cửa hàng
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=pos_settings" <?php echo ($current_action == 'pos_settings') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-desktop" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình POS tại quầy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=payment_methods" <?php echo ($current_action == 'payment_methods') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-credit-card" style="font-size: 10px; margin-right: 5px;"></i> Phương thức thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=order_sources" <?php echo ($current_action == 'order_sources') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-globe" style="font-size: 10px; margin-right: 5px;"></i> Quản lý Nguồn đơn hàng
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=order_settings" <?php echo ($current_action == 'order_settings') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-boxes-packing" style="font-size: 10px; margin-right: 5px;"></i> Quy trình xử lý đơn hàng
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?action=checkout_settings" <?php echo ($current_action == 'checkout_settings') ? 'class="active"' : ''; ?>>
+                            <i class="fa-solid fa-envelope-open-text" style="font-size: 10px; margin-right: 5px;"></i> Cấu hình thanh toán (Email nhắc)
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     </div>
